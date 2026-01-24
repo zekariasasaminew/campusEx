@@ -80,10 +80,14 @@ If a request conflicts with these rules, propose a compliant alternative.
 ## Testing and quality
 
 - Every change should include tests when practical.
+- Focus on testing features, functionalities, and core business logic.
+- Do not test every granular detail or implementation specifics.
+- Test user-facing behavior and critical paths, not internal implementation.
 - Prefer unit tests for pure logic and integration tests for boundaries.
 - Tests must be deterministic. No flaky timing assumptions.
 - Use meaningful assertions, not snapshot spam.
 - Aim for high confidence coverage on critical paths.
+- Tests should live in `__tests__/` directory mirroring source structure.
 
 ## Documentation
 
