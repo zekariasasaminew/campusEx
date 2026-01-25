@@ -36,12 +36,12 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     const redirectResponse = NextResponse.redirect(url);
-    
+
     // Preserve auth cookies from supabaseResponse
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
     });
-    
+
     return redirectResponse;
   }
 
@@ -49,12 +49,12 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/marketplace";
     const redirectResponse = NextResponse.redirect(url);
-    
+
     // Preserve auth cookies from supabaseResponse
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
     });
-    
+
     return redirectResponse;
   }
 
