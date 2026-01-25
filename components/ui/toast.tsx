@@ -42,7 +42,7 @@ export function Toast({
   return (
     <div
       className={`${styles.toast} ${styles[variant]}`}
-      role="alert"
+      role="status"
       aria-live="polite"
     >
       <Icon size={20} className={styles.icon} />

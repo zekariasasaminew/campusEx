@@ -13,7 +13,7 @@ A campus-exclusive marketplace for students built with Next.js 16, React 19, and
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20.9+
 - npm or yarn
 - A Supabase account and project
 
@@ -84,6 +84,9 @@ campus-ex/
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm test` - Run test suite
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage
 
 ## Authentication
 

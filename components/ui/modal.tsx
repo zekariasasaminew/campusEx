@@ -39,16 +39,23 @@ export function Modal({
 
   if (!isOpen) return null;
 
+  const titleId = title ? "modal-title" : undefined;
+
   return (
     <div
       className={styles.overlay}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
+      aria-labelledby={titleId}
     >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          {title && <h2 className={styles.title}>{title}</h2>}
+          {title && (
+            <h2 id="modal-title" className={styles.title}>
+              {title}
+            </h2>
+          )}
           <Button
             variant="ghost"
             size="sm"
