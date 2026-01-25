@@ -1,52 +1,58 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
 }
 
 .sectionTitle {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .hint {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
 .dropzone {
   border: 2px dashed var(--color-border);
   border-radius: 8px;
-  padding: 32px;
+  padding: var(--spacing-2xl);
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
 }
 
 .dropzone:hover {
   border-color: var(--color-primary);
-  background-color: var(--color-background-secondary, #f9f9f9);
+  background-color: var(--color-primary-subtle);
 }
 
 .dropzone.active {
   border-color: var(--color-primary);
-  background-color: var(--color-background-secondary, #f0f0ff);
+  background-color: var(--color-primary-subtle);
 }
 
 .dropzoneContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  color: var(--color-text-secondary);
+  gap: var(--spacing-sm);
+  color: var(--color-text-muted);
 }
 
 .uploadIcon {
   width: 48px;
   height: 48px;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
+  opacity: 0.5;
 }
 
 .hiddenInput {
@@ -55,19 +61,22 @@
 
 .error {
   font-size: 0.75rem;
-  color: var(--color-error, #c00);
+  color: var(--color-danger);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-danger-bg);
+  border-radius: 4px;
 }
 
 .previews {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 .preview {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-xs);
 }
 
 .imageWrapper {

@@ -74,11 +74,6 @@ export function ListingForm({
     }
   };
 
-  const priceDisplay =
-    formData.price_cents !== null && formData.price_cents !== undefined
-      ? (formData.price_cents / 100).toFixed(2)
-      : "";
-
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <BasicFields
@@ -102,14 +97,19 @@ export function ListingForm({
 
       <PriceFields
         isFree={formData.is_free || false}
-        price={priceDisplay}
+        price={
+          formData.price_cents !== null && formData.price_cents !== undefined
+            ? String(formData.price_cents / 100)
+            : ""
+        }
         errors={errors}
         onChange={(field: "is_free" | "price", value: boolean | string) => {
           if (field === "is_free") {
             updateField("is_free", value as boolean);
             if (value) updateField("price_cents", null);
           } else {
-            const cents = Math.round(parseFloat(value as string) * 100);
+            const dollars = parseFloat(value as string);
+            const cents = Math.round(dollars * 100);
             updateField("price_cents", isNaN(cents) ? null : cents);
           }
         }}
@@ -135,7 +135,13 @@ export function ListingForm({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create Listing"}
+          {initialData
+            ? isSubmitting
+              ? "Updating..."
+              : "Update Listing"
+            : isSubmitting
+              ? "Creating..."
+              : "Create Listing"}
         </Button>
       </div>
     </form>

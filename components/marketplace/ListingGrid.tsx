@@ -1,6 +1,7 @@
 import type { ListingWithImages } from "@/lib/marketplace/types";
 import { ListingCard } from "./ListingCard";
 import { EmptyState } from "./EmptyState";
+import { Spinner } from "@/components/ui/spinner";
 import styles from "./ListingGrid.module.css";
 
 interface ListingGridProps {
@@ -17,8 +18,7 @@ export function ListingGrid({
   if (isLoading) {
     return (
       <div className={styles.loading}>
-        <div className={styles.spinner} />
-        <p>Loading listings...</p>
+        <Spinner size="lg" message="Loading listings..." />
       </div>
     );
   }

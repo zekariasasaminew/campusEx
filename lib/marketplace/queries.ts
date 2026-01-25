@@ -82,10 +82,12 @@ export async function getListings(
     throw new Error(`Failed to fetch listings: ${error.message}`);
   }
 
-  const enhanced = (data as ListingWithImages[]).map((listing) => ({
+  const enhanced = ((data as any[]) || []).map((listing) => ({
     ...listing,
+    location: listing.location_text || null,
     price: listing.price_cents ? listing.price_cents / 100 : undefined,
-  }));
+    images: listing.images || [],
+  })) as ListingWithImages[];
 
   return {
     data: enhanced,
@@ -116,14 +118,17 @@ export async function getListingById(
     throw new Error(`Failed to fetch listing: ${error.message}`);
   }
 
-  const listing = data as ListingWithImages & { seller: { email: string } };
+  const listing = data as any;
   const isOwner = userId ? listing.seller_id === userId : false;
 
   return {
     ...listing,
+    location: listing.location_text || null,
     price: listing.price_cents ? listing.price_cents / 100 : undefined,
     is_owner: isOwner,
-  };
+    seller: listing.seller,
+    images: listing.images || [],
+  } as ListingDetail;
 }
 
 /**
@@ -137,7 +142,7 @@ export async function getListingImages(
     .from("marketplace_listing_images")
     .select("*")
     .eq("listing_id", listingId)
-    .order("display_order", { ascending: true });
+    .order("sort_order", { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch images: ${error.message}`);

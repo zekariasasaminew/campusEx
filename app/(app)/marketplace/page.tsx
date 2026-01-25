@@ -34,10 +34,14 @@ export default function MarketplacePage() {
     setLoading(false);
   };
 
+  const resultsText = loading
+    ? "Loading..."
+    : `${listings.length} listing${listings.length !== 1 ? "s" : ""}`;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div>
+        <div className={styles.headerContent}>
           <h1 className={styles.title}>Marketplace</h1>
           <p className={styles.subtitle}>Buy and sell items within campus</p>
         </div>
@@ -47,6 +51,8 @@ export default function MarketplacePage() {
       </div>
 
       <FiltersBar filters={filters} onFiltersChange={loadListings} />
+
+      <div className={styles.results}>{resultsText}</div>
 
       <ListingGrid listings={listings} isLoading={loading} />
     </div>

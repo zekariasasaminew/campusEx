@@ -41,7 +41,7 @@ export async function createListing(
       condition: input.condition,
       price_cents: input.price_cents,
       is_free: input.is_free,
-      location: input.location?.trim() || null,
+      location_text: input.location?.trim() || null,
       status: "active",
       seller_id: userId,
     })
@@ -100,7 +100,7 @@ export async function updateListing(
   if (input.price_cents !== undefined) updates.price_cents = input.price_cents;
   if (input.is_free !== undefined) updates.is_free = input.is_free;
   if (input.location !== undefined)
-    updates.location = input.location?.trim() || null;
+    updates.location_text = input.location?.trim() || null;
 
   // Update listing
   const { data: listing, error } = await supabase
@@ -167,7 +167,7 @@ export async function deleteListing(
   // Get image paths before deletion
   const { data: images } = await supabase
     .from("marketplace_listing_images")
-    .select("storage_path")
+    .select("image_path")
     .eq("listing_id", listingId);
 
   // Delete listing (cascades to images via DB)
@@ -183,7 +183,7 @@ export async function deleteListing(
   // Attempt to delete images from storage (best effort)
   if (images && images.length > 0) {
     try {
-      const paths = images.map((img) => img.storage_path);
+      const paths = images.map((img) => img.image_path);
       await supabase.storage.from("marketplace-images").remove(paths);
     } catch {
       // Log but don't fail - images can be cleaned up later

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   CATEGORIES,
   CONDITIONS,
@@ -20,15 +20,64 @@ interface FiltersBarProps {
 
 export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
   const [search, setSearch] = useState(filters.search || "");
+  const [priceMin, setPriceMin] = useState(filters.priceMin?.toString() || "");
+  const [priceMax, setPriceMax] = useState(filters.priceMax?.toString() || "");
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onFiltersChange({ ...filters, search });
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search !== filters.search) {
+        onFiltersChange({ ...filters, search: search || "" });
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Debounce price inputs
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const minValue = priceMin ? parseInt(priceMin) : null;
+      const maxValue = priceMax ? parseInt(priceMax) : null;
+
+      if (minValue !== filters.priceMin || maxValue !== filters.priceMax) {
+        onFiltersChange({
+          ...filters,
+          priceMin: minValue,
+          priceMax: maxValue,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [priceMin, priceMax]);
+
+  const hasActiveFilters =
+    filters.category ||
+    filters.condition ||
+    filters.priceMin ||
+    filters.priceMax ||
+    filters.freeOnly ||
+    filters.search;
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setPriceMin("");
+    setPriceMax("");
+    onFiltersChange({
+      status: "active",
+      category: null,
+      condition: null,
+      priceMin: null,
+      priceMax: null,
+      freeOnly: false,
+      search: "",
+    });
   };
 
   return (
     <div className={styles.container}>
-      <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+      <div className={styles.searchRow}>
         <Input
           type="search"
           placeholder="Search listings..."
@@ -36,8 +85,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
           onChange={(e) => setSearch(e.target.value)}
           className={styles.searchInput}
         />
-        <Button type="submit">Search</Button>
-      </form>
+      </div>
 
       <div className={styles.filters}>
         <Select
@@ -77,28 +125,18 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
         <div className={styles.priceRange}>
           <Input
             type="number"
-            placeholder="Min price"
-            value={filters.priceMin ?? ""}
-            onChange={(e) =>
-              onFiltersChange({
-                ...filters,
-                priceMin: e.target.value ? parseInt(e.target.value) : null,
-              })
-            }
+            placeholder="Min"
+            value={priceMin}
+            onChange={(e) => setPriceMin(e.target.value)}
             min="0"
             step="1"
           />
           <span className={styles.priceSeparator}>to</span>
           <Input
             type="number"
-            placeholder="Max price"
-            value={filters.priceMax ?? ""}
-            onChange={(e) =>
-              onFiltersChange({
-                ...filters,
-                priceMax: e.target.value ? parseInt(e.target.value) : null,
-              })
-            }
+            placeholder="Max"
+            value={priceMax}
+            onChange={(e) => setPriceMax(e.target.value)}
             min="0"
             step="1"
           />
@@ -115,26 +153,8 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
           <span>Free items only</span>
         </label>
 
-        {(filters.category ||
-          filters.condition ||
-          filters.priceMin ||
-          filters.priceMax ||
-          filters.freeOnly ||
-          filters.search) && (
-          <Button
-            variant="secondary"
-            onClick={() =>
-              onFiltersChange({
-                status: "active",
-                category: null,
-                condition: null,
-                priceMin: null,
-                priceMax: null,
-                freeOnly: false,
-                search: "",
-              })
-            }
-          >
+        {hasActiveFilters && (
+          <Button variant="secondary" onClick={handleClearFilters}>
             Clear Filters
           </Button>
         )}
