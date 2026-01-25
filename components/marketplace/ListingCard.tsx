@@ -2,6 +2,7 @@ import type { ListingWithImages } from "@/lib/marketplace/types";
 import { getImageUrl } from "@/lib/marketplace/storage";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./ListingCard.module.css";
 
 interface ListingCardProps {
@@ -22,11 +23,12 @@ export function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link href={`/marketplace/${listing.id}`} className={styles.card}>
       <div className={styles.imageWrapper}>
-        <img
+        <Image
           src={imageUrl}
           alt={listing.title}
+          fill
           className={styles.image}
-          loading="lazy"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {listing.status === "sold" && (
           <div className={styles.soldBadge}>Sold</div>

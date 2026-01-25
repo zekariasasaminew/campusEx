@@ -6,12 +6,10 @@
 import {
   CATEGORIES,
   CONDITIONS,
-  STATUSES,
   VALIDATION_RULES,
   IMAGE_CONSTRAINTS,
   type Category,
   type Condition,
-  type Status,
 } from "./constants";
 import type {
   CreateListingInput,
@@ -28,10 +26,6 @@ function isValidCategory(value: unknown): value is Category {
 
 function isValidCondition(value: unknown): value is Condition {
   return typeof value === "string" && CONDITIONS.includes(value as Condition);
-}
-
-function isValidStatus(value: unknown): value is Status {
-  return typeof value === "string" && STATUSES.includes(value as Status);
 }
 
 function isValidFileType(file: File): boolean {

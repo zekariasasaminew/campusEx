@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,11 +26,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  useEffect(() => {
-    loadListing();
-  }, [params.listingId]);
-
-  const loadListing = async () => {
+  const loadListing = useCallback(async () => {
     setLoading(true);
     const result = await fetchListingDetail(params.listingId);
 
@@ -41,7 +37,11 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     }
 
     setLoading(false);
-  };
+  }, [params.listingId]);
+
+  useEffect(() => {
+    loadListing();
+  }, [loadListing]);
 
   const handleMarkAsSold = async () => {
     if (!listing) return;

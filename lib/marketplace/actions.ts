@@ -24,7 +24,6 @@ import type {
   ListingFilters,
   CreateListingInput,
   UpdateListingInput,
-  ReportListingInput,
   ListingWithImages,
   ListingDetail,
   MarketplaceListingImage,

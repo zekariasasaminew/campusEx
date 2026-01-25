@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import {
@@ -22,11 +22,7 @@ export default function EditListingPage({ params }: EditListingPageProps) {
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadListing();
-  }, [params.listingId]);
-
-  const loadListing = async () => {
+  const loadListing = useCallback(async () => {
     setLoading(true);
     const result = await fetchListingDetail(params.listingId);
 
@@ -41,7 +37,11 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     }
 
     setLoading(false);
-  };
+  }, [params.listingId, router]);
+
+  useEffect(() => {
+    loadListing();
+  }, [loadListing]);
 
   const handleSubmit = async (data: UpdateListingInput) => {
     const result = await submitListingUpdate(params.listingId, data);
