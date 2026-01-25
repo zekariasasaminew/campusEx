@@ -1,7 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
-import { CATEGORIES, CONDITIONS, VALIDATION_RULES } from "@/lib/marketplace/constants";
+import {
+  CATEGORIES,
+  CONDITIONS,
+  VALIDATION_RULES,
+} from "@/lib/marketplace/constants";
 import type { Category, Condition } from "@/lib/marketplace/constants";
 import styles from "./BasicFields.module.css";
 
@@ -12,7 +16,10 @@ interface BasicFieldsProps {
   condition?: Condition | null;
   location: string;
   errors: Record<string, string>;
-  onChange: (field: string, value: string | Category | Condition | null) => void;
+  onChange: (
+    field: string,
+    value: string | Category | Condition | null,
+  ) => void;
 }
 
 export function BasicFields({
@@ -75,9 +82,7 @@ export function BasicFields({
           <Select
             id="category"
             value={category || ""}
-            onChange={(e) =>
-              onChange("category", e.target.value as Category)
-            }
+            onChange={(e) => onChange("category", e.target.value as Category)}
             required
           >
             <option value="">Select a category</option>
@@ -102,7 +107,7 @@ export function BasicFields({
             onChange={(e) =>
               onChange(
                 "condition",
-                e.target.value ? (e.target.value as Condition) : null
+                e.target.value ? (e.target.value as Condition) : null,
               )
             }
           >

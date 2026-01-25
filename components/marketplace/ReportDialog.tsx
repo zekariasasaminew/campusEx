@@ -35,7 +35,7 @@ export function ReportDialog({
 
     if (details.length > VALIDATION_RULES.reportDetails.max) {
       setError(
-        `Details must not exceed ${VALIDATION_RULES.reportDetails.max} characters`
+        `Details must not exceed ${VALIDATION_RULES.reportDetails.max} characters`,
       );
       return;
     }

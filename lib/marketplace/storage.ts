@@ -14,7 +14,7 @@ export async function uploadListingImages(
   supabase: SupabaseClient,
   listingId: string,
   userId: string,
-  images: File[]
+  images: File[],
 ): Promise<UploadedImage[]> {
   if (images.length === 0) {
     throw new Error("At least one image is required");
@@ -59,7 +59,9 @@ export async function uploadListingImages(
       if (dbError) {
         // Cleanup uploaded file
         await supabase.storage.from("marketplace-images").remove([storagePath]);
-        errors.push(`Failed to save image record for ${file.name}: ${dbError.message}`);
+        errors.push(
+          `Failed to save image record for ${file.name}: ${dbError.message}`,
+        );
         continue;
       }
 
@@ -89,7 +91,7 @@ export async function uploadListingImages(
 export async function deleteListingImages(
   supabase: SupabaseClient,
   listingId: string,
-  imageIds: string[]
+  imageIds: string[],
 ): Promise<void> {
   if (imageIds.length === 0) return;
 
@@ -117,7 +119,9 @@ export async function deleteListingImages(
       const paths = images.map((img) => img.storage_path);
       await supabase.storage.from("marketplace-images").remove(paths);
     } catch {
-      console.warn(`Failed to delete some images from storage for listing ${listingId}`);
+      console.warn(
+        `Failed to delete some images from storage for listing ${listingId}`,
+      );
     }
   }
 }
@@ -125,7 +129,10 @@ export async function deleteListingImages(
 /**
  * Get public URL for an image
  */
-export function getImageUrl(supabase: SupabaseClient, storagePath: string): string {
+export function getImageUrl(
+  supabase: SupabaseClient,
+  storagePath: string,
+): string {
   const { data } = supabase.storage
     .from("marketplace-images")
     .getPublicUrl(storagePath);
@@ -138,7 +145,7 @@ export function getImageUrl(supabase: SupabaseClient, storagePath: string): stri
  */
 export function getImageUrls(
   supabase: SupabaseClient,
-  storagePaths: string[]
+  storagePaths: string[],
 ): string[] {
   return storagePaths.map((path) => getImageUrl(supabase, path));
 }

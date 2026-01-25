@@ -28,6 +28,7 @@ export interface MarketplaceListingImage {
   storage_path: string;
   display_order: number;
   created_at: string;
+  image_url?: string; // Added client-side for enhanced responses
 }
 
 export interface MarketplaceReport {
@@ -43,10 +44,12 @@ export interface MarketplaceReport {
 export interface ListingWithImages extends MarketplaceListing {
   images: MarketplaceListingImage[];
   image_count?: number;
+  price?: number; // Computed: price_cents / 100
 }
 
 export interface ListingDetail extends ListingWithImages {
   is_owner: boolean;
+  seller: { email: string }; // Seller info for display
 }
 
 // Form types

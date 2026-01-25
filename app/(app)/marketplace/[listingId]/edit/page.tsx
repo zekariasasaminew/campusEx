@@ -3,9 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/marketplace/ListingForm";
-import { getListingById } from "@/lib/marketplace/queries";
-import { updateListing } from "@/lib/marketplace/mutations";
-import type { UpdateListingInput, ListingDetail } from "@/lib/marketplace/types";
+import {
+  fetchListingDetail,
+  submitListingUpdate,
+} from "@/lib/marketplace/actions";
+import type {
+  UpdateListingInput,
+  ListingDetail,
+} from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
 interface EditListingPageProps {
@@ -23,10 +28,10 @@ export default function EditListingPage({ params }: EditListingPageProps) {
 
   const loadListing = async () => {
     setLoading(true);
-    const result = await getListingById(params.listingId);
-    
-    if (result.success && result.data) {
-      if (!result.data.isOwner) {
+    const result = await fetchListingDetail(params.listingId);
+
+    if (result.success) {
+      if (!result.data.is_owner) {
         router.push("/marketplace");
         return;
       }
@@ -34,22 +39,18 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     } else {
       router.push("/marketplace");
     }
-    
+
     setLoading(false);
   };
 
   const handleSubmit = async (data: UpdateListingInput) => {
-    const result = await updateListing(params.listingId, data);
-    
+    const result = await submitListingUpdate(params.listingId, data);
+
     if (result.success) {
       router.push(`/marketplace/${params.listingId}`);
-      return { success: true };
+    } else {
+      throw new Error(result.error);
     }
-
-    return {
-      success: false,
-      error: result.error || "Failed to update listing",
-    };
   };
 
   const handleCancel = () => {

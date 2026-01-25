@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/marketplace/ListingForm";
-import { createListing } from "@/lib/marketplace/mutations";
+import { submitNewListing } from "@/lib/marketplace/actions";
 import type { CreateListingInput } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
@@ -10,21 +10,13 @@ export default function NewListingPage() {
   const router = useRouter();
 
   const handleSubmit = async (data: CreateListingInput) => {
-    const result = await createListing(data);
+    const result = await submitNewListing(data);
 
-    if (result.success && result.data) {
-      router.push(`/marketplace/${result.data.id}`);
-      return { success: true };
+    if (result.success) {
+      router.push(`/marketplace/${result.data}`);
+    } else {
+      throw new Error(result.error);
     }
-
-    return {
-      success: false,
-      error: result.error || "Failed to create listing",
-    };
-  };
-
-  const handleCancel = () => {
-    router.push("/marketplace");
   };
 
   return (

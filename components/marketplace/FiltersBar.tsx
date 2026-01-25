@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { CATEGORIES, CONDITIONS, type Category, type Condition } from "@/lib/marketplace/constants";
+import {
+  CATEGORIES,
+  CONDITIONS,
+  type Category,
+  type Condition,
+} from "@/lib/marketplace/constants";
 import type { ListingFilters } from "@/lib/marketplace/types";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";

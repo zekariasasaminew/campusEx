@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FiltersBar } from "@/components/marketplace/FiltersBar";
 import { ListingGrid } from "@/components/marketplace/ListingGrid";
-import { getListings } from "@/lib/marketplace/queries";
+import { fetchListings } from "@/lib/marketplace/actions";
 import type {
   ListingFilters,
   ListingWithImages,
@@ -19,13 +19,22 @@ export default function MarketplacePage() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ListingFilters>({});
 
-  useState(() => {
+  useEffect(() => {
     loadListings({});
-  });
+  }, []);
 
   const loadListings = async (newFilters: ListingFilters) => {
     setLoading(true);
     setFilters(newFilters);
+
+    const result = await fetchListings(newFilters);
+    if (result.success) {
+      setListings(result.data);
+    } else {
+      setListings([]);
+    }
+    setLoading(false);
+  };
 
     try {
       const result = await getListings(newFilters);

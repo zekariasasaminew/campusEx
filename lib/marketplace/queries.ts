@@ -19,9 +19,17 @@ export async function getListings(
   supabase: SupabaseClient,
   filters: ListingFilters = {},
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ): Promise<{ data: ListingWithImages[]; count: number }> {
-  const { status = DEFAULT_FILTERS.status, category, condition, priceMin, priceMax, freeOnly, search } = filters;
+  const {
+    status = DEFAULT_FILTERS.status,
+    category,
+    condition,
+    priceMin,
+    priceMax,
+    freeOnly,
+    search,
+  } = filters;
 
   let query = supabase
     .from("marketplace_listings")
@@ -55,7 +63,9 @@ export async function getListings(
   // Search filter (ilike on title and description)
   if (search && search.trim().length > 0) {
     const searchTerm = `%${search.trim()}%`;
-    query = query.or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`);
+    query = query.or(
+      `title.ilike.${searchTerm},description.ilike.${searchTerm}`,
+    );
   }
 
   // Order by newest first
@@ -72,8 +82,13 @@ export async function getListings(
     throw new Error(`Failed to fetch listings: ${error.message}`);
   }
 
+  const enhanced = (data as ListingWithImages[]).map((listing) => ({
+    ...listing,
+    price: listing.price_cents ? listing.price_cents / 100 : undefined,
+  }));
+
   return {
-    data: (data as ListingWithImages[]) || [],
+    data: enhanced,
     count: count || 0,
   };
 }
@@ -84,11 +99,13 @@ export async function getListings(
 export async function getListingById(
   supabase: SupabaseClient,
   listingId: string,
-  userId: string | null
+  userId: string | null,
 ): Promise<ListingDetail | null> {
   const { data, error } = await supabase
     .from("marketplace_listings")
-    .select("*, images:marketplace_listing_images(*)")
+    .select(
+      "*, images:marketplace_listing_images(*), seller:users!seller_id(email)",
+    )
     .eq("id", listingId)
     .single();
 
@@ -99,11 +116,12 @@ export async function getListingById(
     throw new Error(`Failed to fetch listing: ${error.message}`);
   }
 
-  const listing = data as ListingWithImages;
+  const listing = data as ListingWithImages & { seller: { email: string } };
   const isOwner = userId ? listing.seller_id === userId : false;
 
   return {
     ...listing,
+    price: listing.price_cents ? listing.price_cents / 100 : undefined,
     is_owner: isOwner,
   };
 }
@@ -113,7 +131,7 @@ export async function getListingById(
  */
 export async function getListingImages(
   supabase: SupabaseClient,
-  listingId: string
+  listingId: string,
 ): Promise<MarketplaceListingImage[]> {
   const { data, error } = await supabase
     .from("marketplace_listing_images")
@@ -134,7 +152,7 @@ export async function getListingImages(
 export async function getListingsBySeller(
   supabase: SupabaseClient,
   sellerId: string,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<ListingWithImages[]> {
   const { data, error } = await supabase
     .from("marketplace_listings")
@@ -156,7 +174,7 @@ export async function getListingsBySeller(
 export async function checkListingOwnership(
   supabase: SupabaseClient,
   listingId: string,
-  userId: string
+  userId: string,
 ): Promise<boolean> {
   const { data, error } = await supabase
     .from("marketplace_listings")

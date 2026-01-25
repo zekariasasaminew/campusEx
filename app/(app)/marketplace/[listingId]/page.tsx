@@ -6,8 +6,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ReportDialog } from "@/components/marketplace/ReportDialog";
-import { getListingById } from "@/lib/marketplace/queries";
-import { markListingAsSold, deleteListing } from "@/lib/marketplace/mutations";
+import {
+  fetchListingDetail,
+  submitMarkAsSold,
+  submitDeleteListing,
+  submitReport,
+} from "@/lib/marketplace/actions";
 import type { ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
@@ -28,21 +32,21 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   const loadListing = async () => {
     setLoading(true);
-    const result = await getListingById(params.listingId);
-
-    if (result.success && result.data) {
+    const result = await fetchListingDetail(params.listingId);
+    
+    if (result.success) {
       setListing(result.data);
     } else {
       setListing(null);
     }
-
+    
     setLoading(false);
   };
 
   const handleMarkAsSold = async () => {
     if (!listing) return;
 
-    const result = await markListingAsSold(listing.id);
+    const result = await submitMarkAsSold(listing.id);
     if (result.success) {
       loadListing();
     }
@@ -52,9 +56,21 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     if (!listing || !confirm("Are you sure you want to delete this listing?"))
       return;
 
-    const result = await deleteListing(listing.id);
+    const result = await submitDeleteListing(listing.id);
     if (result.success) {
       router.push("/marketplace");
+    }
+  };
+
+  const handleReport = async (details: string) => {
+    if (!listing) return;
+    
+    const result = await submitReport(listing.id, details);
+    if (result.success) {
+      setShowReportDialog(false);
+      alert("Report submitted successfully");
+    } else {
+      throw new Error(result.error);
     }
   };
 
@@ -115,7 +131,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <Image
-                    src={img.image_url}
+                    src={img.image_url || ""}
                     alt={`Thumbnail ${index + 1}`}
                     fill
                     className={styles.thumbnailImage}
@@ -157,12 +173,12 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
           </div>
 
           <div className={styles.actions}>
-            {listing.isOwner ? (
+            {listing.is_owner ? (
               <>
                 {listing.status === "active" && (
                   <>
                     <Link href={`/marketplace/${listing.id}/edit`}>
-                      <Button variant="outline">Edit Listing</Button>
+                      <Button variant="secondary">Edit Listing</Button>
                     </Link>
                     <Button onClick={handleMarkAsSold}>Mark as Sold</Button>
                   </>
@@ -172,10 +188,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                 </Button>
               </>
             ) : (
-              <Button
-                variant="outline"
-                onClick={() => setShowReportDialog(true)}
-              >
+              <Button variant="secondary" onClick={() => setShowReportDialog(true)}>
                 Report Listing
               </Button>
             )}
@@ -185,8 +198,10 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
       {showReportDialog && (
         <ReportDialog
-          listingId={listing.id}
+          isOpen={showReportDialog}
           onClose={() => setShowReportDialog(false)}
+          onSubmit={handleReport}
+          listingTitle={listing.title}
         />
       )}
     </div>

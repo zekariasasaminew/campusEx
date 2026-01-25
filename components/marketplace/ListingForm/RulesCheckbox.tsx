@@ -7,7 +7,11 @@ interface RulesCheckboxProps {
   onChange: (checked: boolean) => void;
 }
 
-export function RulesCheckbox({ checked, error, onChange }: RulesCheckboxProps) {
+export function RulesCheckbox({
+  checked,
+  error,
+  onChange,
+}: RulesCheckboxProps) {
   return (
     <div className={styles.section}>
       <h3 className={styles.sectionTitle}>Listing Rules</h3>

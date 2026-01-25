@@ -1,4 +1,4 @@
-import type { SelectHTMLAttributes } from "react";
+import type { SelectHTMLAttributes, ReactNode } from "react";
 import styles from "./select.module.css";
 
 interface SelectOption {
@@ -10,8 +10,9 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
-  options: SelectOption[];
+  options?: SelectOption[];
   placeholder?: string;
+  children?: ReactNode;
 }
 
 export function Select({
@@ -22,6 +23,7 @@ export function Select({
   placeholder,
   className = "",
   id,
+  children,
   ...props
 }: SelectProps) {
   const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
@@ -45,11 +47,13 @@ export function Select({
             {placeholder}
           </option>
         )}
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {options
+          ? options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))
+          : children}
       </select>
       {error && (
         <span

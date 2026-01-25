@@ -49,14 +49,15 @@ export function ListingForm({
       await onSubmit(formData as CreateListingInput);
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : "Failed to create listing",
+        submit:
+          error instanceof Error ? error.message : "Failed to create listing",
       });
     }
   };
 
   const updateField = <K extends keyof CreateListingInput>(
     field: K,
-    value: CreateListingInput[K]
+    value: CreateListingInput[K],
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -68,6 +69,11 @@ export function ListingForm({
     }
   };
 
+  const priceDisplay =
+    formData.price_cents !== null && formData.price_cents !== undefined
+      ? (formData.price_cents / 100).toFixed(2)
+      : "";
+
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <BasicFields
@@ -77,35 +83,42 @@ export function ListingForm({
         condition={formData.condition}
         location={formData.location || ""}
         errors={errors}
-        onChange={(field, value) => updateField(field as keyof CreateListingInput, value)}
+        onChange={(
+          field: string,
+          value: string | Category | Condition | null,
+        ) => updateField(field as keyof CreateListingInput, value)}
       />
 
       <ImageUpload
         images={formData.images || []}
-        error={errors.images}
-        onChange={(images) => updateField("images", images)}
+        errors={errors}
+        onChange={(images: File[]) => updateField("images", images)}
       />
 
       <PriceFields
         isFree={formData.is_free || false}
-        priceCents={formData.price_cents}
-        error={errors.price}
-        onIsFreeChange={(isFree) => {
-          updateField("is_free", isFree);
-          if (isFree) {
-            updateField("price_cents", null);
+        price={priceDisplay}
+        errors={errors}
+        onChange={(field: "is_free" | "price", value: boolean | string) => {
+          if (field === "is_free") {
+            updateField("is_free", value as boolean);
+            if (value) updateField("price_cents", null);
+          } else {
+            const cents = Math.round(parseFloat(value as string) * 100);
+            updateField("price_cents", isNaN(cents) ? null : cents);
           }
         }}
-        onPriceChange={(priceCents) => updateField("price_cents", priceCents)}
       />
 
       <RulesCheckbox
-        agreed={formData.agreed_to_rules || false}
-        error={errors.rules}
-        onChange={(agreed) => updateField("agreed_to_rules", agreed)}
+        checked={formData.agreed_to_rules || false}
+        error={errors.agreed_to_rules}
+        onChange={(agreed: boolean) => updateField("agreed_to_rules", agreed)}
       />
 
-      {errors.submit && <div className={styles.submitError}>{errors.submit}</div>}
+      {errors.submit && (
+        <div className={styles.submitError}>{errors.submit}</div>
+      )}
 
       <div className={styles.actions}>
         <Button

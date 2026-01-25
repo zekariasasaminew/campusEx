@@ -10,7 +10,11 @@ import type {
   UpdateListingInput,
   ReportListingInput,
 } from "./types";
-import { validateCreateListing, validateUpdateListing, validateReport } from "./validators";
+import {
+  validateCreateListing,
+  validateUpdateListing,
+  validateReport,
+} from "./validators";
 import { uploadListingImages, deleteListingImages } from "./storage";
 
 /**
@@ -19,14 +23,12 @@ import { uploadListingImages, deleteListingImages } from "./storage";
 export async function createListing(
   supabase: SupabaseClient,
   userId: string,
-  input: CreateListingInput
+  input: CreateListingInput,
 ): Promise<MarketplaceListing> {
   // Validate input
   const validation = validateCreateListing(input);
   if (!validation.isValid) {
-    throw new Error(
-      Object.values(validation.errors).join(", ")
-    );
+    throw new Error(Object.values(validation.errors).join(", "));
   }
 
   // Insert listing
@@ -69,14 +71,12 @@ export async function updateListing(
   supabase: SupabaseClient,
   listingId: string,
   userId: string,
-  input: UpdateListingInput
+  input: UpdateListingInput,
 ): Promise<MarketplaceListing> {
   // Validate input
   const validation = validateUpdateListing(input);
   if (!validation.isValid) {
-    throw new Error(
-      Object.values(validation.errors).join(", ")
-    );
+    throw new Error(Object.values(validation.errors).join(", "));
   }
 
   // Check ownership
@@ -93,12 +93,14 @@ export async function updateListing(
   // Build update object
   const updates: Partial<MarketplaceListing> = {};
   if (input.title !== undefined) updates.title = input.title.trim();
-  if (input.description !== undefined) updates.description = input.description.trim();
+  if (input.description !== undefined)
+    updates.description = input.description.trim();
   if (input.category !== undefined) updates.category = input.category;
   if (input.condition !== undefined) updates.condition = input.condition;
   if (input.price_cents !== undefined) updates.price_cents = input.price_cents;
   if (input.is_free !== undefined) updates.is_free = input.is_free;
-  if (input.location !== undefined) updates.location = input.location?.trim() || null;
+  if (input.location !== undefined)
+    updates.location = input.location?.trim() || null;
 
   // Update listing
   const { data: listing, error } = await supabase
@@ -130,7 +132,7 @@ export async function updateListing(
 export async function markListingAsSold(
   supabase: SupabaseClient,
   listingId: string,
-  userId: string
+  userId: string,
 ): Promise<void> {
   const { error } = await supabase
     .from("marketplace_listings")
@@ -149,7 +151,7 @@ export async function markListingAsSold(
 export async function deleteListing(
   supabase: SupabaseClient,
   listingId: string,
-  userId: string
+  userId: string,
 ): Promise<void> {
   // Check ownership
   const { data: existing } = await supabase
@@ -196,14 +198,12 @@ export async function deleteListing(
 export async function reportListing(
   supabase: SupabaseClient,
   userId: string,
-  input: ReportListingInput
+  input: ReportListingInput,
 ): Promise<void> {
   // Validate input
   const validation = validateReport(input);
   if (!validation.isValid) {
-    throw new Error(
-      Object.values(validation.errors).join(", ")
-    );
+    throw new Error(Object.values(validation.errors).join(", "));
   }
 
   const { error } = await supabase.from("marketplace_reports").insert({

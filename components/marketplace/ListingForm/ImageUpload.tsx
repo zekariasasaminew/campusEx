@@ -108,7 +108,7 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
               <Button
                 type="button"
                 variant="ghost"
-                size="small"
+                size="sm"
                 onClick={() => handleRemove(index)}
                 className={styles.removeButton}
               >
