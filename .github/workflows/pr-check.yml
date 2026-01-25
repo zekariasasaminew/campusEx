@@ -47,7 +47,7 @@ jobs:
 
       - name: Build application
         run: |
-          if [ -z "$NEXT_PUBLIC_KNACK_APP_ID" ]; then
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
             echo "Skipping build because required secrets are not available in this context"
             exit 0
           fi

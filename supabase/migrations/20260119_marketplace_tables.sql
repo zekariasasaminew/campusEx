@@ -142,6 +142,13 @@ USING (
     WHERE marketplace_listings.id = listing_id
     AND marketplace_listings.seller_id = auth.uid()
   )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM marketplace_listings
+    WHERE marketplace_listings.id = listing_id
+    AND marketplace_listings.seller_id = auth.uid()
+  )
 );
 
 -- RLS: Users can delete images from their own listings

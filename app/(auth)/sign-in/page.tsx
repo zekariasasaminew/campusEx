@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
@@ -16,7 +15,6 @@ export default function SignInPage() {
     variant: "success" | "error" | "info";
     isVisible: boolean;
   }>({ message: "", variant: "info", isVisible: false });
-  const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

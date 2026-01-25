@@ -35,13 +35,27 @@ export async function updateSession(request: NextRequest) {
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    
+    // Preserve auth cookies from supabaseResponse
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    
+    return redirectResponse;
   }
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/marketplace";
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    
+    // Preserve auth cookies from supabaseResponse
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    
+    return redirectResponse;
   }
 
   return supabaseResponse;
