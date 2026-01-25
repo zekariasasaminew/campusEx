@@ -35,7 +35,9 @@ function isValidStatus(value: unknown): value is Status {
 }
 
 function isValidFileType(file: File): boolean {
-  return IMAGE_CONSTRAINTS.allowedTypes.includes(file.type);
+  return IMAGE_CONSTRAINTS.allowedTypes.includes(
+    file.type as (typeof IMAGE_CONSTRAINTS.allowedTypes)[number],
+  );
 }
 
 function isValidFileSize(file: File): boolean {

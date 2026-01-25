@@ -98,9 +98,15 @@ export async function fetchListingDetail(
     const { supabase, userId } = await getSupabaseWithAuth();
     const listing = await getListingByIdQuery(supabase, listingId, userId);
 
-    const enhanced = {
+    if (!listing) {
+      return { success: false, error: "Listing not found" };
+    }
+
+    const enhanced: ListingDetail = {
       ...listing,
       images: enhanceWithUrls(supabase, listing.images),
+      is_owner: listing.is_owner,
+      seller: listing.seller,
     };
 
     return { success: true, data: enhanced };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { CreateListingInput } from "@/lib/marketplace/types";
+import type { CreateListingInput, ListingDetail } from "@/lib/marketplace/types";
 import type { Category, Condition } from "@/lib/marketplace/constants";
 import { BasicFields } from "./BasicFields";
 import { ImageUpload } from "./ImageUpload";
@@ -14,20 +14,27 @@ import styles from "./ListingForm.module.css";
 interface ListingFormProps {
   onSubmit: (input: CreateListingInput) => Promise<void>;
   onCancel: () => void;
+  initialData?: ListingDetail;
   isSubmitting?: boolean;
 }
 
 export function ListingForm({
   onSubmit,
   onCancel,
+  initialData,
   isSubmitting = false,
 }: ListingFormProps) {
   const [formData, setFormData] = useState<Partial<CreateListingInput>>({
-    title: "",
-    description: "",
-    category: undefined,
-    condition: undefined,
-    is_free: false,
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    category: initialData?.category,
+    condition: initialData?.condition || undefined,
+    is_free: initialData?.is_free || false,
+    price_cents: initialData?.price_cents || null,
+    location: initialData?.location || "",
+    images: [],
+    agreed_to_rules: false,
+  });
     price_cents: null,
     location: "",
     images: [],

@@ -33,13 +33,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const loadListing = async () => {
     setLoading(true);
     const result = await fetchListingDetail(params.listingId);
-    
+
     if (result.success) {
       setListing(result.data);
     } else {
       setListing(null);
     }
-    
+
     setLoading(false);
   };
 
@@ -64,7 +64,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   const handleReport = async (details: string) => {
     if (!listing) return;
-    
+
     const result = await submitReport(listing.id, details);
     if (result.success) {
       setShowReportDialog(false);
@@ -188,7 +188,10 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                 </Button>
               </>
             ) : (
-              <Button variant="secondary" onClick={() => setShowReportDialog(true)}>
+              <Button
+                variant="secondary"
+                onClick={() => setShowReportDialog(true)}
+              >
                 Report Listing
               </Button>
             )}

@@ -19,6 +19,10 @@ export default function NewListingPage() {
     }
   };
 
+  const handleCancel = () => {
+    router.push("/marketplace");
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
