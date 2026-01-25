@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { CreateListingInput, ListingDetail } from "@/lib/marketplace/types";
+import type {
+  CreateListingInput,
+  ListingDetail,
+} from "@/lib/marketplace/types";
 import type { Category, Condition } from "@/lib/marketplace/constants";
 import { BasicFields } from "./BasicFields";
 import { ImageUpload } from "./ImageUpload";
@@ -32,11 +35,6 @@ export function ListingForm({
     is_free: initialData?.is_free || false,
     price_cents: initialData?.price_cents || null,
     location: initialData?.location || "",
-    images: [],
-    agreed_to_rules: false,
-  });
-    price_cents: null,
-    location: "",
     images: [],
     agreed_to_rules: false,
   });
