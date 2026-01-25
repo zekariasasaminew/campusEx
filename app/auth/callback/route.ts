@@ -1,0 +1,30 @@
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { getSupabaseConfig } from "@/lib/supabase/config";
+
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const origin = requestUrl.origin;
+
+  if (code) {
+    const cookieStore = await cookies();
+    const config = getSupabaseConfig();
+
+    const supabase = createServerClient(config.url, config.anonKey, {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: (cookies) =>
+          cookies.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          ),
+      },
+    });
+
+    await supabase.auth.exchangeCodeForSession(code);
+  }
+
+  // Redirect to marketplace after successful auth
+  return NextResponse.redirect(`${origin}/marketplace`);
+}
