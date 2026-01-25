@@ -31,7 +31,10 @@ export async function uploadListingImages(
     const file = images[i];
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const fileName = `${timestamp}-${randomSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    // Extract file extension safely, generate secure name without user input
+    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeExtension = /^[a-z0-9]{2,5}$/.test(extension) ? extension : "jpg";
+    const fileName = `${timestamp}-${randomSuffix}.${safeExtension}`;
     const storagePath = `marketplace/${userId}/${listingId}/${fileName}`;
 
     try {

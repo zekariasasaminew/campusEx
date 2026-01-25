@@ -26,6 +26,13 @@ export function Select({
   children,
   ...props
 }: SelectProps) {
+  // Validate that exactly one of options or children is provided
+  if (options && children) {
+    throw new Error(
+      "Select: Provide either 'options' prop or 'children', not both.",
+    );
+  }
+
   const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
   return (

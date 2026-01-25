@@ -8,6 +8,7 @@ import {
   submitListingUpdate,
 } from "@/lib/marketplace/actions";
 import type {
+  CreateListingInput,
   UpdateListingInput,
   ListingDetail,
 } from "@/lib/marketplace/types";
@@ -43,8 +44,23 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     loadListing();
   }, [loadListing]);
 
-  const handleSubmit = async (data: UpdateListingInput) => {
-    const result = await submitListingUpdate(params.listingId, data);
+  const handleSubmit = async (data: CreateListingInput) => {
+    // Convert CreateListingInput to UpdateListingInput
+    // When editing, new images from form go to images_to_add
+    const updateData: UpdateListingInput = {
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      condition: data.condition,
+      price_cents: data.price_cents,
+      is_free: data.is_free,
+      location: data.location,
+      images_to_add: data.images.length > 0 ? data.images : undefined,
+      // Note: images_to_remove would be handled by a dedicated image management UI
+      // For now, this form only adds new images
+    };
+
+    const result = await submitListingUpdate(params.listingId, updateData);
 
     if (result.success) {
       router.push(`/marketplace/${params.listingId}`);

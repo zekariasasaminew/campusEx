@@ -5,6 +5,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
+  MarketplaceListing,
   ListingWithImages,
   ListingDetail,
   ListingFilters,
@@ -62,7 +63,9 @@ export async function getListings(
 
   // Search filter (ilike on title and description)
   if (search && search.trim().length > 0) {
-    const searchTerm = `%${search.trim()}%`;
+    // Escape special SQL pattern characters to prevent injection
+    const escapedSearch = search.trim().replace(/[%_]/g, (char) => `\\${char}`);
+    const searchTerm = `%${escapedSearch}%`;
     query = query.or(
       `title.ilike.${searchTerm},description.ilike.${searchTerm}`,
     );
@@ -82,7 +85,10 @@ export async function getListings(
     throw new Error(`Failed to fetch listings: ${error.message}`);
   }
 
-  const enhanced = ((data as any[]) || []).map((listing) => ({
+  const enhanced = (
+    (data as (MarketplaceListing & { images: MarketplaceListingImage[] })[]) ||
+    []
+  ).map((listing) => ({
     ...listing,
     location: listing.location_text || null,
     price: listing.price_cents ? listing.price_cents / 100 : undefined,
@@ -118,7 +124,10 @@ export async function getListingById(
     throw new Error(`Failed to fetch listing: ${error.message}`);
   }
 
-  const listing = data as any;
+  const listing = data as MarketplaceListing & {
+    images: MarketplaceListingImage[];
+    seller: { email: string };
+  };
   const isOwner = userId ? listing.seller_id === userId : false;
 
   return {

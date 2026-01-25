@@ -40,7 +40,7 @@ export function ListingCard({ listing }: ListingCardProps) {
 
       <div className={styles.content}>
         <h3 className={styles.title}>{listing.title}</h3>
-        <p className={`${styles.price} ${isFree ? styles.free : ""}`}>
+        <p className={`${styles.price} ${listing.is_free ? styles.free : ""}`}>
           {formattedPrice}
         </p>
 
