@@ -1,5 +1,5 @@
 .container {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 24px;
   display: flex;
@@ -9,9 +9,8 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .title {
@@ -21,17 +20,12 @@
 }
 
 .subtitle {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 1rem;
   color: var(--color-text-secondary);
 }
 
 @media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .title {
     font-size: 1.5rem;
   }
