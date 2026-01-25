@@ -48,10 +48,7 @@ export default function MarketplacePage() {
 
       <FiltersBar filters={filters} onFiltersChange={loadListings} />
 
-      <ListingGrid
-        listings={listings}
-        isLoading={loading}
-      />
+      <ListingGrid listings={listings} isLoading={loading} />
     </div>
   );
 }
