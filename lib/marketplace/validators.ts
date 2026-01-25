@@ -149,7 +149,7 @@ export function validateCreateListing(
 
   // Rules agreement validation
   if (!input.agreed_to_rules) {
-    errors.rules = "You must agree to the marketplace rules";
+    errors.agreed_to_rules = "You must agree to the marketplace rules";
   }
 
   return {

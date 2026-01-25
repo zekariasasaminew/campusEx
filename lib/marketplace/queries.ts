@@ -53,10 +53,10 @@ export async function getListings(
     query = query.eq("is_free", true);
   } else {
     if (priceMin !== null && priceMin !== undefined) {
-      query = query.gte("price_cents", priceMin);
+      query = query.eq("is_free", false).gte("price_cents", priceMin);
     }
     if (priceMax !== null && priceMax !== undefined) {
-      query = query.lte("price_cents", priceMax);
+      query = query.eq("is_free", false).lte("price_cents", priceMax);
     }
   }
 

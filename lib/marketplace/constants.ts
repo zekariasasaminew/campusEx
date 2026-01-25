@@ -32,7 +32,6 @@ export const IMAGE_CONSTRAINTS = {
   maxSizeBytes: 5 * 1024 * 1024, // 5MB
   allowedTypes: [
     "image/jpeg",
-    "image/jpg",
     "image/png",
     "image/gif",
     "image/webp",
@@ -43,6 +42,8 @@ export const IMAGE_CONSTRAINTS = {
 // Storage path template
 export const STORAGE_PATH_TEMPLATE =
   "marketplace/{userId}/{listingId}/{fileName}";
+
+export const PLACEHOLDER_IMAGE_PATH = "/placeholder.png";
 
 // Validation constraints
 export const VALIDATION_RULES = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { IMAGE_CONSTRAINTS } from "@/lib/marketplace/constants";
@@ -15,6 +15,15 @@ interface ImageUploadProps {
 export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      images.forEach((file) => {
+        const url = URL.createObjectURL(file);
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [images]);
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList) return;
