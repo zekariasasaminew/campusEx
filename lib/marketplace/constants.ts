@@ -30,12 +30,7 @@ export type Status = (typeof STATUSES)[number];
 export const IMAGE_CONSTRAINTS = {
   maxCount: 5,
   maxSizeBytes: 5 * 1024 * 1024, // 5MB
-  allowedTypes: [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ],
+  allowedTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
   allowedExtensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
 } as const;
 
