@@ -53,9 +53,5 @@ jobs:
           fi
           npm run build
         env:
-          NEXT_PUBLIC_KNACK_APP_ID: ${{ secrets.NEXT_PUBLIC_KNACK_APP_ID }}
-          NEXT_PUBLIC_KNACK_API_KEY: ${{ secrets.NEXT_PUBLIC_KNACK_API_KEY }}
-          NEXT_PUBLIC_KNACK_SCENE: ${{ secrets.NEXT_PUBLIC_KNACK_SCENE }}
-          NEXT_PUBLIC_KNACK_VIEW: ${{ secrets.NEXT_PUBLIC_KNACK_VIEW }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
