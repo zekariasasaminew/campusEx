@@ -1,0 +1,81 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--color-background-secondary, #f9f9f9);
+  border-radius: 8px;
+}
+
+.ruleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ruleTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.safetyNote {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.checkboxField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.required {
+  color: var(--color-error, #c00);
+}
+
+.error {
+  font-size: 0.75rem;
+  color: var(--color-error, #c00);
+  margin-left: 26px;
+}
