@@ -46,7 +46,7 @@ function isValidFileSize(file: File): boolean {
 
 export function validatePriceAndFree(
   priceCents: number | null,
-  isFree: boolean
+  isFree: boolean,
 ): { isValid: boolean; error?: string } {
   if (isFree && priceCents !== null) {
     return {
@@ -62,7 +62,10 @@ export function validatePriceAndFree(
     };
   }
 
-  if (priceCents !== null && (priceCents < 0 || !Number.isInteger(priceCents))) {
+  if (
+    priceCents !== null &&
+    (priceCents < 0 || !Number.isInteger(priceCents))
+  ) {
     return {
       isValid: false,
       error: "Price must be a non-negative whole number",
@@ -75,7 +78,7 @@ export function validatePriceAndFree(
 // Create listing validation
 
 export function validateCreateListing(
-  input: Partial<CreateListingInput>
+  input: Partial<CreateListingInput>,
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
@@ -91,7 +94,9 @@ export function validateCreateListing(
   // Description validation
   if (!input.description || typeof input.description !== "string") {
     errors.description = "Description is required";
-  } else if (input.description.trim().length < VALIDATION_RULES.description.min) {
+  } else if (
+    input.description.trim().length < VALIDATION_RULES.description.min
+  ) {
     errors.description = `Description must be at least ${VALIDATION_RULES.description.min} characters`;
   } else if (input.description.length > VALIDATION_RULES.description.max) {
     errors.description = `Description must not exceed ${VALIDATION_RULES.description.max} characters`;
@@ -103,7 +108,11 @@ export function validateCreateListing(
   }
 
   // Condition validation (optional field, but must be valid if provided)
-  if (input.condition !== null && input.condition !== undefined && !isValidCondition(input.condition)) {
+  if (
+    input.condition !== null &&
+    input.condition !== undefined &&
+    !isValidCondition(input.condition)
+  ) {
     errors.condition = "Please select a valid condition";
   }
 
@@ -115,7 +124,7 @@ export function validateCreateListing(
   // Price validation
   const priceValidation = validatePriceAndFree(
     input.price_cents ?? null,
-    input.is_free ?? false
+    input.is_free ?? false,
   );
   if (!priceValidation.isValid && priceValidation.error) {
     errors.price = priceValidation.error;
@@ -134,7 +143,9 @@ export function validateCreateListing(
       errors.images = `Invalid file type. Allowed: ${IMAGE_CONSTRAINTS.allowedExtensions.join(", ")}`;
     }
 
-    const oversizedFiles = input.images.filter((file) => !isValidFileSize(file));
+    const oversizedFiles = input.images.filter(
+      (file) => !isValidFileSize(file),
+    );
     if (oversizedFiles.length > 0) {
       errors.images = `File size must not exceed ${IMAGE_CONSTRAINTS.maxSizeBytes / (1024 * 1024)}MB`;
     }
@@ -154,7 +165,7 @@ export function validateCreateListing(
 // Update listing validation
 
 export function validateUpdateListing(
-  input: Partial<UpdateListingInput>
+  input: Partial<UpdateListingInput>,
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
@@ -173,7 +184,9 @@ export function validateUpdateListing(
   if (input.description !== undefined) {
     if (typeof input.description !== "string") {
       errors.description = "Description must be a string";
-    } else if (input.description.trim().length < VALIDATION_RULES.description.min) {
+    } else if (
+      input.description.trim().length < VALIDATION_RULES.description.min
+    ) {
       errors.description = `Description must be at least ${VALIDATION_RULES.description.min} characters`;
     } else if (input.description.length > VALIDATION_RULES.description.max) {
       errors.description = `Description must not exceed ${VALIDATION_RULES.description.max} characters`;
@@ -186,12 +199,20 @@ export function validateUpdateListing(
   }
 
   // Condition validation (optional in update)
-  if (input.condition !== undefined && input.condition !== null && !isValidCondition(input.condition)) {
+  if (
+    input.condition !== undefined &&
+    input.condition !== null &&
+    !isValidCondition(input.condition)
+  ) {
     errors.condition = "Please select a valid condition";
   }
 
   // Location validation (optional in update)
-  if (input.location !== undefined && input.location !== null && input.location.length > VALIDATION_RULES.location.max) {
+  if (
+    input.location !== undefined &&
+    input.location !== null &&
+    input.location.length > VALIDATION_RULES.location.max
+  ) {
     errors.location = `Location must not exceed ${VALIDATION_RULES.location.max} characters`;
   }
 
@@ -199,7 +220,7 @@ export function validateUpdateListing(
   if (input.price_cents !== undefined || input.is_free !== undefined) {
     const priceValidation = validatePriceAndFree(
       input.price_cents ?? null,
-      input.is_free ?? false
+      input.is_free ?? false,
     );
     if (!priceValidation.isValid && priceValidation.error) {
       errors.price = priceValidation.error;
@@ -214,7 +235,9 @@ export function validateUpdateListing(
 
 // Report validation
 
-export function validateReport(input: Partial<ReportListingInput>): ValidationResult {
+export function validateReport(
+  input: Partial<ReportListingInput>,
+): ValidationResult {
   const errors: Record<string, string> = {};
 
   if (!input.listing_id || typeof input.listing_id !== "string") {

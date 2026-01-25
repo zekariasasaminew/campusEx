@@ -17,13 +17,7 @@ export const CATEGORIES = [
 export type Category = (typeof CATEGORIES)[number];
 
 // Item condition options
-export const CONDITIONS = [
-  "New",
-  "Like New",
-  "Good",
-  "Fair",
-  "Parts",
-] as const;
+export const CONDITIONS = ["New", "Like New", "Good", "Fair", "Parts"] as const;
 
 export type Condition = (typeof CONDITIONS)[number];
 
@@ -36,12 +30,19 @@ export type Status = (typeof STATUSES)[number];
 export const IMAGE_CONSTRAINTS = {
   maxCount: 5,
   maxSizeBytes: 5 * 1024 * 1024, // 5MB
-  allowedTypes: ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"],
+  allowedTypes: [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ],
   allowedExtensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
 } as const;
 
 // Storage path template
-export const STORAGE_PATH_TEMPLATE = "marketplace/{userId}/{listingId}/{fileName}";
+export const STORAGE_PATH_TEMPLATE =
+  "marketplace/{userId}/{listingId}/{fileName}";
 
 // Validation constraints
 export const VALIDATION_RULES = {

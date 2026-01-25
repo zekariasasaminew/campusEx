@@ -1,0 +1,81 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sm {
+  height: 2rem;
+  padding: 0 var(--spacing-md);
+  font-size: 0.875rem;
+}
+
+.md {
+  height: 2.5rem;
+  padding: 0 var(--spacing-lg);
+  font-size: 0.875rem;
+}
+
+.lg {
+  height: 3rem;
+  padding: 0 var(--spacing-xl);
+  font-size: 1rem;
+}
+
+.primary {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+.primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.secondary {
+  background: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+  border-color: var(--color-border);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-accent);
+}
+
+.destructive {
+  background: var(--color-destructive);
+  color: var(--color-destructive-foreground);
+}
+
+.destructive:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-foreground);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--color-accent);
+}
+
+.fullWidth {
+  width: 100%;
+}
