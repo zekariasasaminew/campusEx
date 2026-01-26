@@ -64,7 +64,7 @@ function enhanceWithUrls(
 ) {
   return images.map((img) => ({
     ...img,
-    image_url: getImageUrl(supabase, img.storage_path),
+    image_url: getImageUrl(supabase, img.image_path),
   }));
 }
 

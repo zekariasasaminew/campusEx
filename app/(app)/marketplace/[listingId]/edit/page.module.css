@@ -1,33 +1,38 @@
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 24px;
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-lg);
 }
 
 .header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
 }
 
 .title {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.875rem;
   font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
 }
 
 .subtitle {
   margin: 0;
   font-size: 1rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
+  line-height: 1.5;
 }
 
 .loading {
-  text-align: center;
-  padding: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
 }
 
 @media (max-width: 640px) {
@@ -36,6 +41,6 @@
   }
 
   .container {
-    padding: 16px;
+    padding: var(--spacing-md);
   }
 }

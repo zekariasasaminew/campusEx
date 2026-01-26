@@ -14,7 +14,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const supabase = createClient();
   const primaryImage = listing.images?.[0];
   const imageUrl = primaryImage
-    ? getImageUrl(supabase, primaryImage.storage_path)
+    ? getImageUrl(supabase, primaryImage.image_path)
     : PLACEHOLDER_IMAGE_PATH;
 
   const formattedPrice = listing.is_free
@@ -40,15 +40,14 @@ export function ListingCard({ listing }: ListingCardProps) {
 
       <div className={styles.content}>
         <h3 className={styles.title}>{listing.title}</h3>
-        <p className={styles.price}>{formattedPrice}</p>
+        <p className={`${styles.price} ${listing.is_free ? styles.free : ""}`}>
+          {formattedPrice}
+        </p>
 
         <div className={styles.meta}>
-          <span className={styles.category}>{listing.category}</span>
+          <span className={styles.chip}>{listing.category}</span>
           {listing.condition && (
-            <>
-              <span className={styles.separator}>•</span>
-              <span className={styles.condition}>{listing.condition}</span>
-            </>
+            <span className={styles.chip}>{listing.condition}</span>
           )}
         </div>
 

@@ -59,10 +59,12 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
 
   return (
     <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>Photos</h3>
-      <p className={styles.hint}>
-        Add up to {IMAGE_CONSTRAINTS.maxCount} photos (max {maxSizeMB}MB each)
-      </p>
+      <div>
+        <h3 className={styles.sectionTitle}>Photos</h3>
+        <p className={styles.hint}>
+          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (max {maxSizeMB}MB each)
+        </p>
+      </div>
 
       <div
         className={`${styles.dropzone} ${dragActive ? styles.active : ""}`}

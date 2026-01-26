@@ -31,7 +31,10 @@ export async function uploadListingImages(
     const file = images[i];
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const fileName = `${timestamp}-${randomSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    // Extract file extension safely, generate secure name without user input
+    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeExtension = /^[a-z0-9]{2,5}$/.test(extension) ? extension : "jpg";
+    const fileName = `${timestamp}-${randomSuffix}.${safeExtension}`;
     const storagePath = `marketplace/${userId}/${listingId}/${fileName}`;
 
     try {
@@ -52,8 +55,8 @@ export async function uploadListingImages(
         .from("marketplace_listing_images")
         .insert({
           listing_id: listingId,
-          storage_path: storagePath,
-          display_order: i,
+          image_path: storagePath,
+          sort_order: i,
         });
 
       if (dbError) {
@@ -66,8 +69,8 @@ export async function uploadListingImages(
       }
 
       uploadedImages.push({
-        storage_path: storagePath,
-        display_order: i,
+        image_path: storagePath,
+        sort_order: i,
       });
     } catch (error) {
       errors.push(`Unexpected error uploading ${file.name}: ${error}`);
@@ -98,7 +101,7 @@ export async function deleteListingImages(
   // Get storage paths before deletion
   const { data: images } = await supabase
     .from("marketplace_listing_images")
-    .select("storage_path")
+    .select("image_path")
     .eq("listing_id", listingId)
     .in("id", imageIds);
 
@@ -116,7 +119,7 @@ export async function deleteListingImages(
   // Delete from storage (best effort)
   if (images && images.length > 0) {
     try {
-      const paths = images.map((img) => img.storage_path);
+      const paths = images.map((img) => img.image_path);
       await supabase.storage.from("marketplace-images").remove(paths);
     } catch {
       console.warn(
@@ -131,8 +134,12 @@ export async function deleteListingImages(
  */
 export function getImageUrl(
   supabase: SupabaseClient,
-  storagePath: string,
+  storagePath: string | null | undefined,
 ): string {
+  if (!storagePath) {
+    return "/placeholder-image.png";
+  }
+
   const { data } = supabase.storage
     .from("marketplace-images")
     .getPublicUrl(storagePath);

@@ -5,7 +5,7 @@
   gap: var(--spacing-sm);
   border-radius: var(--radius);
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
@@ -17,7 +17,7 @@
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -45,35 +45,35 @@
 }
 
 .primary:hover:not(:disabled) {
-  opacity: 0.9;
+  background: var(--color-primary-hover);
 }
 
 .secondary {
-  background: var(--color-secondary);
-  color: var(--color-secondary-foreground);
+  background: var(--color-surface);
+  color: var(--color-text);
   border-color: var(--color-border);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--color-accent);
+  background: var(--color-surface-2);
 }
 
 .destructive {
-  background: var(--color-destructive);
+  background: var(--color-danger);
   color: var(--color-destructive-foreground);
 }
 
 .destructive:hover:not(:disabled) {
-  opacity: 0.9;
+  background: var(--color-danger-hover);
 }
 
 .ghost {
   background: transparent;
-  color: var(--color-foreground);
+  color: var(--color-text);
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--color-accent);
+  background: var(--color-surface-2);
 }
 
 .fullWidth {

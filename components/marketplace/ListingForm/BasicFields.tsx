@@ -33,7 +33,10 @@ export function BasicFields({
 }: BasicFieldsProps) {
   return (
     <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>Basic Information</h3>
+      <div>
+        <h3 className={styles.sectionTitle}>Basic Information</h3>
+        <p className={styles.hint}>Provide clear details about your item</p>
+      </div>
 
       <div className={styles.field}>
         <label htmlFor="title" className={styles.label}>

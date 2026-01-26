@@ -26,6 +26,13 @@ export function Select({
   children,
   ...props
 }: SelectProps) {
+  // Validate that exactly one of options or children is provided
+  if (process.env.NODE_ENV === "development" && options && children) {
+    console.warn(
+      "Select: Provide either 'options' prop or 'children', not both. Using 'children'.",
+    );
+  }
+
   const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
   return (

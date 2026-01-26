@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Toast } from "@/components/ui/toast";
+import { Spinner } from "@/components/ui/spinner";
 import { ReportDialog } from "@/components/marketplace/ReportDialog";
 import {
   fetchListingDetail,
@@ -16,7 +19,7 @@ import type { ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
 interface ListingDetailPageProps {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
 }
 
 export default function ListingDetailPage({ params }: ListingDetailPageProps) {
@@ -24,11 +27,17 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
 
   const loadListing = useCallback(async () => {
     setLoading(true);
-    const result = await fetchListingDetail(params.listingId);
+    const { listingId } = await params;
+    const result = await fetchListingDetail(listingId);
 
     if (result.success) {
       setListing(result.data);
@@ -37,7 +46,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     }
 
     setLoading(false);
-  }, [params.listingId]);
+  }, [params]);
 
   useEffect(() => {
     loadListing();
@@ -49,16 +58,26 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     const result = await submitMarkAsSold(listing.id);
     if (result.success) {
       loadListing();
+      setToast({ message: "Listing marked as sold", variant: "success" });
+    } else {
+      setToast({
+        message: result.error || "Failed to mark as sold",
+        variant: "error",
+      });
     }
   };
 
   const handleDelete = async () => {
-    if (!listing || !confirm("Are you sure you want to delete this listing?"))
-      return;
+    if (!listing) return;
 
     const result = await submitDeleteListing(listing.id);
     if (result.success) {
       router.push("/marketplace");
+    } else {
+      setToast({
+        message: result.error || "Failed to delete listing",
+        variant: "error",
+      });
     }
   };
 
@@ -68,7 +87,10 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     const result = await submitReport(listing.id, details);
     if (result.success) {
       setShowReportDialog(false);
-      alert("Report submitted successfully");
+      setToast({
+        message: "Report submitted successfully",
+        variant: "success",
+      });
     } else {
       throw new Error(result.error);
     }
@@ -77,7 +99,9 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading...</div>
+        <div className={styles.loading}>
+          <Spinner size="lg" message="Loading listing..." />
+        </div>
       </div>
     );
   }
@@ -152,24 +176,26 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
           <div className={styles.meta}>
             {listing.category && (
-              <span className={styles.metaItem}>{listing.category}</span>
+              <span className={styles.chip}>{listing.category}</span>
             )}
             {listing.condition && (
-              <span className={styles.metaItem}>{listing.condition}</span>
+              <span className={styles.chip}>{listing.condition}</span>
             )}
             {listing.location && (
-              <span className={styles.metaItem}>{listing.location}</span>
+              <span className={styles.chip}>{listing.location}</span>
             )}
           </div>
 
-          <div className={styles.description}>
-            <h2>Description</h2>
-            <p>{listing.description}</p>
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Description</h2>
+            <p className={styles.sectionContent}>{listing.description}</p>
           </div>
 
-          <div className={styles.seller}>
-            <h2>Seller</h2>
-            <p>{listing.seller.email}</p>
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Seller</h2>
+            <p className={styles.sectionContent}>
+              {listing.seller.full_name || listing.seller.email}
+            </p>
           </div>
 
           <div className={styles.actions}>
@@ -183,8 +209,11 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                     <Button onClick={handleMarkAsSold}>Mark as Sold</Button>
                   </>
                 )}
-                <Button variant="ghost" onClick={handleDelete}>
-                  Delete
+                <Button
+                  variant="destructive"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  Delete Listing
                 </Button>
               </>
             ) : (
@@ -205,6 +234,25 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
           onClose={() => setShowReportDialog(false)}
           onSubmit={handleReport}
           listingTitle={listing.title}
+        />
+      )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Delete Listing"
+        message="Are you sure you want to delete this listing? This action cannot be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          isVisible={!!toast}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

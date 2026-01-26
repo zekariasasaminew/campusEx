@@ -15,7 +15,7 @@ export interface MarketplaceListing {
   condition: Condition | null;
   price_cents: number | null;
   is_free: boolean;
-  location: string | null;
+  location_text: string | null;
   status: Status;
   seller_id: string;
   created_at: string;
@@ -25,8 +25,8 @@ export interface MarketplaceListing {
 export interface MarketplaceListingImage {
   id: string;
   listing_id: string;
-  storage_path: string;
-  display_order: number;
+  image_path: string;
+  sort_order: number;
   created_at: string;
   image_url?: string; // Added client-side for enhanced responses
 }
@@ -45,11 +45,12 @@ export interface ListingWithImages extends MarketplaceListing {
   images: MarketplaceListingImage[];
   image_count?: number;
   price?: number; // Computed: price_cents / 100
+  location?: string | null; // Mapped from location_text for client use
 }
 
 export interface ListingDetail extends ListingWithImages {
   is_owner: boolean;
-  seller: { email: string }; // Seller info for display
+  seller: { email: string; full_name?: string }; // Seller info for display
 }
 
 // Form types
@@ -104,8 +105,8 @@ export interface PaginatedListings {
 }
 
 export interface UploadedImage {
-  storage_path: string;
-  display_order: number;
+  image_path: string;
+  sort_order: number;
 }
 
 // Validation result type
