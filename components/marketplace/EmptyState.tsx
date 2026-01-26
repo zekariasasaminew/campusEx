@@ -27,7 +27,7 @@ export function EmptyState({ message, action }: EmptyStateProps) {
         <circle cx="17" cy="17" r="3" />
         <circle cx="7" cy="7" r="3" />
       </svg>
-      <p className={styles.message}>{message || "No listings found"}</p>
+      <p className={styles.message}>{message || "Nothing to show"}</p>
       {action && (
         <a href={action.href} className={styles.action}>
           {action.label}
