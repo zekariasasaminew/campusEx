@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/marketplace/ListingForm";
+import { Spinner } from "@/components/ui/spinner";
 import {
   fetchListingDetail,
   submitListingUpdate,
@@ -79,7 +80,9 @@ export default function EditListingPage({ params }: EditListingPageProps) {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading...</div>
+        <div className={styles.loading}>
+          <Spinner size="lg" message="Loading listing..." />
+        </div>
       </div>
     );
   }
