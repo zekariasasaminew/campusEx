@@ -24,18 +24,21 @@
   font-size: 1.875rem;
   font-weight: 700;
   color: var(--color-text);
+  line-height: 1.2;
 }
 
 .subtitle {
   margin: var(--spacing-xs) 0 0;
   font-size: 1rem;
   color: var(--color-text-muted);
+  line-height: 1.5;
 }
 
 .results {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {
