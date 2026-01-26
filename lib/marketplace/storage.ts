@@ -4,8 +4,8 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { UploadedImage } from "./types";
-import { IMAGE_CONSTRAINTS } from "./constants";
+import type { SuploadedImage } from "./types";
+import { IMAGE_CONSTRAINTS, PLACEHOLDER_IMAGE_PATH } from "./constants";
 
 /**
  * Upload images for a listing
