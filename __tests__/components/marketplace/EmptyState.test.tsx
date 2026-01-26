@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/marketplace/EmptyState";
 describe("EmptyState", () => {
   it("should render default message", () => {
     render(<EmptyState />);
-    expect(screen.getByText(/no listings found/i)).toBeInTheDocument();
+    expect(screen.getByText(/nothing to show/i)).toBeInTheDocument();
   });
 
   it("should render custom message", () => {
