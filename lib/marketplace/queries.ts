@@ -63,8 +63,8 @@ export async function getListings(
 
   // Search filter (ilike on title and description)
   if (search && search.trim().length > 0) {
-    // Escape special SQL pattern characters to prevent injection
-    const escapedSearch = search.trim().replace(/[%_]/g, (char) => `\\${char}`);
+    // Escape special SQL pattern characters by doubling them
+    const escapedSearch = search.trim().replace(/%/g, "%%").replace(/_/g, "__");
     const searchTerm = `%${escapedSearch}%`;
     query = query.or(
       `title.ilike.${searchTerm},description.ilike.${searchTerm}`,
@@ -112,7 +112,7 @@ export async function getListingById(
   const { data, error } = await supabase
     .from("marketplace_listings")
     .select(
-      "*, images:marketplace_listing_images(*), seller:users!seller_id(email)",
+      "*, images:marketplace_listing_images(*), seller:users!seller_id(email, full_name)",
     )
     .eq("id", listingId)
     .single();
@@ -126,7 +126,7 @@ export async function getListingById(
 
   const listing = data as MarketplaceListing & {
     images: MarketplaceListingImage[];
-    seller: { email: string };
+    seller: { email: string; full_name?: string };
   };
   const isOwner = userId ? listing.seller_id === userId : false;
 
