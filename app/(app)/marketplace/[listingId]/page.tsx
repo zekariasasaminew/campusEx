@@ -19,7 +19,7 @@ import type { ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
 interface ListingDetailPageProps {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
 }
 
 export default function ListingDetailPage({ params }: ListingDetailPageProps) {
@@ -36,7 +36,8 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   const loadListing = useCallback(async () => {
     setLoading(true);
-    const result = await fetchListingDetail(params.listingId);
+    const { listingId } = await params;
+    const result = await fetchListingDetail(listingId);
 
     if (result.success) {
       setListing(result.data);
@@ -45,7 +46,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     }
 
     setLoading(false);
-  }, [params.listingId]);
+  }, [params]);
 
   useEffect(() => {
     loadListing();
@@ -192,7 +193,9 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Seller</h2>
-            <p className={styles.sectionContent}>{listing.seller.email}</p>
+            <p className={styles.sectionContent}>
+              {listing.seller.full_name || listing.seller.email}
+            </p>
           </div>
 
           <div className={styles.actions}>

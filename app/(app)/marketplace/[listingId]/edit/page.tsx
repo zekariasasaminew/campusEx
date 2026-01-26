@@ -15,17 +15,20 @@ import type {
 import styles from "./page.module.css";
 
 interface EditListingPageProps {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
 }
 
 export default function EditListingPage({ params }: EditListingPageProps) {
   const router = useRouter();
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [listingId, setListingId] = useState<string>("");
 
   const loadListing = useCallback(async () => {
     setLoading(true);
-    const result = await fetchListingDetail(params.listingId);
+    const { listingId: id } = await params;
+    setListingId(id);
+    const result = await fetchListingDetail(id);
 
     if (result.success) {
       if (!result.data.is_owner) {
@@ -38,7 +41,7 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     }
 
     setLoading(false);
-  }, [params.listingId, router]);
+  }, [params, router]);
 
   useEffect(() => {
     loadListing();
@@ -60,17 +63,17 @@ export default function EditListingPage({ params }: EditListingPageProps) {
       // For now, this form only adds new images
     };
 
-    const result = await submitListingUpdate(params.listingId, updateData);
+    const result = await submitListingUpdate(listingId, updateData);
 
     if (result.success) {
-      router.push(`/marketplace/${params.listingId}`);
+      router.push(`/marketplace/${listingId}`);
     } else {
       throw new Error(result.error);
     }
   };
 
   const handleCancel = () => {
-    router.push(`/marketplace/${params.listingId}`);
+    router.push(`/marketplace/${listingId}`);
   };
 
   if (loading) {
