@@ -14,7 +14,10 @@ export function RulesCheckbox({
 }: RulesCheckboxProps) {
   return (
     <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>Listing Rules</h3>
+      <div>
+        <h3 className={styles.sectionTitle}>Listing Rules</h3>
+        <p className={styles.hint}>Review and accept community guidelines</p>
+      </div>
 
       <div className={styles.rules}>
         <div className={styles.ruleBlock}>

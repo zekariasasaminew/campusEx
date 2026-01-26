@@ -16,7 +16,10 @@ export function PriceFields({
 }: PriceFieldsProps) {
   return (
     <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>Pricing</h3>
+      <div>
+        <h3 className={styles.sectionTitle}>Pricing</h3>
+        <p className={styles.hint}>Set your price or offer for free</p>
+      </div>
 
       <div className={styles.checkboxField}>
         <label className={styles.checkboxLabel}>

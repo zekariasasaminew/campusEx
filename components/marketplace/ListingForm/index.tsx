@@ -135,12 +135,12 @@ export function ListingForm({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {initialData
-            ? isSubmitting
+          {isSubmitting
+            ? initialData
               ? "Updating..."
-              : "Update Listing"
-            : isSubmitting
-              ? "Creating..."
+              : "Creating..."
+            : initialData
+              ? "Update Listing"
               : "Create Listing"}
         </Button>
       </div>
