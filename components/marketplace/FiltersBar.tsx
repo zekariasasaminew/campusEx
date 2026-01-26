@@ -32,7 +32,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, filters, onFiltersChange]);
 
   // Debounce price inputs
   useEffect(() => {
@@ -50,7 +50,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [priceMin, priceMax]);
+  }, [priceMin, priceMax, filters, onFiltersChange]);
 
   const hasActiveFilters =
     filters.category ||
