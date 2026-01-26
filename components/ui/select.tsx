@@ -27,9 +27,9 @@ export function Select({
   ...props
 }: SelectProps) {
   // Validate that exactly one of options or children is provided
-  if (options && children) {
-    throw new Error(
-      "Select: Provide either 'options' prop or 'children', not both.",
+  if (process.env.NODE_ENV === "development" && options && children) {
+    console.warn(
+      "Select: Provide either 'options' prop or 'children', not both. Using 'children'.",
     );
   }
 
