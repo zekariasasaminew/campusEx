@@ -21,6 +21,7 @@ export function EmptyState({ message, action }: EmptyStateProps) {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d="M20 7h-9" />
         <path d="M14 17H5" />
