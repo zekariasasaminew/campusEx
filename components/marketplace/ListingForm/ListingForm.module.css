@@ -9,7 +9,7 @@
   padding: var(--spacing-md);
   background: var(--color-danger-bg);
   color: var(--color-danger);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
 }
 
