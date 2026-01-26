@@ -50,7 +50,7 @@ export interface ListingWithImages extends MarketplaceListing {
 
 export interface ListingDetail extends ListingWithImages {
   is_owner: boolean;
-  seller: { email: string }; // Seller info for display
+  seller: { email: string; full_name?: string }; // Seller info for display
 }
 
 // Form types
