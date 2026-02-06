@@ -11,6 +11,10 @@ import {
   markNotificationRead as markNotificationReadMutation,
   markAllNotificationsRead as markAllNotificationsReadMutation,
 } from "./mutations";
+import {
+  updateNotificationSchema,
+  markAllNotificationsReadSchema,
+} from "./validators";
 import type { Notification } from "./types";
 
 type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -58,8 +62,9 @@ export async function markNotificationRead(
   notificationId: string,
 ): Promise<Result<void>> {
   try {
+    const validatedInput = updateNotificationSchema.parse({ notification_id: notificationId });
     const user = await getCurrentUser();
-    await markNotificationReadMutation(notificationId, user.id);
+    await markNotificationReadMutation(validatedInput.notification_id, user.id);
     return { success: true, data: undefined };
   } catch (error) {
     return {
@@ -71,6 +76,7 @@ export async function markNotificationRead(
 
 export async function markAllNotificationsRead(): Promise<Result<void>> {
   try {
+    markAllNotificationsReadSchema.parse({});
     const user = await getCurrentUser();
     await markAllNotificationsReadMutation(user.id);
     return { success: true, data: undefined };

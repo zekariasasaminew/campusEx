@@ -30,8 +30,14 @@ CREATE INDEX IF NOT EXISTS idx_listings_visibility ON public.marketplace_listing
 -- Extend listing_reports table
 -- =====================================================
 
+-- Drop the old status constraint and add new one with updated values
 ALTER TABLE public.marketplace_reports
-ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'reviewed', 'action_taken')),
+DROP CONSTRAINT IF EXISTS valid_report_status;
+
+ALTER TABLE public.marketplace_reports
+ADD CONSTRAINT valid_report_status CHECK (status IN ('open', 'reviewed', 'action_taken'));
+
+ALTER TABLE public.marketplace_reports
 ADD COLUMN IF NOT EXISTS admin_notes TEXT,
 ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS reviewed_by UUID REFERENCES public.users(id);

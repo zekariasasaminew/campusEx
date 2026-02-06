@@ -24,7 +24,7 @@ export async function getInboxConversations(
       updated_at,
       last_message_at,
       listings!inner(title, status),
-      listing_images(image_path)
+      marketplace_listing_images(image_path)
     `,
     )
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
@@ -52,17 +52,27 @@ export async function getInboxConversations(
         .limit(1)
         .maybeSingle();
 
-      const { count: unreadCount } = await supabase
+      // Get unread messages count for this conversation
+      const { data: unreadMessages } = await supabase
         .from("messages")
-        .select("*", { count: "exact", head: true })
+        .select("id")
         .eq("conversation_id", conv.id)
         .neq("sender_id", userId)
-        .is("deleted_at", null)
-        .not(
-          "id",
-          "in",
-          `(SELECT message_id FROM message_reads WHERE user_id = '${userId}')`,
-        );
+        .is("deleted_at", null);
+
+      // Filter out read messages
+      const unreadIds = unreadMessages?.map(m => m.id) || [];
+      let unreadCount = 0;
+      if (unreadIds.length > 0) {
+        const { data: readReceipts } = await supabase
+          .from("message_reads")
+          .select("message_id")
+          .eq("user_id", userId)
+          .in("message_id", unreadIds);
+        
+        const readIds = new Set(readReceipts?.map(r => r.message_id) || []);
+        unreadCount = unreadIds.filter(id => !readIds.has(id)).length;
+      }
 
       return {
         id: conv.id,
@@ -77,7 +87,7 @@ export async function getInboxConversations(
           .title as string,
         listing_image_url:
           ((
-            conv.listing_images as unknown as Array<Record<string, unknown>>
+            conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>
           )?.[0]?.image_path as string | null) || null,
         other_participant_id: otherParticipantId,
         other_participant_name: otherUser?.display_name || "User",
@@ -109,7 +119,7 @@ export async function getConversationById(
       updated_at,
       last_message_at,
       listings!inner(title, status),
-      listing_images(image_path)
+      marketplace_listing_images(image_path)
     `,
     )
     .eq("id", conversationId)
@@ -137,17 +147,27 @@ export async function getConversationById(
     .limit(1)
     .maybeSingle();
 
-  const { count: unreadCount } = await supabase
+  // Get unread messages count for this conversation
+  const { data: unreadMessages } = await supabase
     .from("messages")
-    .select("*", { count: "exact", head: true })
+    .select("id")
     .eq("conversation_id", conv.id)
     .neq("sender_id", userId)
-    .is("deleted_at", null)
-    .not(
-      "id",
-      "in",
-      `(SELECT message_id FROM message_reads WHERE user_id = '${userId}')`,
-    );
+    .is("deleted_at", null);
+
+  // Filter out read messages
+  const unreadIds = unreadMessages?.map(m => m.id) || [];
+  let unreadCount = 0;
+  if (unreadIds.length > 0) {
+    const { data: readReceipts } = await supabase
+      .from("message_reads")
+      .select("message_id")
+      .eq("user_id", userId)
+      .in("message_id", unreadIds);
+    
+    const readIds = new Set(readReceipts?.map(r => r.message_id) || []);
+    unreadCount = unreadIds.filter(id => !readIds.has(id)).length;
+  }
 
   return {
     id: conv.id,
@@ -161,7 +181,7 @@ export async function getConversationById(
     listing_title: (conv.listings as unknown as Record<string, unknown>)
       .title as string,
     listing_image_url:
-      ((conv.listing_images as unknown as Array<Record<string, unknown>>)?.[0]
+      ((conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>)?.[0]
         ?.image_path as string | null) || null,
     other_participant_id: otherParticipantId,
     other_participant_name: otherUser?.display_name || "User",
@@ -234,7 +254,7 @@ export async function getOrCreateConversation(
   const supabase = await createClient();
 
   const { data: listing } = await supabase
-    .from("listings")
+    .from("marketplace_listings")
     .select("seller_id, status")
     .eq("id", listingId)
     .single();

@@ -63,7 +63,7 @@ BEGIN
   SELECT u.full_name, l.title INTO sender_name, listing_title
   FROM public.users u
   JOIN public.conversations c ON c.id = NEW.conversation_id
-  JOIN public.listings l ON l.id = c.listing_id
+  JOIN public.marketplace_listings l ON l.id = c.listing_id
   WHERE u.id = NEW.sender_id;
 
   -- Create notification

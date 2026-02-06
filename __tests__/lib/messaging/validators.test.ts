@@ -1,48 +1,48 @@
 import { describe, it, expect } from "vitest";
 import {
-  createMessageSchema,
+  sendMessageSchema,
   editMessageSchema,
-  createConversationForListingSchema,
+  createConversationSchema,
 } from "@/lib/messaging/validators";
 
 describe("Messaging Validators", () => {
-  describe("createMessageSchema", () => {
-    it("accepts valid message content", () => {
-      const result = createMessageSchema.safeParse({
+  describe("sendMessageSchema", () => {
+    it("accepts valid message body", () => {
+      const result = sendMessageSchema.safeParse({
         conversation_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "Hello! Is this still available?",
+        body: "Hello! Is this still available?",
       });
       expect(result.success).toBe(true);
     });
 
-    it("rejects empty content", () => {
-      const result = createMessageSchema.safeParse({
+    it("rejects empty body", () => {
+      const result = sendMessageSchema.safeParse({
         conversation_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "",
+        body: "",
       });
       expect(result.success).toBe(false);
     });
 
-    it("rejects content over 2000 characters", () => {
-      const result = createMessageSchema.safeParse({
+    it("rejects body over 2000 characters", () => {
+      const result = sendMessageSchema.safeParse({
         conversation_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "a".repeat(2001),
+        body: "a".repeat(2001),
       });
       expect(result.success).toBe(false);
     });
 
-    it("accepts content at 2000 character limit", () => {
-      const result = createMessageSchema.safeParse({
+    it("accepts body at 2000 character limit", () => {
+      const result = sendMessageSchema.safeParse({
         conversation_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "a".repeat(2000),
+        body: "a".repeat(2000),
       });
       expect(result.success).toBe(true);
     });
 
     it("rejects invalid conversation_id format", () => {
-      const result = createMessageSchema.safeParse({
+      const result = sendMessageSchema.safeParse({
         conversation_id: "not-a-uuid",
-        content: "Hello",
+        body: "Hello",
       });
       expect(result.success).toBe(false);
     });
@@ -52,45 +52,45 @@ describe("Messaging Validators", () => {
     it("accepts valid message edit", () => {
       const result = editMessageSchema.safeParse({
         message_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "Updated message content",
+        body: "Updated message content",
       });
       expect(result.success).toBe(true);
     });
 
-    it("rejects empty content", () => {
+    it("rejects empty body", () => {
       const result = editMessageSchema.safeParse({
         message_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "",
+        body: "",
       });
       expect(result.success).toBe(false);
     });
 
-    it("rejects content over 2000 characters", () => {
+    it("rejects body over 2000 characters", () => {
       const result = editMessageSchema.safeParse({
         message_id: "550e8400-e29b-41d4-a716-446655440000",
-        content: "a".repeat(2001),
+        body: "a".repeat(2001),
       });
       expect(result.success).toBe(false);
     });
   });
 
-  describe("createConversationForListingSchema", () => {
+  describe("createConversationSchema", () => {
     it("accepts valid listing_id", () => {
-      const result = createConversationForListingSchema.safeParse({
+      const result = createConversationSchema.safeParse({
         listing_id: "550e8400-e29b-41d4-a716-446655440000",
       });
       expect(result.success).toBe(true);
     });
 
     it("rejects invalid listing_id format", () => {
-      const result = createConversationForListingSchema.safeParse({
+      const result = createConversationSchema.safeParse({
         listing_id: "not-a-uuid",
       });
       expect(result.success).toBe(false);
     });
 
     it("rejects missing listing_id", () => {
-      const result = createConversationForListingSchema.safeParse({});
+      const result = createConversationSchema.safeParse({});
       expect(result.success).toBe(false);
     });
   });
