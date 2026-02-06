@@ -23,7 +23,7 @@ export async function getInboxConversations(
       created_at,
       updated_at,
       last_message_at,
-      listings!inner(title, status),
+      marketplace_listings!inner(title, status),
       marketplace_listing_images(image_path)
     `,
     )
@@ -112,7 +112,7 @@ export async function getInboxConversations(
       created_at: conv.created_at,
       updated_at: conv.updated_at,
       last_message_at: conv.last_message_at,
-      listing_title: (conv.listings as unknown as Record<string, unknown>)
+      listing_title: (conv.marketplace_listings as unknown as Record<string, unknown>)
         .title as string,
       listing_image_url:
         ((
@@ -146,7 +146,7 @@ export async function getConversationById(
       created_at,
       updated_at,
       last_message_at,
-      listings!inner(title, status),
+      marketplace_listings!inner(title, status),
       marketplace_listing_images(image_path)
     `,
     )
@@ -206,7 +206,7 @@ export async function getConversationById(
     created_at: conv.created_at,
     updated_at: conv.updated_at,
     last_message_at: conv.last_message_at,
-    listing_title: (conv.listings as unknown as Record<string, unknown>)
+    listing_title: (conv.marketplace_listings as unknown as Record<string, unknown>)
       .title as string,
     listing_image_url:
       ((conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>)?.[0]
