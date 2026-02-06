@@ -26,6 +26,7 @@ import {
   markMessagesReadSchema,
 } from "./validators";
 import type {
+  Conversation,
   ConversationWithDetails,
   MessageWithSender,
   CreateConversationInput,
@@ -58,11 +59,9 @@ export async function getInbox(): Promise<Result<ConversationWithDetails[]>> {
   }
 }
 
-export async function getConversation(
-  conversationId: string,
-): Promise<
+export async function getConversation(conversationId: string): Promise<
   Result<{
-    conversation: Record<string, unknown>;
+    conversation: ConversationWithDetails;
     messages: MessageWithSender[];
   }>
 > {

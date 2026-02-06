@@ -11,7 +11,10 @@ import {
 import { MessageList } from "@/components/messaging/MessageList";
 import { MessageComposer } from "@/components/messaging/MessageComposer";
 import { Spinner } from "@/components/ui/spinner";
-import type { MessageWithSender } from "@/lib/messaging/types";
+import type {
+  ConversationWithDetails,
+  MessageWithSender,
+} from "@/lib/messaging/types";
 import styles from "./page.module.css";
 
 interface ConversationPageProps {
@@ -21,10 +24,8 @@ interface ConversationPageProps {
 export default function ConversationPage({ params }: ConversationPageProps) {
   const router = useRouter();
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [conversation, setConversation] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
+  const [conversation, setConversation] =
+    useState<ConversationWithDetails | null>(null);
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
