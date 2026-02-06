@@ -4,10 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type {
-  ConversationWithDetails,
-  MessageWithSender,
-} from "./types";
+import type { ConversationWithDetails, MessageWithSender } from "./types";
 
 export async function getInboxConversations(
   userId: string,
