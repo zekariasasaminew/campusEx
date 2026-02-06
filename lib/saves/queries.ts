@@ -37,11 +37,15 @@ export async function getSavedListings(
     id: save.id,
     listing_id: save.listing_id,
     created_at: save.created_at,
-    listing_title: (save.listings as any).title,
-    listing_price_cents: (save.listings as any).price_cents,
-    listing_is_free: (save.listings as any).is_free,
-    listing_status: (save.listings as any).status,
-    listing_image_url: (save.listing_images as any[])?.[0]?.image_path || null,
+    listing_title: (save.listings as Record<string, unknown>).title as string,
+    listing_price_cents: (save.listings as Record<string, unknown>)
+      .price_cents as number,
+    listing_is_free: (save.listings as Record<string, unknown>)
+      .is_free as boolean,
+    listing_status: (save.listings as Record<string, unknown>).status as string,
+    listing_image_url:
+      ((save.listing_images as Array<Record<string, unknown>>)?.[0]
+        ?.image_path as string | null) || null,
   }));
 }
 

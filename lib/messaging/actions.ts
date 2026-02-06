@@ -60,7 +60,12 @@ export async function getInbox(): Promise<Result<ConversationWithDetails[]>> {
 
 export async function getConversation(
   conversationId: string,
-): Promise<Result<{ conversation: any; messages: MessageWithSender[] }>> {
+): Promise<
+  Result<{
+    conversation: Record<string, unknown>;
+    messages: MessageWithSender[];
+  }>
+> {
   try {
     const user = await getCurrentUser();
     const conversation = await getConversationById(conversationId, user.id);
