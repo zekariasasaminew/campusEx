@@ -77,11 +77,11 @@ export async function getInboxConversations(
         created_at: conv.created_at,
         updated_at: conv.updated_at,
         last_message_at: conv.last_message_at,
-        listing_title: (conv.listings as Record<string, unknown>)
+        listing_title: ((conv.listings as unknown) as Record<string, unknown>)
           .title as string,
         listing_image_url:
-          ((conv.listing_images as Array<Record<string, unknown>>)?.[0]
-            ?.image_path as string | null) || null,
+          ((conv.listing_images as unknown) as Array<Record<string, unknown>>)
+            ?.[0]?.image_path as string | null || null,
         other_participant_id: otherParticipantId,
         other_participant_name: otherUser?.display_name || "User",
         last_message_body: lastMessage?.body || null,
@@ -96,18 +96,81 @@ export async function getInboxConversations(
 export async function getConversationById(
   conversationId: string,
   userId: string,
-): Promise<Conversation | null> {
+): Promise<ConversationWithDetails | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("conversations")
-    .select("*")
+    .select(
+      `
+      id,
+      listing_id,
+      buyer_id,
+      seller_id,
+      status,
+      created_at,
+      updated_at,
+      last_message_at,
+      listings!inner(title, status),
+      listing_images(image_path)
+    `,
+    )
     .eq("id", conversationId)
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
     .single();
 
   if (error) return null;
-  return data as Conversation;
+
+  const conv = data;
+  const otherParticipantId =
+    conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
+
+  const { data: otherUser } = await supabase
+    .from("users")
+    .select("display_name")
+    .eq("id", otherParticipantId)
+    .single();
+
+  const { data: lastMessage } = await supabase
+    .from("messages")
+    .select("body")
+    .eq("conversation_id", conv.id)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { count: unreadCount } = await supabase
+    .from("messages")
+    .select("*", { count: "exact", head: true })
+    .eq("conversation_id", conv.id)
+    .neq("sender_id", userId)
+    .is("deleted_at", null)
+    .not(
+      "id",
+      "in",
+      `(SELECT message_id FROM message_reads WHERE user_id = '${userId}')`,
+    );
+
+  return {
+    id: conv.id,
+    listing_id: conv.listing_id,
+    buyer_id: conv.buyer_id,
+    seller_id: conv.seller_id,
+    status: conv.status as "open" | "closed",
+    created_at: conv.created_at,
+    updated_at: conv.updated_at,
+    last_message_at: conv.last_message_at,
+    listing_title: ((conv.listings as unknown) as Record<string, unknown>)
+      .title as string,
+    listing_image_url:
+      ((conv.listing_images as unknown) as Array<Record<string, unknown>>)?.[0]
+        ?.image_path as string | null || null,
+    other_participant_id: otherParticipantId,
+    other_participant_name: otherUser?.display_name || "User",
+    last_message_body: lastMessage?.body || null,
+    unread_count: unreadCount || 0,
+  };
 }
 
 export async function getConversationMessages(
@@ -153,12 +216,11 @@ export async function getConversationMessages(
         edited_at: msg.edited_at,
         deleted_at: msg.deleted_at,
         sender_name:
-          ((msg.users as Record<string, unknown>).display_name as string) ||
-          "User",
+          (((msg.users as unknown) as Record<string, unknown>)
+            .display_name as string) || "User",
         sender_avatar_url:
-          ((msg.users as Record<string, unknown>).avatar_url as
-            | string
-            | null) || null,
+          (((msg.users as unknown) as Record<string, unknown>)
+            .avatar_url as string | null) || null,
         is_read: !!readReceipt,
       };
     }),
