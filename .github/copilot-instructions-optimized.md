@@ -7,6 +7,7 @@
 **COMMIT AFTER EVERY LOGICAL CHANGE** - This is not optional.
 
 Examples of when you MUST commit:
+
 - ✅ After fixing 1-3 related lint errors in a file
 - ✅ After removing unused imports from a file
 - ✅ After adding a new function or component
@@ -15,6 +16,7 @@ Examples of when you MUST commit:
 - ✅ After refactoring a function
 
 **DO NOT:**
+
 - ❌ Make 10+ file changes without committing
 - ❌ Fix all lint errors in one massive commit
 - ❌ Wait until everything is "done" to commit
@@ -29,12 +31,14 @@ git commit -m "Imperative message describing the change"
 ```
 
 **Good commit messages:**
+
 - `Remove unused imports from messaging components`
 - `Fix useEffect dependencies in inbox page`
 - `Replace any types with proper types in admin queries`
 - `Add useCallback to profile edit handlers`
 
 **Bad commit messages:**
+
 - `Fix lint errors` (too vague)
 - `Updates` (meaningless)
 - `WIP` (not descriptive)
@@ -92,6 +96,7 @@ When user asks to "fix all lint errors":
 **NEVER use eslint-disable for useEffect deps**
 
 ✅ **Correct approach:**
+
 ```typescript
 const loadData = useCallback(async () => {
   // fetch logic
@@ -103,6 +108,7 @@ useEffect(() => {
 ```
 
 ❌ **Wrong approach:**
+
 ```typescript
 useEffect(() => {
   loadData();
@@ -146,6 +152,7 @@ useEffect(() => {
 ## Before Completing Task
 
 Checklist:
+
 - [ ] Lint passes (`npm run lint`)
 - [ ] Tests pass (if applicable)
 - [ ] All changes committed (check with `git status`)

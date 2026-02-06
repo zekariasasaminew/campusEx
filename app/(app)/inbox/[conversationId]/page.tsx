@@ -66,18 +66,21 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     return () => clearInterval(interval);
   }, [conversationId, loadConversation, markAsRead]);
 
-  const handleSendMessage = useCallback(async (body: string) => {
-    if (!conversationId) return;
+  const handleSendMessage = useCallback(
+    async (body: string) => {
+      if (!conversationId) return;
 
-    const result = await sendMessage({
-      conversation_id: conversationId,
-      body,
-    });
+      const result = await sendMessage({
+        conversation_id: conversationId,
+        body,
+      });
 
-    if (result.success) {
-      await loadConversation();
-    }
-  }, [conversationId, loadConversation]);
+      if (result.success) {
+        await loadConversation();
+      }
+    },
+    [conversationId, loadConversation],
+  );
 
   if (isLoading) {
     return (
