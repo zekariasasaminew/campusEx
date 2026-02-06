@@ -9,12 +9,14 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Toast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 import { ReportDialog } from "@/components/marketplace/ReportDialog";
+import { SaveButton } from "@/components/saves/SaveButton";
 import {
   fetchListingDetail,
   submitMarkAsSold,
   submitDeleteListing,
   submitReport,
 } from "@/lib/marketplace/actions";
+import { createOrGetConversationForListing } from "@/lib/messaging/actions";
 import type { ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
@@ -29,6 +31,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isContactingSeller, setIsContactingSeller] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     variant: "success" | "error";
@@ -96,6 +99,25 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     }
   };
 
+  const handleContactSeller = async () => {
+    if (!listing) return;
+
+    setIsContactingSeller(true);
+    const result = await createOrGetConversationForListing({
+      listing_id: listing.id,
+    });
+
+    if (result.success) {
+      router.push(`/inbox/${result.data}`);
+    } else {
+      setToast({
+        message: result.error || "Failed to start conversation",
+        variant: "error",
+      });
+      setIsContactingSeller(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -149,10 +171,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
               {listing.images.map((img, index) => (
                 <button
                   key={img.id}
-                  className={`${styles.thumbnail} ${
-                    index === selectedImageIndex ? styles.active : ""
-                  }`}
-                  onClick={() => setSelectedImageIndex(index)}
+             div>
+              <h1 className={styles.title}>{listing.title}</h1>
+              <div className={styles.price}>
+                {listing.is_free ? "Free" : `$${listing.price?.toFixed(2)}`}
+              </div>
+            </div>
+            <SaveButton listingId={listing.id} / onClick={() => setSelectedImageIndex(index)}
                 >
                   <Image
                     src={img.image_url || ""}
@@ -214,12 +239,20 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   Delete Listing
+               >
+                <Button
+                  onClick={handleContactSeller}
+                  disabled={isContactingSeller || listing.status === "sold"}
+                >
+                  {isContactingSeller ? "Starting conversation..." : "Contact Seller"}
                 </Button>
-              </>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => setShowReportDialog(true)}
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowReportDialog(true)}
+                >
+                  Report Listing
+                </Button>
+              </k={() => setShowReportDialog(true)}
               >
                 Report Listing
               </Button>
