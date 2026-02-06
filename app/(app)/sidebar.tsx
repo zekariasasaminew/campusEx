@@ -2,13 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingBag, User, LogOut } from "lucide-react";
+import {
+  ShoppingBag,
+  User,
+  LogOut,
+  MessageSquare,
+  Bookmark,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./sidebar.module.css";
 
 const navigation = [
   { name: "Marketplace", href: "/marketplace", icon: ShoppingBag },
+  { name: "Inbox", href: "/inbox", icon: MessageSquare },
+  { name: "Saved", href: "/saved", icon: Bookmark },
   { name: "Profile", href: "/profile", icon: User },
 ];
 

@@ -39,6 +39,9 @@ export async function getListings(
   // Status filter (default to active only)
   query = query.eq("status", status);
 
+  // Filter out hidden listings (Phase Two)
+  query = query.eq("visibility_status", "visible");
+
   // Category filter
   if (category) {
     query = query.eq("category", category);

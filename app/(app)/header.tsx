@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import styles from "./header.module.css";
 
 export function Header() {
@@ -24,6 +25,7 @@ export function Header() {
         </Link>
         <div className={styles.actions}>
           <ThemeToggle />
+          <NotificationBell />
           <Link href="/profile" className={styles.profileButton}>
             <User size={20} />
           </Link>

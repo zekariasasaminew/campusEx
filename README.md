@@ -88,6 +88,28 @@ campus-ex/
 - `npm run test:ui` - Run tests with UI
 - `npm run test:coverage` - Run tests with coverage
 
+## Features
+
+### Phase One: Core Marketplace
+
+- ✅ Student authentication (Supabase magic link)
+- ✅ Create, edit, delete listings with images
+- ✅ Browse and search marketplace
+- ✅ Category and condition filters
+- ✅ Report inappropriate content
+- ✅ Image upload and storage
+- ✅ Row-level security (RLS) policies
+
+### Phase Two: Community Features
+
+- ✅ **In-app messaging** - Direct buyer-seller communication
+- ✅ **Saved listings** - Bookmark items for later
+- ✅ **User profiles** - Display name, grad year, bio, verification badges
+- ✅ **Notifications** - Alerts for new messages and key events
+- ✅ **Admin moderation** - Content safety and user protection
+
+See [docs/PHASE_TWO.md](docs/PHASE_TWO.md) for detailed Phase Two documentation.
+
 ## Authentication
 
 The app uses Supabase magic link authentication:
@@ -96,7 +118,7 @@ The app uses Supabase magic link authentication:
 2. Supabase sends a magic link to their email
 3. Clicking the link authenticates and redirects to the marketplace
 
-All routes under `/marketplace` and `/profile` require authentication.
+All routes under `/marketplace`, `/profile`, `/inbox`, `/saved`, and `/notifications` require authentication.
 
 ## Database Migrations
 
