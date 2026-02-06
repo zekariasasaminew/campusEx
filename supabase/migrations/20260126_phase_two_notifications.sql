@@ -20,19 +20,21 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_notifications_user ON public.notifications(user_id, created_at DESC);
-CREATE INDEX idx_notifications_user_unread ON public.notifications(user_id, read_at) WHERE read_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications(user_id, read_at) WHERE read_at IS NULL;
 
 -- RLS: Enable row-level security
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- RLS: Users can view their own notifications
+DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
 CREATE POLICY "Users can view own notifications"
 ON public.notifications FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
 -- RLS: Users can update their own notifications (mark as read)
+DROP POLICY IF EXISTS "Users can update own notifications" ON public.notifications;
 CREATE POLICY "Users can update own notifications"
 ON public.notifications FOR UPDATE
 TO authenticated
@@ -80,6 +82,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_message_notification ON public.messages;
 CREATE TRIGGER on_message_notification
   AFTER INSERT ON public.messages
   FOR EACH ROW EXECUTE FUNCTION public.notify_on_new_message();

@@ -11,7 +11,7 @@ describe("Saves Mutations", () => {
   let mockSupabase: ReturnType<typeof createMockSupabase>;
 
   function createMockSupabase() {
-    const mockChain: any = {
+    const mockChain = {
       from: vi.fn(),
       select: vi.fn(),
       insert: vi.fn(),
