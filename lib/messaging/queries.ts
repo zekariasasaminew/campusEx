@@ -60,33 +60,10 @@ export async function getInboxConversations(
 
   // Group messages by conversation and get the latest
   const lastMessageMap = new Map<string, string>();
-  const messagesByConv = new Map<string, typeof allMessages>();
   
   allMessages?.forEach(msg => {
     if (!lastMessageMap.has(msg.conversation_id)) {
       lastMessageMap.set(msg.conversation_id, msg.body);
-    }
-    if (!messagesByConv.has(msg.conversation_id)) {
-      messagesByConv.set(msg.conversation_id, []);
-    }
-    messagesByConv.get(msg.conversation_id)!.push(msg);
-  });
-
-  // Batch fetch all unread message IDs
-  const allUnreadMessageIds: string[] = [];
-  const messageIdToConvMap = new Map<string, string>();
-  
-  allMessages?.forEach(msg => {
-    if (msg.conversation_id) {
-      const conv = data.find(c => c.id === msg.conversation_id);
-      const senderId = allMessages.find(m => 
-        m.conversation_id === msg.conversation_id && 
-        m.body === msg.body &&
-        m.created_at === msg.created_at
-      );
-      // Only consider messages not sent by current user
-      allUnreadMessageIds.push((msg as unknown as { id: string }).id || '');
-      messageIdToConvMap.set((msg as unknown as { id: string }).id || '', msg.conversation_id);
     }
   });
 
@@ -99,9 +76,6 @@ export async function getInboxConversations(
     .is("deleted_at", null);
 
   const unreadMessageIds = messagesWithIds?.map(m => m.id) || [];
-  const messageIdToConvMapFull = new Map(
-    messagesWithIds?.map(m => [m.id, m.conversation_id]) || []
-  );
 
   // Batch fetch read receipts
   let readMessageIds = new Set<string>();
