@@ -18,17 +18,17 @@ export async function getSavedListings(
       id,
       listing_id,
       created_at,
-      listings!inner(
+      marketplace_listings!inner(
         title,
         price_cents,
         is_free,
         status
       ),
-      listing_images(image_path)
+      marketplace_listing_images(image_path)
     `,
     )
     .eq("user_id", userId)
-    .eq("listings.visibility_status", "visible")
+    .eq("marketplace_listings.visibility_status", "visible")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -37,16 +37,16 @@ export async function getSavedListings(
     id: save.id,
     listing_id: save.listing_id,
     created_at: save.created_at,
-    listing_title: (save.listings as unknown as Record<string, unknown>)
+    listing_title: (save.marketplace_listings as unknown as Record<string, unknown>)
       .title as string,
-    listing_price_cents: (save.listings as unknown as Record<string, unknown>)
+    listing_price_cents: (save.marketplace_listings as unknown as Record<string, unknown>)
       .price_cents as number,
-    listing_is_free: (save.listings as unknown as Record<string, unknown>)
+    listing_is_free: (save.marketplace_listings as unknown as Record<string, unknown>)
       .is_free as boolean,
-    listing_status: (save.listings as unknown as Record<string, unknown>)
+    listing_status: (save.marketplace_listings as unknown as Record<string, unknown>)
       .status as string,
     listing_image_url:
-      ((save.listing_images as unknown as Array<Record<string, unknown>>)?.[0]
+      ((save.marketplace_listing_images as unknown as Array<Record<string, unknown>>)?.[0]
         ?.image_path as string | null) || null,
   }));
 }

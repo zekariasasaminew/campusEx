@@ -43,7 +43,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     if (result.success) {
       setConversation(result.data.conversation);
       setMessages(result.data.messages);
-      setCurrentUserId(result.data.conversation.buyer_id);
+      setCurrentUserId(result.data.currentUserId);
       setError(null);
     } else {
       setError(result.error);

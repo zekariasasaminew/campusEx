@@ -14,7 +14,7 @@ export async function updateReportStatus(
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("listing_reports")
+    .from("marketplace_reports")
     .update({
       status,
       admin_notes: adminNotes,
@@ -39,7 +39,7 @@ export async function hideListing(
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("listings")
+    .from("marketplace_listings")
     .update({
       visibility_status: "hidden",
       hidden_reason: reason,
@@ -61,7 +61,7 @@ export async function unhideListing(
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("listings")
+    .from("marketplace_listings")
     .update({
       visibility_status: "visible",
       hidden_reason: null,

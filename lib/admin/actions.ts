@@ -12,6 +12,11 @@ import {
   hideListing as hideListingMutation,
   unhideListing as unhideListingMutation,
 } from "./mutations";
+import {
+  updateReportStatusSchema,
+  hideListingSchema,
+  unhideListingSchema,
+} from "./validators";
 import type {
   ListingReportWithDetails,
   UpdateReportStatusInput,
@@ -71,12 +76,13 @@ export async function updateReportStatus(
   input: UpdateReportStatusInput,
 ): Promise<Result<void>> {
   try {
+    const validatedInput = updateReportStatusSchema.parse(input);
     const admin = await requireAdmin();
     await updateReportStatusMutation(
-      input.report_id,
+      validatedInput.report_id,
       admin.id,
-      input.status,
-      input.admin_notes,
+      validatedInput.status,
+      validatedInput.admin_notes,
     );
     return { success: true, data: undefined };
   } catch (error) {
@@ -91,8 +97,9 @@ export async function hideListing(
   input: HideListingInput,
 ): Promise<Result<void>> {
   try {
+    const validatedInput = hideListingSchema.parse(input);
     const admin = await requireAdmin();
-    await hideListingMutation(input.listing_id, admin.id, input.reason);
+    await hideListingMutation(validatedInput.listing_id, admin.id, validatedInput.reason);
     return { success: true, data: undefined };
   } catch (error) {
     return {
@@ -106,8 +113,9 @@ export async function unhideListing(
   input: UnhideListingInput,
 ): Promise<Result<void>> {
   try {
+    const validatedInput = unhideListingSchema.parse(input);
     const admin = await requireAdmin();
-    await unhideListingMutation(input.listing_id, admin.id);
+    await unhideListingMutation(validatedInput.listing_id, admin.id);
     return { success: true, data: undefined };
   } catch (error) {
     return {
