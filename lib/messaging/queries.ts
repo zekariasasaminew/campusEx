@@ -5,7 +5,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type {
-  Conversation,
   ConversationWithDetails,
   MessageWithSender,
 } from "./types";
@@ -77,11 +76,12 @@ export async function getInboxConversations(
         created_at: conv.created_at,
         updated_at: conv.updated_at,
         last_message_at: conv.last_message_at,
-        listing_title: ((conv.listings as unknown) as Record<string, unknown>)
+        listing_title: (conv.listings as unknown as Record<string, unknown>)
           .title as string,
         listing_image_url:
-          ((conv.listing_images as unknown) as Array<Record<string, unknown>>)
-            ?.[0]?.image_path as string | null || null,
+          ((
+            conv.listing_images as unknown as Array<Record<string, unknown>>
+          )?.[0]?.image_path as string | null) || null,
         other_participant_id: otherParticipantId,
         other_participant_name: otherUser?.display_name || "User",
         last_message_body: lastMessage?.body || null,
@@ -161,11 +161,11 @@ export async function getConversationById(
     created_at: conv.created_at,
     updated_at: conv.updated_at,
     last_message_at: conv.last_message_at,
-    listing_title: ((conv.listings as unknown) as Record<string, unknown>)
+    listing_title: (conv.listings as unknown as Record<string, unknown>)
       .title as string,
     listing_image_url:
-      ((conv.listing_images as unknown) as Array<Record<string, unknown>>)?.[0]
-        ?.image_path as string | null || null,
+      ((conv.listing_images as unknown as Array<Record<string, unknown>>)?.[0]
+        ?.image_path as string | null) || null,
     other_participant_id: otherParticipantId,
     other_participant_name: otherUser?.display_name || "User",
     last_message_body: lastMessage?.body || null,
@@ -216,11 +216,12 @@ export async function getConversationMessages(
         edited_at: msg.edited_at,
         deleted_at: msg.deleted_at,
         sender_name:
-          (((msg.users as unknown) as Record<string, unknown>)
+          ((msg.users as unknown as Record<string, unknown>)
             .display_name as string) || "User",
         sender_avatar_url:
-          (((msg.users as unknown) as Record<string, unknown>)
-            .avatar_url as string | null) || null,
+          ((msg.users as unknown as Record<string, unknown>).avatar_url as
+            | string
+            | null) || null,
         is_read: !!readReceipt,
       };
     }),

@@ -26,7 +26,6 @@ import {
   markMessagesReadSchema,
 } from "./validators";
 import type {
-  Conversation,
   ConversationWithDetails,
   MessageWithSender,
   CreateConversationInput,
