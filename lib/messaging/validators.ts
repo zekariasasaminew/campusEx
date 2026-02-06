@@ -32,7 +32,7 @@ export const sendMessageSchema = z.object({
 
 export const editMessageSchema = z.object({
   message_id: z.string().uuid("Invalid message ID"),
-  content: z
+  body: z
     .string()
     .min(1, "Message cannot be empty")
     .max(2000, "Message must be 2000 characters or less")

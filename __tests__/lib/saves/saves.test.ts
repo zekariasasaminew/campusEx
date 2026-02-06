@@ -88,13 +88,13 @@ describe("Saves Queries", () => {
           id: "save-1",
           listing_id: "listing-1",
           created_at: "2026-01-01T00:00:00Z",
-          listings: {
+          marketplace_listings: {
             title: "Test Listing",
             price_cents: 1000,
             is_free: false,
             status: "active",
           },
-          listing_images: [{ image_path: "/images/test.jpg" }],
+          marketplace_listing_images: [{ image_path: "/images/test.jpg" }],
         },
       ];
 
@@ -130,13 +130,13 @@ describe("Saves Queries", () => {
           id: "save-1",
           listing_id: "listing-1",
           created_at: "2026-01-01T00:00:00Z",
-          listings: {
+          marketplace_listings: {
             title: "Test Listing",
             price_cents: 1000,
             is_free: false,
             status: "active",
           },
-          listing_images: [],
+          marketplace_listing_images: [],
         },
       ];
 
