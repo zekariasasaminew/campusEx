@@ -60,12 +60,15 @@ export async function getReports(
     reviewed_at: report.reviewed_at,
     reviewed_by: report.reviewed_by,
     created_at: report.created_at,
-    listing_title: (report.listings as Record<string, unknown>).title as string,
-    listing_status: (report.listings as Record<string, unknown>)
+    listing_title: ((report.listings as unknown) as Record<string, unknown>)
+      .title as string,
+    listing_status: ((report.listings as unknown) as Record<string, unknown>)
       .status as string,
-    listing_visibility_status: (report.listings as Record<string, unknown>)
-      .visibility_status as string,
-    reporter_email: (report.users as Record<string, unknown>).email as string,
+    listing_visibility_status: (
+      (report.listings as unknown) as Record<string, unknown>
+    ).visibility_status as string,
+    reporter_email: ((report.users as unknown) as Record<string, unknown>)
+      .email as string,
   }));
 }
 
@@ -106,10 +109,14 @@ export async function getReportById(
     reviewed_at: data.reviewed_at,
     reviewed_by: data.reviewed_by,
     created_at: data.created_at,
-    listing_title: (data.listings as Record<string, unknown>).title as string,
-    listing_status: (data.listings as Record<string, unknown>).status as string,
-    listing_visibility_status: (data.listings as Record<string, unknown>)
-      .visibility_status as string,
-    reporter_email: (data.users as Record<string, unknown>).email as string,
+    listing_title: ((data.listings as unknown) as Record<string, unknown>)
+      .title as string,
+    listing_status: ((data.listings as unknown) as Record<string, unknown>)
+      .status as string,
+    listing_visibility_status: (
+      (data.listings as unknown) as Record<string, unknown>
+    ).visibility_status as string,
+    reporter_email: ((data.users as unknown) as Record<string, unknown>)
+      .email as string,
   };
 }
