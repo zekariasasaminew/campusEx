@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -21,7 +21,10 @@ interface ConversationPageProps {
 export default function ConversationPage({ params }: ConversationPageProps) {
   const router = useRouter();
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [conversation, setConversation] = useState<any>(null);
+  const [conversation, setConversation] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -31,17 +34,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     params.then((p) => setConversationId(p.conversationId));
   }, [params]);
 
-  useEffect(() => {
-    if (!conversationId) return;
-
-    loadConversation();
-    markAsRead();
-
-    const interval = setInterval(loadConversation, 5000);
-    return () => clearInterval(interval);
-  }, [conversationId]);
-
-  const loadConversation = async () => {
+  const loadConversation = useCallback(async () => {
     if (!conversationId) return;
 
     const result = await getConversation(conversationId);
@@ -56,14 +49,24 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     }
 
     setIsLoading(false);
-  };
+  }, [conversationId]);
 
-  const markAsRead = async () => {
+  const markAsRead = useCallback(async () => {
     if (!conversationId) return;
     await markConversationRead({ conversation_id: conversationId });
-  };
+  }, [conversationId]);
 
-  const handleSendMessage = async (body: string) => {
+  useEffect(() => {
+    if (!conversationId) return;
+
+    loadConversation();
+    markAsRead();
+
+    const interval = setInterval(loadConversation, 5000);
+    return () => clearInterval(interval);
+  }, [conversationId, loadConversation, markAsRead]);
+
+  const handleSendMessage = useCallback(async (body: string) => {
     if (!conversationId) return;
 
     const result = await sendMessage({
@@ -74,7 +77,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     if (result.success) {
       await loadConversation();
     }
-  };
+  }, [conversationId, loadConversation]);
 
   if (isLoading) {
     return (

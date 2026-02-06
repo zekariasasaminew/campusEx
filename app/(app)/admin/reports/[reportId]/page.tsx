@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -26,7 +26,6 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   const [report, setReport] = useState<ListingReportWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [adminNotes, setAdminNotes] = useState("");
-  const [hideReason, setHideReason] = useState("");
   const [showHideDialog, setShowHideDialog] = useState(false);
   const [showUnhideDialog, setShowUnhideDialog] = useState(false);
 
@@ -34,12 +33,7 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
     params.then((p) => setReportId(p.reportId));
   }, [params]);
 
-  useEffect(() => {
-    if (!reportId) return;
-    loadReport();
-  }, [reportId]);
-
-  const loadReport = async () => {
+  const loadReport = useCallback(async () => {
     if (!reportId) return;
 
     const result = await getAdminReportById(reportId);
@@ -50,9 +44,14 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
     }
 
     setIsLoading(false);
-  };
+  }, [reportId]);
 
-  const handleMarkReviewed = async () => {
+  useEffect(() => {
+    if (!reportId) return;
+    loadReport();
+  }, [reportId, loadReport]);
+
+  const handleMarkReviewed = useCallback(async () => {
     if (!reportId) return;
 
     const result = await updateReportStatus({
@@ -64,9 +63,9 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
     if (result.success) {
       loadReport();
     }
-  };
+  }, [reportId, adminNotes, loadReport]);
 
-  const handleMarkActionTaken = async () => {
+  const handleMarkActionTaken = useCallback(async () => {
     if (!reportId) return;
 
     const result = await updateReportStatus({
@@ -78,23 +77,23 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
     if (result.success) {
       loadReport();
     }
-  };
+  }, [reportId, adminNotes, loadReport]);
 
-  const handleHideListing = async () => {
-    if (!report || !hideReason.trim()) return;
+  const handleHideListing = useCallback(async () => {
+    if (!report) return;
 
     const result = await hideListing({
       listing_id: report.listing_id,
-      reason: hideReason,
+      reason: "Hidden by admin due to report",
     });
 
     if (result.success) {
       await handleMarkActionTaken();
       loadReport();
     }
-  };
+  }, [report, handleMarkActionTaken, loadReport]);
 
-  const handleUnhideListing = async () => {
+  const handleUnhideListing = useCallback(async () => {
     if (!report) return;
 
     const result = await unhideListing({
@@ -104,7 +103,7 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
     if (result.success) {
       loadReport();
     }
-  };
+  }, [report, loadReport]);
 
   if (isLoading) {
     return (

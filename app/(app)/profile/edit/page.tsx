@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,7 @@ export default function EditProfilePage() {
     variant: "success" | "error";
   } | null>(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     const supabase = createClient();
     const {
       data: { user },
@@ -51,9 +47,13 @@ export default function EditProfilePage() {
     }
 
     setIsLoading(false);
-  };
+  }, [router]);
 
-  const handleSave = async () => {
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  const handleSave = useCallback(async () => {
     const supabase = createClient();
     const {
       data: { user },
@@ -63,7 +63,7 @@ export default function EditProfilePage() {
 
     setIsSaving(true);
 
-    const updates: Record<string, any> = {
+    const updates: Record<string, string | number | null> = {
       display_name: displayName.trim(),
       grad_year: gradYear ? parseInt(gradYear) : null,
       bio: bio.trim() || null,
@@ -90,7 +90,7 @@ export default function EditProfilePage() {
     }
 
     setIsSaving(false);
-  };
+  }, [displayName, gradYear, bio, preferredMeetingSpot, router]);
 
   if (isLoading) {
     return (
