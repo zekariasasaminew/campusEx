@@ -32,70 +32,124 @@ export async function getInboxConversations(
 
   if (error) throw error;
 
-  const conversations = await Promise.all(
-    (data || []).map(async (conv) => {
-      const otherParticipantId =
-        conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
+  if (!data || data.length === 0) return [];
 
-      const { data: otherUser } = await supabase
-        .from("users")
-        .select("display_name")
-        .eq("id", otherParticipantId)
-        .single();
-
-      const { data: lastMessage } = await supabase
-        .from("messages")
-        .select("body")
-        .eq("conversation_id", conv.id)
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      // Get unread messages count for this conversation
-      const { data: unreadMessages } = await supabase
-        .from("messages")
-        .select("id")
-        .eq("conversation_id", conv.id)
-        .neq("sender_id", userId)
-        .is("deleted_at", null);
-
-      // Filter out read messages
-      const unreadIds = unreadMessages?.map(m => m.id) || [];
-      let unreadCount = 0;
-      if (unreadIds.length > 0) {
-        const { data: readReceipts } = await supabase
-          .from("message_reads")
-          .select("message_id")
-          .eq("user_id", userId)
-          .in("message_id", unreadIds);
-        
-        const readIds = new Set(readReceipts?.map(r => r.message_id) || []);
-        unreadCount = unreadIds.filter(id => !readIds.has(id)).length;
-      }
-
-      return {
-        id: conv.id,
-        listing_id: conv.listing_id,
-        buyer_id: conv.buyer_id,
-        seller_id: conv.seller_id,
-        status: conv.status as "open" | "closed",
-        created_at: conv.created_at,
-        updated_at: conv.updated_at,
-        last_message_at: conv.last_message_at,
-        listing_title: (conv.listings as unknown as Record<string, unknown>)
-          .title as string,
-        listing_image_url:
-          ((
-            conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>
-          )?.[0]?.image_path as string | null) || null,
-        other_participant_id: otherParticipantId,
-        other_participant_name: otherUser?.display_name || "User",
-        last_message_body: lastMessage?.body || null,
-        unread_count: unreadCount || 0,
-      };
-    }),
+  // Batch fetch all user IDs
+  const participantIds = data.map(conv => 
+    conv.buyer_id === userId ? conv.seller_id : conv.buyer_id
   );
+  const uniqueParticipantIds = [...new Set(participantIds)];
+  
+  const { data: participants } = await supabase
+    .from("users")
+    .select("id, display_name")
+    .in("id", uniqueParticipantIds);
+  
+  const participantMap = new Map(
+    participants?.map(p => [p.id, p.display_name]) || []
+  );
+
+  // Batch fetch all last messages
+  const conversationIds = data.map(conv => conv.id);
+  const { data: allMessages } = await supabase
+    .from("messages")
+    .select("conversation_id, body, created_at")
+    .in("conversation_id", conversationIds)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+
+  // Group messages by conversation and get the latest
+  const lastMessageMap = new Map<string, string>();
+  const messagesByConv = new Map<string, typeof allMessages>();
+  
+  allMessages?.forEach(msg => {
+    if (!lastMessageMap.has(msg.conversation_id)) {
+      lastMessageMap.set(msg.conversation_id, msg.body);
+    }
+    if (!messagesByConv.has(msg.conversation_id)) {
+      messagesByConv.set(msg.conversation_id, []);
+    }
+    messagesByConv.get(msg.conversation_id)!.push(msg);
+  });
+
+  // Batch fetch all unread message IDs
+  const allUnreadMessageIds: string[] = [];
+  const messageIdToConvMap = new Map<string, string>();
+  
+  allMessages?.forEach(msg => {
+    if (msg.conversation_id) {
+      const conv = data.find(c => c.id === msg.conversation_id);
+      const senderId = allMessages.find(m => 
+        m.conversation_id === msg.conversation_id && 
+        m.body === msg.body &&
+        m.created_at === msg.created_at
+      );
+      // Only consider messages not sent by current user
+      allUnreadMessageIds.push((msg as unknown as { id: string }).id || '');
+      messageIdToConvMap.set((msg as unknown as { id: string }).id || '', msg.conversation_id);
+    }
+  });
+
+  // Get all messages with IDs for unread counting
+  const { data: messagesWithIds } = await supabase
+    .from("messages")
+    .select("id, conversation_id, sender_id")
+    .in("conversation_id", conversationIds)
+    .neq("sender_id", userId)
+    .is("deleted_at", null);
+
+  const unreadMessageIds = messagesWithIds?.map(m => m.id) || [];
+  const messageIdToConvMapFull = new Map(
+    messagesWithIds?.map(m => [m.id, m.conversation_id]) || []
+  );
+
+  // Batch fetch read receipts
+  let readMessageIds = new Set<string>();
+  if (unreadMessageIds.length > 0) {
+    const { data: readReceipts } = await supabase
+      .from("message_reads")
+      .select("message_id")
+      .eq("user_id", userId)
+      .in("message_id", unreadMessageIds);
+    
+    readMessageIds = new Set(readReceipts?.map(r => r.message_id) || []);
+  }
+
+  // Count unread messages per conversation
+  const unreadCountMap = new Map<string, number>();
+  messagesWithIds?.forEach(msg => {
+    if (!readMessageIds.has(msg.id)) {
+      const count = unreadCountMap.get(msg.conversation_id) || 0;
+      unreadCountMap.set(msg.conversation_id, count + 1);
+    }
+  });
+
+  // Build final conversation objects
+  const conversations = data.map(conv => {
+    const otherParticipantId =
+      conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
+
+    return {
+      id: conv.id,
+      listing_id: conv.listing_id,
+      buyer_id: conv.buyer_id,
+      seller_id: conv.seller_id,
+      status: conv.status as "open" | "closed",
+      created_at: conv.created_at,
+      updated_at: conv.updated_at,
+      last_message_at: conv.last_message_at,
+      listing_title: (conv.listings as unknown as Record<string, unknown>)
+        .title as string,
+      listing_image_url:
+        ((
+          conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>
+        )?.[0]?.image_path as string | null) || null,
+      other_participant_id: otherParticipantId,
+      other_participant_name: participantMap.get(otherParticipantId) || "User",
+      last_message_body: lastMessageMap.get(conv.id) || null,
+      unread_count: unreadCountMap.get(conv.id) || 0,
+    };
+  });
 
   return conversations;
 }
@@ -215,34 +269,35 @@ export async function getConversationMessages(
 
   if (error) throw error;
 
-  const messages = await Promise.all(
-    (data || []).map(async (msg) => {
-      const { data: readReceipt } = await supabase
-        .from("message_reads")
-        .select("id")
-        .eq("message_id", msg.id)
-        .eq("user_id", userId)
-        .maybeSingle();
+  if (!data || data.length === 0) return [];
 
-      return {
-        id: msg.id,
-        conversation_id: msg.conversation_id,
-        sender_id: msg.sender_id,
-        body: msg.body,
-        created_at: msg.created_at,
-        edited_at: msg.edited_at,
-        deleted_at: msg.deleted_at,
-        sender_name:
-          ((msg.users as unknown as Record<string, unknown>)
-            .display_name as string) || "User",
-        sender_avatar_url:
-          ((msg.users as unknown as Record<string, unknown>).avatar_url as
-            | string
-            | null) || null,
-        is_read: !!readReceipt,
-      };
-    }),
-  );
+  // Batch fetch read receipts for all messages
+  const messageIds = data.map(msg => msg.id);
+  const { data: readReceipts } = await supabase
+    .from("message_reads")
+    .select("message_id")
+    .eq("user_id", userId)
+    .in("message_id", messageIds);
+
+  const readMessageIds = new Set(readReceipts?.map(r => r.message_id) || []);
+
+  const messages = data.map(msg => ({
+    id: msg.id,
+    conversation_id: msg.conversation_id,
+    sender_id: msg.sender_id,
+    body: msg.body,
+    created_at: msg.created_at,
+    edited_at: msg.edited_at,
+    deleted_at: msg.deleted_at,
+    sender_name:
+      ((msg.users as unknown as Record<string, unknown>)
+        .display_name as string) || "User",
+    sender_avatar_url:
+      ((msg.users as unknown as Record<string, unknown>).avatar_url as
+        | string
+        | null) || null,
+    is_read: readMessageIds.has(msg.id),
+  }));
 
   return messages;
 }

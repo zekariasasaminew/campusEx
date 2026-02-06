@@ -26,6 +26,7 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   const [report, setReport] = useState<ListingReportWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [adminNotes, setAdminNotes] = useState("");
+  const [hideReason, setHideReason] = useState("");
   const [showHideDialog, setShowHideDialog] = useState(false);
   const [showUnhideDialog, setShowUnhideDialog] = useState(false);
 
@@ -80,18 +81,20 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   }, [reportId, adminNotes, loadReport]);
 
   const handleHideListing = useCallback(async () => {
-    if (!report) return;
+    if (!report || !hideReason.trim()) return;
 
     const result = await hideListing({
       listing_id: report.listing_id,
-      reason: "Hidden by admin due to report",
+      reason: hideReason,
     });
 
     if (result.success) {
       await handleMarkActionTaken();
+      setShowHideDialog(false);
+      setHideReason("");
       loadReport();
     }
-  }, [report, handleMarkActionTaken, loadReport]);
+  }, [report, hideReason, handleMarkActionTaken, loadReport]);
 
   const handleUnhideListing = useCallback(async () => {
     if (!report) return;
@@ -232,13 +235,29 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
 
       <ConfirmDialog
         isOpen={showHideDialog}
-        onClose={() => setShowHideDialog(false)}
+        onClose={() => {
+          setShowHideDialog(false);
+          setHideReason("");
+        }}
         onConfirm={handleHideListing}
         title="Hide Listing"
-        message="Are you sure you want to hide this listing from the marketplace?"
+        message="Please provide a reason for hiding this listing:"
         confirmLabel="Hide Listing"
         variant="destructive"
-      />
+      >
+        <div className={styles.field}>
+          <label htmlFor="hideReason" className={styles.label}>
+            Reason for hiding
+          </label>
+          <Textarea
+            id="hideReason"
+            value={hideReason}
+            onChange={(e) => setHideReason(e.target.value)}
+            placeholder="Explain why this listing is being hidden"
+            rows={3}
+          />
+        </div>
+      </ConfirmDialog>
 
       <ConfirmDialog
         isOpen={showUnhideDialog}

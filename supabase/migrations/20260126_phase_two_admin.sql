@@ -15,6 +15,57 @@ ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user
 CREATE INDEX IF NOT EXISTS idx_users_role ON public.users(role) WHERE role = 'admin';
 
 -- =====================================================
+-- Security: Prevent users from escalating their role
+-- =====================================================
+
+-- Drop the existing update policy that allows all column updates
+DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
+
+-- Create a new policy that prevents role, email_verified, and campus_verified updates
+CREATE POLICY "Users can update own profile (restricted)"
+ON public.users FOR UPDATE
+TO authenticated
+USING (auth.uid() = id)
+WITH CHECK (
+  auth.uid() = id
+  -- Prevent users from changing their role
+  AND (
+    (OLD.role IS NOT DISTINCT FROM NEW.role) OR
+    EXISTS (
+      SELECT 1 FROM public.users
+      WHERE users.id = auth.uid()
+      AND users.role = 'admin'
+    )
+  )
+  -- Prevent users from changing email_verified (if it exists)
+  AND (
+    (SELECT column_name FROM information_schema.columns 
+     WHERE table_schema = 'public' 
+     AND table_name = 'users' 
+     AND column_name = 'email_verified') IS NULL
+    OR OLD.email_verified IS NOT DISTINCT FROM NEW.email_verified
+    OR EXISTS (
+      SELECT 1 FROM public.users
+      WHERE users.id = auth.uid()
+      AND users.role = 'admin'
+    )
+  )
+  -- Prevent users from changing campus_verified (if it exists)
+  AND (
+    (SELECT column_name FROM information_schema.columns 
+     WHERE table_schema = 'public' 
+     AND table_name = 'users' 
+     AND column_name = 'campus_verified') IS NULL
+    OR OLD.campus_verified IS NOT DISTINCT FROM NEW.campus_verified
+    OR EXISTS (
+      SELECT 1 FROM public.users
+      WHERE users.id = auth.uid()
+      AND users.role = 'admin'
+    )
+  )
+);
+
+-- =====================================================
 -- Extend listings table for visibility control
 -- =====================================================
 
