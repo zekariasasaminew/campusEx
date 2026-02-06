@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getInbox } from "@/lib/messaging/actions";
 import { ConversationList } from "@/components/messaging/ConversationList";
-import { Spinner } from "@/components/ui/spinner";
 import styles from "./page.module.css";
 
 export const metadata = {
