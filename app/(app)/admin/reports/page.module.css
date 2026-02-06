@@ -1,0 +1,193 @@
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.header {
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.stats {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.stat {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
+
+.stat strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.empty {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.emptyMessage {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.table {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2.5fr 1fr 1fr 0.5fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2.5fr 1fr 1fr 0.5fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.tableRow:hover {
+  background: var(--color-surface-2);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.colListing,
+.colReporter,
+.colReason,
+.colStatus,
+.colDate,
+.colActions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.listingTitle {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listingMeta {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+.hiddenBadge,
+.soldBadge {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.hiddenBadge {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.soldBadge {
+  background: var(--color-text-muted);
+  color: var(--color-surface);
+}
+
+.colReporter,
+.colReason {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusBadge.open {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.statusBadge.reviewed {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.statusBadge.action_taken {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.colDate {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.viewLink {
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.error {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-danger);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
