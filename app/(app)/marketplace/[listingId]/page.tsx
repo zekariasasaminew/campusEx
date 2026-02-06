@@ -171,13 +171,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
               {listing.images.map((img, index) => (
                 <button
                   key={img.id}
-             div>
-              <h1 className={styles.title}>{listing.title}</h1>
-              <div className={styles.price}>
-                {listing.is_free ? "Free" : `$${listing.price?.toFixed(2)}`}
-              </div>
-            </div>
-            <SaveButton listingId={listing.id} / onClick={() => setSelectedImageIndex(index)}
+                  onClick={() => setSelectedImageIndex(index)}
                 >
                   <Image
                     src={img.image_url || ""}
@@ -197,6 +191,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
             <div className={styles.price}>
               {listing.is_free ? "Free" : `$${listing.price?.toFixed(2)}`}
             </div>
+            <SaveButton listingId={listing.id} />
           </div>
 
           <div className={styles.meta}>
@@ -239,12 +234,17 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   Delete Listing
-               >
+                </Button>
+              </>
+            ) : (
+              <>
                 <Button
                   onClick={handleContactSeller}
                   disabled={isContactingSeller || listing.status === "sold"}
                 >
-                  {isContactingSeller ? "Starting conversation..." : "Contact Seller"}
+                  {isContactingSeller
+                    ? "Starting conversation..."
+                    : "Contact Seller"}
                 </Button>
                 <Button
                   variant="secondary"
@@ -252,10 +252,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                 >
                   Report Listing
                 </Button>
-              </k={() => setShowReportDialog(true)}
-              >
-                Report Listing
-              </Button>
+              </>
             )}
           </div>
         </div>
