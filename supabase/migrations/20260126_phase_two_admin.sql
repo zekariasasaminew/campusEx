@@ -18,8 +18,9 @@ CREATE INDEX IF NOT EXISTS idx_users_role ON public.users(role) WHERE role = 'ad
 -- Security: Prevent users from escalating their role
 -- =====================================================
 
--- Drop the existing update policy that allows all column updates
+-- Drop the existing update policies (both old and new names)
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can update own profile (restricted)" ON public.users;
 
 -- Create a trigger function to prevent role escalation
 CREATE OR REPLACE FUNCTION public.prevent_role_escalation()
