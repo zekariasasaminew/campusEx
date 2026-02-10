@@ -83,11 +83,13 @@ async function logAdminAction(
 ): Promise<void> {
   const supabase = await createClient();
 
-  await supabase.from("admin_action_log").insert({
+  const { error } = await supabase.from("admin_action_log").insert({
     admin_id: adminId,
     action,
     target_type: targetType,
     target_id: targetId,
     metadata,
   });
+
+  if (error) throw error;
 }

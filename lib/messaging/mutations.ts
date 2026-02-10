@@ -126,12 +126,14 @@ async function checkMessageRateLimit(
     Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
   ).toISOString();
 
-  const { count } = await supabase
+  const { count, error } = await supabase
     .from("messages")
     .select("*", { count: "exact", head: true })
     .eq("conversation_id", conversationId)
     .eq("sender_id", userId)
     .gte("created_at", windowStart);
+
+  if (error) throw error;
 
   if ((count || 0) >= MESSAGE_RATE_LIMIT) {
     throw new Error(
