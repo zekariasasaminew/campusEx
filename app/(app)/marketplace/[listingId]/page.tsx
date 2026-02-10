@@ -171,6 +171,9 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
               {listing.images.map((img, index) => (
                 <button
                   key={img.id}
+                  className={`${styles.thumbnail} ${
+                    selectedImageIndex === index ? styles.active : ""
+                  }`}
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <Image
