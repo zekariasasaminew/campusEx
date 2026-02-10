@@ -197,4 +197,110 @@ describe("FiltersBar", () => {
     expect(minInput.value).toBe("10");
     expect(maxInput.value).toBe("50");
   });
+
+  it("should convert dollar values to cents when emitting price filters", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersBar
+        filters={defaultFilters}
+        onFiltersChange={mockOnFiltersChange}
+      />,
+    );
+
+    const minInput = screen.getByPlaceholderText(/min/i);
+    await user.type(minInput, "10.50");
+
+    // Wait for debounce
+    await vi.waitFor(
+      () => {
+        expect(mockOnFiltersChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            priceMin: 1050, // 10.50 dollars = 1050 cents
+            priceMax: null,
+          }),
+        );
+      },
+      { timeout: 600 },
+    );
+  });
+
+  it("should handle invalid price input (NaN) by setting null", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersBar
+        filters={defaultFilters}
+        onFiltersChange={mockOnFiltersChange}
+      />,
+    );
+
+    const minInput = screen.getByPlaceholderText(/min/i);
+    // Type non-numeric characters (browsers prevent this, but testing the handler)
+    await user.clear(minInput);
+    await user.type(minInput, "abc");
+
+    // Wait for debounce
+    await vi.waitFor(
+      () => {
+        expect(mockOnFiltersChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            priceMin: null, // Invalid input should emit null
+            priceMax: null,
+          }),
+        );
+      },
+      { timeout: 600 },
+    );
+  });
+
+  it("should handle empty price input by setting null", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersBar
+        filters={{ ...defaultFilters, priceMin: 1000 }}
+        onFiltersChange={mockOnFiltersChange}
+      />,
+    );
+
+    const minInput = screen.getByPlaceholderText(/min/i);
+    await user.clear(minInput);
+
+    // Wait for debounce
+    await vi.waitFor(
+      () => {
+        expect(mockOnFiltersChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            priceMin: null, // Empty input should emit null
+            priceMax: null,
+          }),
+        );
+      },
+      { timeout: 600 },
+    );
+  });
+
+  it("should round decimal prices to nearest cent", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersBar
+        filters={defaultFilters}
+        onFiltersChange={mockOnFiltersChange}
+      />,
+    );
+
+    const maxInput = screen.getByPlaceholderText(/max/i);
+    await user.type(maxInput, "99.999");
+
+    // Wait for debounce
+    await vi.waitFor(
+      () => {
+        expect(mockOnFiltersChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            priceMin: null,
+            priceMax: 10000, // 99.999 rounds to 100.00 = 10000 cents
+          }),
+        );
+      },
+      { timeout: 600 },
+    );
+  });
 });
