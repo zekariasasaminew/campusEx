@@ -23,8 +23,7 @@ export async function getInboxConversations(
       created_at,
       updated_at,
       last_message_at,
-      marketplace_listings!inner(title, status),
-      marketplace_listing_images(image_path)
+      marketplace_listings!inner(title, status, marketplace_listing_images(image_path))
     `,
     )
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
@@ -35,22 +34,22 @@ export async function getInboxConversations(
   if (!data || data.length === 0) return [];
 
   // Batch fetch all user IDs
-  const participantIds = data.map(conv => 
-    conv.buyer_id === userId ? conv.seller_id : conv.buyer_id
+  const participantIds = data.map((conv) =>
+    conv.buyer_id === userId ? conv.seller_id : conv.buyer_id,
   );
   const uniqueParticipantIds = [...new Set(participantIds)];
-  
+
   const { data: participants } = await supabase
     .from("users")
     .select("id, display_name")
     .in("id", uniqueParticipantIds);
-  
+
   const participantMap = new Map(
-    participants?.map(p => [p.id, p.display_name]) || []
+    participants?.map((p) => [p.id, p.display_name]) || [],
   );
 
   // Batch fetch all last messages
-  const conversationIds = data.map(conv => conv.id);
+  const conversationIds = data.map((conv) => conv.id);
   const { data: allMessages } = await supabase
     .from("messages")
     .select("conversation_id, body, created_at")
@@ -60,8 +59,8 @@ export async function getInboxConversations(
 
   // Group messages by conversation and get the latest
   const lastMessageMap = new Map<string, string>();
-  
-  allMessages?.forEach(msg => {
+
+  allMessages?.forEach((msg) => {
     if (!lastMessageMap.has(msg.conversation_id)) {
       lastMessageMap.set(msg.conversation_id, msg.body);
     }
@@ -75,7 +74,7 @@ export async function getInboxConversations(
     .neq("sender_id", userId)
     .is("deleted_at", null);
 
-  const unreadMessageIds = messagesWithIds?.map(m => m.id) || [];
+  const unreadMessageIds = messagesWithIds?.map((m) => m.id) || [];
 
   // Batch fetch read receipts
   let readMessageIds = new Set<string>();
@@ -85,13 +84,13 @@ export async function getInboxConversations(
       .select("message_id")
       .eq("user_id", userId)
       .in("message_id", unreadMessageIds);
-    
-    readMessageIds = new Set(readReceipts?.map(r => r.message_id) || []);
+
+    readMessageIds = new Set(readReceipts?.map((r) => r.message_id) || []);
   }
 
   // Count unread messages per conversation
   const unreadCountMap = new Map<string, number>();
-  messagesWithIds?.forEach(msg => {
+  messagesWithIds?.forEach((msg) => {
     if (!readMessageIds.has(msg.id)) {
       const count = unreadCountMap.get(msg.conversation_id) || 0;
       unreadCountMap.set(msg.conversation_id, count + 1);
@@ -99,9 +98,12 @@ export async function getInboxConversations(
   });
 
   // Build final conversation objects
-  const conversations = data.map(conv => {
+  const conversations = data.map((conv) => {
     const otherParticipantId =
       conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
+
+    const listing = conv.marketplace_listings as unknown as Record<string, unknown>;
+    const images = (listing.marketplace_listing_images as Array<Record<string, unknown>>) || [];
 
     return {
       id: conv.id,
@@ -112,12 +114,8 @@ export async function getInboxConversations(
       created_at: conv.created_at,
       updated_at: conv.updated_at,
       last_message_at: conv.last_message_at,
-      listing_title: (conv.marketplace_listings as unknown as Record<string, unknown>)
-        .title as string,
-      listing_image_url:
-        ((
-          conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>
-        )?.[0]?.image_path as string | null) || null,
+      listing_title: listing.title as string,
+      listing_image_url: (images[0]?.image_path as string | null) || null,
       other_participant_id: otherParticipantId,
       other_participant_name: participantMap.get(otherParticipantId) || "User",
       last_message_body: lastMessageMap.get(conv.id) || null,
@@ -146,19 +144,29 @@ export async function getConversationById(
       created_at,
       updated_at,
       last_message_at,
-      marketplace_listings!inner(title, status),
-      marketplace_listing_images(image_path)
+      marketplace_listings!inner(title, status, marketplace_listing_images(image_path))
     `,
     )
     .eq("id", conversationId)
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
     .single();
 
-  if (error) return null;
+  if (error) {
+    console.error("getConversationById error:", {
+      conversationId,
+      userId,
+      error,
+      data,
+    });
+    return null;
+  }
 
   const conv = data;
   const otherParticipantId =
     conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
+
+  const listing = conv.marketplace_listings as unknown as Record<string, unknown>;
+  const images = (listing.marketplace_listing_images as Array<Record<string, unknown>>) || [];
 
   const { data: otherUser } = await supabase
     .from("users")
@@ -184,7 +192,7 @@ export async function getConversationById(
     .is("deleted_at", null);
 
   // Filter out read messages
-  const unreadIds = unreadMessages?.map(m => m.id) || [];
+  const unreadIds = unreadMessages?.map((m) => m.id) || [];
   let unreadCount = 0;
   if (unreadIds.length > 0) {
     const { data: readReceipts } = await supabase
@@ -192,9 +200,9 @@ export async function getConversationById(
       .select("message_id")
       .eq("user_id", userId)
       .in("message_id", unreadIds);
-    
-    const readIds = new Set(readReceipts?.map(r => r.message_id) || []);
-    unreadCount = unreadIds.filter(id => !readIds.has(id)).length;
+
+    const readIds = new Set(readReceipts?.map((r) => r.message_id) || []);
+    unreadCount = unreadIds.filter((id) => !readIds.has(id)).length;
   }
 
   return {
@@ -206,11 +214,8 @@ export async function getConversationById(
     created_at: conv.created_at,
     updated_at: conv.updated_at,
     last_message_at: conv.last_message_at,
-    listing_title: (conv.marketplace_listings as unknown as Record<string, unknown>)
-      .title as string,
-    listing_image_url:
-      ((conv.marketplace_listing_images as unknown as Array<Record<string, unknown>>)?.[0]
-        ?.image_path as string | null) || null,
+    listing_title: listing.title as string,
+    listing_image_url: (images[0]?.image_path as string | null) || null,
     other_participant_id: otherParticipantId,
     other_participant_name: otherUser?.display_name || "User",
     last_message_body: lastMessage?.body || null,
@@ -246,16 +251,16 @@ export async function getConversationMessages(
   if (!data || data.length === 0) return [];
 
   // Batch fetch read receipts for all messages
-  const messageIds = data.map(msg => msg.id);
+  const messageIds = data.map((msg) => msg.id);
   const { data: readReceipts } = await supabase
     .from("message_reads")
     .select("message_id")
     .eq("user_id", userId)
     .in("message_id", messageIds);
 
-  const readMessageIds = new Set(readReceipts?.map(r => r.message_id) || []);
+  const readMessageIds = new Set(readReceipts?.map((r) => r.message_id) || []);
 
-  const messages = data.map(msg => ({
+  const messages = data.map((msg) => ({
     id: msg.id,
     conversation_id: msg.conversation_id,
     sender_id: msg.sender_id,
@@ -282,23 +287,40 @@ export async function getOrCreateConversation(
 ): Promise<string> {
   const supabase = await createClient();
 
-  const { data: listing } = await supabase
+  const { data: listing, error: listingError } = await supabase
     .from("marketplace_listings")
     .select("seller_id, status")
     .eq("id", listingId)
     .single();
 
+  if (listingError) {
+    console.error("getOrCreateConversation - listing fetch error:", {
+      listingId,
+      buyerId,
+      error: listingError,
+    });
+  }
+
   if (!listing) throw new Error("Listing not found");
   if (listing.seller_id === buyerId)
     throw new Error("Cannot message own listing");
 
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("conversations")
     .select("id")
     .eq("listing_id", listingId)
     .eq("buyer_id", buyerId)
     .eq("seller_id", listing.seller_id)
     .maybeSingle();
+
+  if (existingError) {
+    console.error("getOrCreateConversation - existing check error:", {
+      listingId,
+      buyerId,
+      sellerId: listing.seller_id,
+      error: existingError,
+    });
+  }
 
   if (existing) return existing.id;
 
@@ -312,7 +334,15 @@ export async function getOrCreateConversation(
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("getOrCreateConversation - insert error:", {
+      listingId,
+      buyerId,
+      sellerId: listing.seller_id,
+      error,
+    });
+    throw error;
+  }
   return newConv.id;
 }
 

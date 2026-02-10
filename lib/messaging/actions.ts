@@ -69,11 +69,16 @@ export async function getConversation(conversationId: string): Promise<
     const user = await getCurrentUser();
     const conversation = await getConversationById(conversationId, user.id);
     if (!conversation) {
+      console.error("getConversation action: conversation not found", {
+        conversationId,
+        userId: user.id,
+      });
       return { success: false, error: "Conversation not found" };
     }
     const messages = await getConversationMessages(conversationId, user.id);
     return { success: true, data: { conversation, messages, currentUserId: user.id } };
   } catch (error) {
+    console.error("getConversation action error:", error);
     return {
       success: false,
       error:
@@ -88,12 +93,20 @@ export async function createOrGetConversationForListing(
   try {
     const user = await getCurrentUser();
     const validated = createConversationSchema.parse(input);
+    console.log("createOrGetConversationForListing:", {
+      listingId: validated.listing_id,
+      userId: user.id,
+    });
     const conversationId = await getOrCreateConversation(
       validated.listing_id,
       user.id,
     );
+    console.log("createOrGetConversationForListing - success:", {
+      conversationId,
+    });
     return { success: true, data: conversationId };
   } catch (error) {
+    console.error("createOrGetConversationForListing error:", error);
     return {
       success: false,
       error:
