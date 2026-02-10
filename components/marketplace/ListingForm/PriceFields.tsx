@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { VALIDATION_RULES } from "@/lib/marketplace/constants";
 import styles from "./PriceFields.module.css";
 
 interface PriceFieldsProps {
@@ -46,11 +47,15 @@ export function PriceFields({
               onChange={(e) => onChange("price", e.target.value)}
               placeholder="0.00"
               min="0.01"
+              max={VALIDATION_RULES.priceFilter.max.toString()}
               step="0.01"
               required={!isFree}
             />
           </div>
           {errors.price && <div className={styles.error}>{errors.price}</div>}
+          <div className={styles.hint}>
+            Maximum ${VALIDATION_RULES.priceFilter.max.toLocaleString()}
+          </div>
         </div>
       )}
     </div>

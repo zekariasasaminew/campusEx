@@ -23,3 +23,14 @@
   flex-direction: column;
   gap: var(--spacing-lg);
 }
+
+.emailNote {
+  font-size: 0.8125rem;
+  color: var(--color-muted-foreground);
+  text-align: center;
+  margin: calc(var(--spacing-md) * -1) 0 0 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}

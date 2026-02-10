@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   CATEGORIES,
   CONDITIONS,
+  VALIDATION_RULES,
   type Category,
   type Condition,
 } from "@/lib/marketplace/constants";
@@ -58,8 +59,17 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     if (initialMount.current) return; // Skip on initial mount
 
     const timer = setTimeout(() => {
-      const minValue = priceMin ? parseInt(priceMin) : null;
-      const maxValue = priceMax ? parseInt(priceMax) : null;
+      // Convert dollars to cents for database query with validation
+      const parsedMin = priceMin === "" ? null : Number(priceMin);
+      const parsedMax = priceMax === "" ? null : Number(priceMax);
+      const minValue =
+        parsedMin !== null && Number.isFinite(parsedMin)
+          ? Math.round(parsedMin * 100)
+          : null;
+      const maxValue =
+        parsedMax !== null && Number.isFinite(parsedMax)
+          ? Math.round(parsedMax * 100)
+          : null;
 
       if (
         minValue !== filtersRef.current.priceMin ||
@@ -108,6 +118,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={styles.searchInput}
+          maxLength={VALIDATION_RULES.searchQuery.max}
         />
       </div>
 
@@ -153,6 +164,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             min="0"
+            max={VALIDATION_RULES.priceFilter.max.toString()}
             step="1"
           />
           <span className={styles.priceSeparator}>to</span>
@@ -162,6 +174,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             min="0"
+            max={VALIDATION_RULES.priceFilter.max.toString()}
             step="1"
           />
         </div>

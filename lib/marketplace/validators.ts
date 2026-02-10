@@ -68,6 +68,15 @@ export function validatePriceAndFree(
     };
   }
 
+  // Enforce maximum price (convert dollars to cents)
+  const maxPriceCents = VALIDATION_RULES.priceFilter.max * 100;
+  if (priceCents !== null && priceCents > maxPriceCents) {
+    return {
+      isValid: false,
+      error: `Price cannot exceed $${VALIDATION_RULES.priceFilter.max.toLocaleString()}`,
+    };
+  }
+
   return { isValid: true };
 }
 

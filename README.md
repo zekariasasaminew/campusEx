@@ -92,21 +92,21 @@ campus-ex/
 
 ### Phase One: Core Marketplace
 
-- ✅ Student authentication (Supabase magic link)
-- ✅ Create, edit, delete listings with images
-- ✅ Browse and search marketplace
-- ✅ Category and condition filters
-- ✅ Report inappropriate content
-- ✅ Image upload and storage
-- ✅ Row-level security (RLS) policies
+- Student authentication (Supabase magic link)
+- Create, edit, delete listings with images
+- Browse and search marketplace
+- Category and condition filters
+- Report inappropriate content
+- Image upload and storage
+- Row-level security (RLS) policies
 
 ### Phase Two: Community Features
 
-- ✅ **In-app messaging** - Direct buyer-seller communication
-- ✅ **Saved listings** - Bookmark items for later
-- ✅ **User profiles** - Display name, grad year, bio, verification badges
-- ✅ **Notifications** - Alerts for new messages and key events
-- ✅ **Admin moderation** - Content safety and user protection
+- **In-app messaging** - Direct buyer-seller communication
+- **Saved listings** - Bookmark items for later
+- **User profiles** - Display name, grad year, bio, verification badges
+- **Notifications** - Alerts for new messages and key events
+- **Admin moderation** - Content safety and user protection
 
 See [docs/PHASE_TWO.md](docs/PHASE_TWO.md) for detailed Phase Two documentation.
 

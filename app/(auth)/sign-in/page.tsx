@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
 
-export default function SignInPage() {
+function SignInForm() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
@@ -16,14 +18,39 @@ export default function SignInPage() {
     isVisible: boolean;
   }>({ message: "", variant: "info", isVisible: false });
 
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "unauthorized_domain") {
+      setToast({
+        message: "Only @augustana.edu email addresses are allowed",
+        variant: "error",
+        isVisible: true,
+      });
+    } else if (error === "auth_failed") {
+      setToast({
+        message: "Authentication failed. Please try again.",
+        variant: "error",
+        isVisible: true,
+      });
+    }
+  }, [searchParams]);
+
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Validate Augustana email domain with normalization
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail.endsWith("@augustana.edu")) {
+        throw new Error(
+          "Only Augustana College email addresses (@augustana.edu) are allowed",
+        );
+      }
+
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOtp({
-        email,
+        email: normalizedEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -54,19 +81,22 @@ export default function SignInPage() {
       <div className={styles.content}>
         <h1 className={styles.title}>Sign in to Campus Ex</h1>
         <p className={styles.description}>
-          Enter your email to receive a magic link
+          Enter your Augustana email to receive a magic link
         </p>
         <form onSubmit={handleSignIn} className={styles.form}>
           <Input
             type="email"
-            label="Email"
-            placeholder="you@university.edu"
+            label="Augustana Email"
+            placeholder="you@augustana.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             fullWidth
             disabled={loading}
           />
+          <p className={styles.emailNote}>
+            Only @augustana.edu email addresses are allowed
+          </p>
           <Button type="submit" fullWidth disabled={loading || !email}>
             {loading ? "Sending..." : "Send magic link"}
           </Button>
@@ -79,5 +109,13 @@ export default function SignInPage() {
         onClose={() => setToast({ ...toast, isVisible: false })}
       />
     </>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className={styles.content}>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }

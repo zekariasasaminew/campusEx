@@ -196,6 +196,16 @@ useEffect(() => {
 - Only add new deps when necessary
 - Explain tradeoffs when adding deps
 
+## Database Migrations
+
+- **NEVER edit existing SQL files** in `supabase/migrations/`
+- **ALWAYS create new migration files** for any database changes
+- **File naming**: Use timestamp prefix `YYYYMMDD_description.sql` (e.g., `20260210_add_user_column.sql`)
+- **Before creating**: Review current DB schema and previous migrations
+- **Content**: Write idempotent SQL (use `IF NOT EXISTS`, `IF EXISTS`)
+- **Track state**: Consider the current database state when writing new migrations
+- **Example flow**: Need to add column → review existing schema → create new migration file → apply via Supabase CLI
+
 ## Before Completing Task
 
 Checklist:

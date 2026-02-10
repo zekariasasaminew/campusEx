@@ -289,12 +289,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 All Phase Two code follows repository standards:
 
-- ✅ No file over 300 lines
-- ✅ Functions under 40 lines
-- ✅ Explicit TypeScript types
-- ✅ Input validation with Zod
-- ✅ RLS policies on all tables
-- ✅ Accessible UI components
-- ✅ CSS Modules with design tokens
-- ✅ Server Actions pattern
-- ✅ Tests for critical paths
+- No file over 300 lines
+- Functions under 40 lines
+- Explicit TypeScript types
+- Input validation with Zod
+- RLS policies on all tables
+- Accessible UI components
+- CSS Modules with design tokens
+- Server Actions pattern
+- Tests for critical paths
