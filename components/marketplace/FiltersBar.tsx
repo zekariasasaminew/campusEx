@@ -154,6 +154,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             placeholder="Min"
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
+            min="0"
             max="10000"
             step="1"
           />
@@ -164,8 +165,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             min="0"
-            max="1000nge={(e) => setPriceMax(e.target.value)}
-            min="0"
+            max="10000"
             step="1"
           />
         </div>
