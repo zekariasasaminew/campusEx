@@ -54,19 +54,22 @@ export default function SignInPage() {
       <div className={styles.content}>
         <h1 className={styles.title}>Sign in to Campus Ex</h1>
         <p className={styles.description}>
-          Enter your email to receive a magic link
+          Enter your Augustana email to receive a magic link
         </p>
         <form onSubmit={handleSignIn} className={styles.form}>
           <Input
             type="email"
-            label="Email"
-            placeholder="you@university.edu"
+            label="Augustana Email"
+            placeholder="you@augustana.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             fullWidth
             disabled={loading}
           />
+          <p className={styles.emailNote}>
+            🔒 Only @augustana.edu email addresses are allowed
+          </p>
           <Button type="submit" fullWidth disabled={loading || !email}>
             {loading ? "Sending..." : "Send magic link"}
           </Button>
