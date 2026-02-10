@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   CATEGORIES,
   CONDITIONS,
+  VALIDATION_RULES,
   type Category,
   type Condition,
 } from "@/lib/marketplace/constants";
@@ -117,7 +118,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={styles.searchInput}
-          maxLength={100}
+          maxLength={VALIDATION_RULES.searchQuery.max}
         />
       </div>
 
@@ -163,7 +164,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             min="0"
-            max="10000"
+            max={VALIDATION_RULES.priceFilter.max.toString()}
             step="1"
           />
           <span className={styles.priceSeparator}>to</span>
@@ -173,7 +174,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             min="0"
-            max="10000"
+            max={VALIDATION_RULES.priceFilter.max.toString()}
             step="1"
           />
         </div>
