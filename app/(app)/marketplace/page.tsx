@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FiltersBar } from "@/components/marketplace/FiltersBar";
@@ -16,12 +16,9 @@ export default function MarketplacePage() {
   const [listings, setListings] = useState<ListingWithImages[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ListingFilters>({});
+  const initialized = useRef(false);
 
-  useEffect(() => {
-    loadListings({});
-  }, []);
-
-  const loadListings = async (newFilters: ListingFilters) => {
+  const loadListings = useCallback(async (newFilters: ListingFilters) => {
     setLoading(true);
     setFilters(newFilters);
 
@@ -32,7 +29,14 @@ export default function MarketplacePage() {
       setListings([]);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      loadListings({});
+    }
+  }, [loadListings]);
 
   const resultsText = loading
     ? "Loading..."
