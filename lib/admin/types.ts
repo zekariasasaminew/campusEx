@@ -59,3 +59,27 @@ export interface UpdateListingInput {
   location?: string | null;
 }
 
+export interface AdminListingWithDetails {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  condition: string | null;
+  price_cents: number | null;
+  is_free: boolean;
+  location_text: string | null;
+  status: string;
+  visibility_status: string;
+  hidden_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  seller_email: string;
+  seller_name: string | null;
+  images: Array<{
+    id: string;
+    image_path: string;
+    sort_order: number;
+  }>;
+}
+
+

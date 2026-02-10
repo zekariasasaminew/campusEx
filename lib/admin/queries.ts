@@ -4,7 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type { ListingReportWithDetails } from "./types";
+import type { ListingReportWithDetails, AdminListingWithDetails } from "./types";
 
 export async function checkIsAdmin(userId: string): Promise<boolean> {
   const supabase = await createClient();
@@ -120,3 +120,61 @@ export async function getReportById(
       .email as string,
   };
 }
+
+export async function getAllListings(): Promise<AdminListingWithDetails[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("marketplace_listings")
+    .select(
+      `
+      id,
+      title,
+      description,
+      category,
+      condition,
+      price_cents,
+      is_free,
+      location_text,
+      status,
+      visibility_status,
+      hidden_reason,
+      created_at,
+      updated_at,
+      users!marketplace_listings_seller_id_fkey(email, full_name),
+      marketplace_listing_images(id, image_path, sort_order)
+    `,
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map((listing) => ({
+    id: listing.id,
+    title: listing.title,
+    description: listing.description,
+    category: listing.category,
+    condition: listing.condition,
+    price_cents: listing.price_cents,
+    is_free: listing.is_free,
+    location_text: listing.location_text,
+    status: listing.status,
+    visibility_status: listing.visibility_status,
+    hidden_reason: listing.hidden_reason,
+    created_at: listing.created_at,
+    updated_at: listing.updated_at,
+    seller_email: (listing.users as unknown as Record<string, unknown>)
+      .email as string,
+    seller_name:
+      ((listing.users as unknown as Record<string, unknown>)
+        .full_name as string) || null,
+    images: (
+      (listing.marketplace_listing_images as unknown as Array<{
+        id: string;
+        image_path: string;
+        sort_order: number;
+      }>) || []
+    ).sort((a, b) => a.sort_order - b.sort_order),
+  }));
+}
+

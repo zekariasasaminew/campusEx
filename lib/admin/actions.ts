@@ -6,7 +6,12 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { checkIsAdmin, getReports, getReportById } from "./queries";
+import {
+  checkIsAdmin,
+  getReports,
+  getReportById,
+  getAllListings,
+} from "./queries";
 import {
   updateReportStatus as updateReportStatusMutation,
   hideListing as hideListingMutation,
@@ -28,6 +33,7 @@ import type {
   UnhideListingInput,
   DeleteListingInput,
   UpdateListingInput,
+  AdminListingWithDetails,
 } from "./types";
 
 type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -173,4 +179,21 @@ export async function adminUpdateListing(
     };
   }
 }
+
+export async function getAdminListings(): Promise<
+  Result<AdminListingWithDetails[]>
+> {
+  try {
+    await requireAdmin();
+    const listings = await getAllListings();
+    return { success: true, data: listings };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to load listings",
+    };
+  }
+}
+
 
