@@ -24,18 +24,21 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    // Validate email domain after authentication
-    if (data?.user?.email && !data.user.email.endsWith("@augustana.edu")) {
-      // Sign out the user immediately
-      await supabase.auth.signOut();
-      // Redirect to sign-in with error
-      return NextResponse.redirect(
-        `${origin}/sign-in?error=unauthorized_domain`,
-      );
-    }
-
     if (error) {
       return NextResponse.redirect(`${origin}/sign-in?error=auth_failed`);
+    }
+
+    // Validate email domain after authentication
+    if (data?.user?.email) {
+      const normalizedEmail = data.user.email.trim().toLowerCase();
+      if (!normalizedEmail.endsWith("@augustana.edu")) {
+        // Sign out the user immediately
+        await supabase.auth.signOut();
+        // Redirect to sign-in with error
+        return NextResponse.redirect(
+          `${origin}/sign-in?error=unauthorized_domain`,
+        );
+      }
     }
   }
 
