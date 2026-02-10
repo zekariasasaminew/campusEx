@@ -18,22 +18,18 @@ import type {
 import styles from "./page.module.css";
 
 interface ConversationPageProps {
-  params: Promise<{ conversationId: string }>;
+  params: { conversationId: string };
 }
 
 export default function ConversationPage({ params }: ConversationPageProps) {
   const router = useRouter();
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const conversationId = params.conversationId;
   const [conversation, setConversation] =
     useState<ConversationWithDetails | null>(null);
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    params.then((p) => setConversationId(p.conversationId));
-  }, [params]);
 
   const loadConversation = useCallback(async () => {
     if (!conversationId) return;

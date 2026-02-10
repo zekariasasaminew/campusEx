@@ -17,22 +17,18 @@ import type { ListingReportWithDetails } from "@/lib/admin/types";
 import styles from "./page.module.css";
 
 interface ReportDetailPageProps {
-  params: Promise<{ reportId: string }>;
+  params: { reportId: string };
 }
 
 export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   const router = useRouter();
-  const [reportId, setReportId] = useState<string | null>(null);
+  const reportId = params.reportId;
   const [report, setReport] = useState<ListingReportWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [adminNotes, setAdminNotes] = useState("");
   const [hideReason, setHideReason] = useState("");
   const [showHideDialog, setShowHideDialog] = useState(false);
   const [showUnhideDialog, setShowUnhideDialog] = useState(false);
-
-  useEffect(() => {
-    params.then((p) => setReportId(p.reportId));
-  }, [params]);
 
   const loadReport = useCallback(async () => {
     if (!reportId) return;
