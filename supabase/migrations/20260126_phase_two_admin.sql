@@ -82,6 +82,33 @@ ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ;
 -- Index for filtering visible listings
 CREATE INDEX IF NOT EXISTS idx_listings_visibility ON public.marketplace_listings(visibility_status, status);
 
+-- Update SELECT policies to exclude hidden listings
+DROP POLICY IF EXISTS "Authenticated users can view active and sold listings" ON public.marketplace_listings;
+DROP POLICY IF EXISTS "Users can view their own listings" ON public.marketplace_listings;
+
+-- Authenticated users can view non-hidden active/sold listings
+CREATE POLICY "Authenticated users can view active and sold listings"
+ON public.marketplace_listings FOR SELECT
+TO authenticated
+USING (
+  status IN ('active', 'sold')
+  AND visibility_status = 'visible'
+);
+
+-- Users can view their own listings regardless of status (owners see hidden too)
+-- Admins can view all listings
+CREATE POLICY "Users can view their own listings"
+ON public.marketplace_listings FOR SELECT
+TO authenticated
+USING (
+  auth.uid() = seller_id
+  OR EXISTS (
+    SELECT 1 FROM public.users
+    WHERE users.id = auth.uid()
+    AND users.role = 'admin'
+  )
+);
+
 -- =====================================================
 -- Extend listing_reports table
 -- =====================================================

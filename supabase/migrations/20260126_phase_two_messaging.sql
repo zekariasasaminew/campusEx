@@ -106,7 +106,7 @@ USING (
 )
 WITH CHECK (
   auth.uid() = sender_id
-  AND (edited_at = now() OR deleted_at = now())
+  AND (edited_at IS NOT NULL OR deleted_at IS NOT NULL)
 );
 
 -- =====================================================
