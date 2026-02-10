@@ -40,8 +40,9 @@ function SignInForm() {
     setLoading(true);
 
     try {
-      // Validate Augustana email domain
-      if (!email.endsWith("@augustana.edu")) {
+      // Validate Augustana email domain with normalization
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail.endsWith("@augustana.edu")) {
         throw new Error(
           "Only Augustana College email addresses (@augustana.edu) are allowed",
         );
@@ -49,7 +50,7 @@ function SignInForm() {
 
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOtp({
-        email,
+        email: normalizedEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
