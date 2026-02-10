@@ -1,10 +1,10 @@
 .sidebar {
   width: 16rem;
-  background: var(--color-background);
+  background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar.collapsed {
@@ -12,7 +12,7 @@
 }
 
 .header {
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -24,17 +24,17 @@
   border: none;
   color: var(--color-muted-foreground);
   cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .collapseButton:hover {
-  background: var(--color-muted);
-  color: var(--color-foreground);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
 }
 
 .nav {
@@ -51,9 +51,10 @@
   gap: var(--spacing-md);
   padding: var(--spacing-md) var(--spacing-lg);
   color: var(--color-muted-foreground);
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 3px solid transparent;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .collapsed .navItem {
@@ -62,13 +63,13 @@
 }
 
 .navItem:hover {
-  background: var(--color-muted);
-  color: var(--color-foreground);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
 }
 
 .navItem.active {
-  background: var(--color-muted);
-  color: var(--color-foreground);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
   border-left-color: var(--color-primary);
 }
 
