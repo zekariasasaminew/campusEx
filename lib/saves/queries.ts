@@ -22,9 +22,9 @@ export async function getSavedListings(
         title,
         price_cents,
         is_free,
-        status
-      ),
-      marketplace_listing_images(image_path)
+        status,
+        visibility_status
+      )
     `,
     )
     .eq("user_id", userId)
@@ -33,21 +33,44 @@ export async function getSavedListings(
 
   if (error) throw error;
 
+  // Get images separately to avoid query failures
+  const listingIds = data?.map((save) => save.listing_id) || [];
+  let images: Record<string, string> = {};
+
+  if (listingIds.length > 0) {
+    const { data: imageData } = await supabase
+      .from("marketplace_listing_images")
+      .select("listing_id, image_path")
+      .in("listing_id", listingIds)
+      .order("position", { ascending: true });
+
+    if (imageData) {
+      // Get first image for each listing
+      imageData.forEach((img) => {
+        if (!images[img.listing_id]) {
+          images[img.listing_id] = img.image_path;
+        }
+      });
+    }
+  }
+
   return (data || []).map((save) => ({
     id: save.id,
     listing_id: save.listing_id,
     created_at: save.created_at,
-    listing_title: (save.marketplace_listings as unknown as Record<string, unknown>)
-      .title as string,
-    listing_price_cents: (save.marketplace_listings as unknown as Record<string, unknown>)
-      .price_cents as number,
-    listing_is_free: (save.marketplace_listings as unknown as Record<string, unknown>)
-      .is_free as boolean,
-    listing_status: (save.marketplace_listings as unknown as Record<string, unknown>)
-      .status as string,
-    listing_image_url:
-      ((save.marketplace_listing_images as unknown as Array<Record<string, unknown>>)?.[0]
-        ?.image_path as string | null) || null,
+    listing_title: (
+      save.marketplace_listings as unknown as Record<string, unknown>
+    ).title as string,
+    listing_price_cents: (
+      save.marketplace_listings as unknown as Record<string, unknown>
+    ).price_cents as number,
+    listing_is_free: (
+      save.marketplace_listings as unknown as Record<string, unknown>
+    ).is_free as boolean,
+    listing_status: (
+      save.marketplace_listings as unknown as Record<string, unknown>
+    ).status as string,
+    listing_image_url: images[save.listing_id] || null,
   }));
 }
 
