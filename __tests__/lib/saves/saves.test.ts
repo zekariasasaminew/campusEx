@@ -70,6 +70,7 @@ describe("Saves Queries", () => {
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
       maybeSingle: vi.fn(),
     };
   }
@@ -98,7 +99,17 @@ describe("Saves Queries", () => {
         },
       ];
 
-      mockSupabase.order.mockResolvedValue({ data: mockData, error: null });
+      const mockImageData = [
+        { listing_id: "listing-1", image_path: "/images/test.jpg" },
+      ];
+
+      // Mock first query (saves)
+      mockSupabase.order.mockResolvedValueOnce({ data: mockData, error: null });
+      // Mock second query (images)
+      mockSupabase.order.mockResolvedValueOnce({
+        data: mockImageData,
+        error: null,
+      });
 
       const result = await getSavedListings("user-123");
 
@@ -140,7 +151,10 @@ describe("Saves Queries", () => {
         },
       ];
 
-      mockSupabase.order.mockResolvedValue({ data: mockData, error: null });
+      // Mock first query (saves)
+      mockSupabase.order.mockResolvedValueOnce({ data: mockData, error: null });
+      // Mock second query (images) returning no images
+      mockSupabase.order.mockResolvedValueOnce({ data: [], error: null });
 
       const result = await getSavedListings("user-123");
 
