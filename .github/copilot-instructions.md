@@ -1,4 +1,42 @@
-# GitHub Copilot Instructions (Optimized for AI)
+# GitHub Copilot Instructions
+
+## Architecture Overview
+
+**Campus Ex** is a Next.js 16 + Supabase marketplace app using TypeScript, React 19, and CSS Modules.
+
+### Data Layer Pattern (Critical)
+
+Every feature domain (`lib/marketplace`, `lib/messaging`, `lib/notifications`, `lib/admin`, `lib/saves`) follows this structure:
+
+- **`actions.ts`** - Server actions with `"use server"` directive. Handle auth, call queries/mutations. Return `Result<T>` type.
+- **`queries.ts`** - Pure read operations. Accept `SupabaseClient`, return data. No auth logic here.
+- **`mutations.ts`** - Pure write operations. Accept `SupabaseClient` and `userId`. Call validators first.
+- **`types.ts`** - TypeScript interfaces/types for the domain.
+- **`validators.ts`** - Zod schemas for input validation.
+- **`storage.ts`** - (if needed) File upload/deletion operations.
+
+**Example flow**: Component → `actions.ts` (gets user, creates client) → `mutations.ts` (validates, writes) → database
+
+### Supabase Patterns
+
+- **Browser**: Import from `@/lib/supabase/client` (has `"use client"`)
+- **Server**: Use `getSupabaseWithAuth()` helper in actions.ts (handles cookies/auth)
+- **Shared config**: `@/lib/supabase/config` centralizes URL/key
+- **Middleware**: Auth session refresh in `middleware.ts` using `@/lib/supabase/middleware`
+
+### Next.js App Router
+
+- **Route groups**: `(app)` = protected pages, `(auth)` = public auth pages
+- **Styling**: CSS Modules (`.module.css`) co-located with components
+- **Imports**: Use `@/` alias (maps to project root)
+- **Images**: Supabase storage URLs configured in `next.config.ts`
+
+### Testing Setup
+
+- **Framework**: Vitest with happy-dom (not jsdom)
+- **Location**: `__tests__/` mirrors source structure (`__tests__/lib/marketplace/` for `lib/marketplace/`)
+- **Run**: `npm test` (one-time), `npm run test:ui` (watch mode), `npm run test:coverage`
+- **Focus**: Test user-facing behavior, not implementation details
 
 ## CRITICAL: Git Workflow - MANDATORY
 
@@ -138,10 +176,19 @@ useEffect(() => {
 
 ## Testing
 
+- Framework: Vitest with happy-dom (not jsdom)
+- Tests in `__tests__/` mirror source structure
 - Test user-facing behavior, not implementation details
-- Tests in `__tests__/` mirroring source structure
 - Focus on critical paths and core business logic
 - No flaky tests (avoid timing assumptions)
+- Run: `npm test`, `npm run test:ui`, `npm run test:coverage`
+
+## Build Workflow
+
+- **`npm run build`** - Runs lint automatically, then builds
+- Fix all lint errors before builds will succeed
+- Dev server: `npm run dev` (port 3000)
+- Production: `npm run start` (requires build first)
 
 ## Dependencies
 
