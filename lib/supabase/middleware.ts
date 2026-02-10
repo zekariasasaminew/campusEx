@@ -27,12 +27,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/sign-in");
-  const isProtectedRoute =
-    request.nextUrl.pathname.startsWith("/marketplace") ||
-    request.nextUrl.pathname.startsWith("/profile");
+  // Auth routes that don't require authentication
+  const isAuthRoute =
+    request.nextUrl.pathname.startsWith("/sign-in") ||
+    request.nextUrl.pathname.startsWith("/auth/callback");
 
-  if (!user && isProtectedRoute) {
+  // If not authenticated and trying to access any route except auth routes
+  if (!user && !isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     const redirectResponse = NextResponse.redirect(url);
@@ -45,7 +46,8 @@ export async function updateSession(request: NextRequest) {
     return redirectResponse;
   }
 
-  if (user && isAuthRoute) {
+  // If authenticated and trying to access sign-in, redirect to marketplace
+  if (user && request.nextUrl.pathname.startsWith("/sign-in")) {
     const url = request.nextUrl.clone();
     url.pathname = "/marketplace";
     const redirectResponse = NextResponse.redirect(url);
