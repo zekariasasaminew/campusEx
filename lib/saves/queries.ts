@@ -35,7 +35,7 @@ export async function getSavedListings(
 
   // Get images separately to avoid query failures
   const listingIds = data?.map((save) => save.listing_id) || [];
-  let images: Record<string, string> = {};
+  const images: Record<string, string> = {};
 
   if (listingIds.length > 0) {
     const { data: imageData } = await supabase
