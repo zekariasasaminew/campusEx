@@ -51,10 +51,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--color-border);
   background-color: var(--color-surface-2);
+  box-shadow: var(--shadow-card);
 }
 
 .image {
@@ -65,14 +66,15 @@
   position: absolute;
   top: var(--spacing-md);
   right: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-text);
-  color: var(--color-surface);
-  font-weight: 600;
-  font-size: 0.75rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-accent-warm);
+  color: var(--color-accent-warm-foreground);
+  font-weight: 700;
+  font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
 }
 
 .thumbnails {
@@ -85,22 +87,23 @@
   position: relative;
   aspect-ratio: 1;
   min-height: 80px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid var(--color-border);
   background-color: var(--color-surface-2);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
 }
 
 .thumbnail:hover {
   border-color: var(--color-primary);
+  transform: scale(1.05);
 }
 
 .thumbnail.active {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
 .thumbnailImage {
@@ -124,16 +127,18 @@
 
 .title {
   margin: 0;
-  font-size: 1.875rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--color-text);
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
 }
 
 .price {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-primary);
+  letter-spacing: -0.02em;
 }
 
 .meta {
@@ -145,18 +150,19 @@
 .chip {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-md);
-  background-color: var(--color-surface-2);
-  color: var(--color-text-muted);
-  border-radius: var(--radius-sm);
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  border-radius: var(--radius);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .section {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
 }
 
 .sectionTitle {
@@ -170,7 +176,7 @@
   margin: 0;
   color: var(--color-text);
   white-space: pre-wrap;
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
 }
 
 .actions {

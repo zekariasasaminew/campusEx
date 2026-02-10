@@ -10,8 +10,9 @@
 .spinner {
   border: 3px solid var(--color-border);
   border-top-color: var(--color-primary);
+  border-right-color: var(--color-primary);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .sm {

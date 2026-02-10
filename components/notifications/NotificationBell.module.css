@@ -8,8 +8,8 @@
   padding: var(--spacing-sm);
   cursor: pointer;
   color: var(--color-text);
-  transition: all 0.15s ease;
-  border-radius: var(--radius-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -17,8 +17,9 @@
 }
 
 .bellButton:hover {
-  background: var(--color-surface-2);
+  background: var(--color-primary-subtle);
   color: var(--color-primary);
+  transform: scale(1.05);
 }
 
 .bellButton:focus-visible {
@@ -35,15 +36,26 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  background: var(--color-danger);
-  color: white;
+  background: var(--color-accent-warm);
+  color: var(--color-accent-warm-foreground);
   font-size: 0.625rem;
   font-weight: 700;
   padding: 2px 5px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   min-width: 16px;
   text-align: center;
   line-height: 1;
+  box-shadow: var(--shadow-sm);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 .dropdown {
@@ -54,10 +66,22 @@
   max-width: 90vw;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   z-index: 1000;
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header {
@@ -101,15 +125,19 @@
   text-decoration: none;
   color: inherit;
   display: block;
-  transition: background 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notification:hover {
-  background: var(--color-surface-2);
+  background: var(--color-primary-subtle);
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(var(--spacing-md) - 3px);
 }
 
 .notification.unread {
   background: var(--color-primary-subtle);
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(var(--spacing-md) - 3px);
 }
 
 .notificationTitle {

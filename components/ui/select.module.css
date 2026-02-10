@@ -17,19 +17,24 @@
 .select {
   height: 2.5rem;
   padding: 0 var(--spacing-md);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-text);
   font-size: 0.875rem;
+  font-family: var(--font-sans);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select:hover:not(:disabled) {
+  border-color: var(--color-text-secondary);
 }
 
 .select:focus {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 0;
+  outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
 .select:disabled {
@@ -40,6 +45,10 @@
 
 .select.error {
   border-color: var(--color-danger);
+}
+
+.select.error:focus {
+  box-shadow: 0 0 0 3px var(--color-danger-bg);
 }
 
 .errorText {

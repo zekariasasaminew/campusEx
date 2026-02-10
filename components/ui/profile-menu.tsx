@@ -62,14 +62,24 @@ export function ProfileMenu() {
           </Link>
 
           {isAdmin && (
-            <Link
-              href="/admin/reports"
-              className={styles.menuItem}
-              onClick={() => setIsOpen(false)}
-            >
-              <Shield size={18} />
-              <span>Admin Reports</span>
-            </Link>
+            <>
+              <Link
+                href="/admin/reports"
+                className={styles.menuItem}
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield size={18} />
+                <span>Admin Reports</span>
+              </Link>
+              <Link
+                href="/admin/listings"
+                className={styles.menuItem}
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield size={18} />
+                <span>Admin Listings</span>
+              </Link>
+            </>
           )}
 
           <div className={styles.divider} />
