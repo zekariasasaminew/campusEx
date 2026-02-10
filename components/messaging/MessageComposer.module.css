@@ -1,12 +1,12 @@
 .composer {
   border-top: 1px solid var(--color-border);
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   background: var(--color-surface);
 }
 
 .form {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   align-items: flex-end;
 }
 
