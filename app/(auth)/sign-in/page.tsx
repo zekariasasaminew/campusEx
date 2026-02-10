@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Toast } from "@/components/ui/toast";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
 
-export default function SignInPage() {
+function SignInForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -108,5 +108,13 @@ export default function SignInPage() {
         onClose={() => setToast({ ...toast, isVisible: false })}
       />
     </>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className={styles.content}>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }
