@@ -80,12 +80,14 @@ export async function checkIfSaved(
 ): Promise<boolean> {
   const supabase = await createClient();
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("listing_saves")
     .select("id")
     .eq("listing_id", listingId)
     .eq("user_id", userId)
     .maybeSingle();
+
+  if (error) throw error;
 
   return !!data;
 }

@@ -108,10 +108,12 @@ export async function markConversationRead(
     user_id: userId,
   }));
 
-  await supabase.from("message_reads").upsert(reads, {
+  const { error } = await supabase.from("message_reads").upsert(reads, {
     onConflict: "message_id,user_id",
     ignoreDuplicates: true,
   });
+
+  if (error) throw error;
 }
 
 async function checkMessageRateLimit(
