@@ -9,7 +9,7 @@
 -- =====================================================
 
 ALTER TABLE public.users
-ADD COLUMN IF NOT EXISTS display_name TEXT NOT NULL DEFAULT '',
+ADD COLUMN IF NOT EXISTS display_name TEXT NOT NULL DEFAULT '' CHECK (char_length(display_name) <= 50 AND char_length(display_name) > 0),
 ADD COLUMN IF NOT EXISTS grad_year INTEGER,
 ADD COLUMN IF NOT EXISTS bio TEXT CHECK (char_length(bio) <= 280),
 ADD COLUMN IF NOT EXISTS preferred_meeting_spot TEXT CHECK (char_length(preferred_meeting_spot) <= 80),

@@ -162,7 +162,8 @@ BEGIN
   WHERE id = NEW.conversation_id;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 CREATE TRIGGER on_message_created
   AFTER INSERT ON public.messages

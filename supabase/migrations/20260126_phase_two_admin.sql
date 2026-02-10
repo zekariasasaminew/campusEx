@@ -37,16 +37,16 @@ BEGIN
   END IF;
   
   -- Prevent non-admins from changing email_verified if column exists
-  IF (SELECT column_name FROM information_schema.columns 
-      WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'email_verified') IS NOT NULL THEN
+  IF EXISTS (SELECT 1 FROM information_schema.columns 
+      WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'email_verified') THEN
     IF OLD.email_verified IS DISTINCT FROM NEW.email_verified THEN
       RAISE EXCEPTION 'Users cannot change email verification status';
     END IF;
   END IF;
   
   -- Prevent non-admins from changing campus_verified if column exists
-  IF (SELECT column_name FROM information_schema.columns 
-      WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'campus_verified') IS NOT NULL THEN
+  IF EXISTS (SELECT 1 FROM information_schema.columns 
+      WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'campus_verified') THEN
     IF OLD.campus_verified IS DISTINCT FROM NEW.campus_verified THEN
       RAISE EXCEPTION 'Users cannot change campus verification status';
     END IF;
@@ -54,7 +54,8 @@ BEGIN
   
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 -- Drop and recreate trigger
 DROP TRIGGER IF EXISTS check_role_escalation ON public.users;

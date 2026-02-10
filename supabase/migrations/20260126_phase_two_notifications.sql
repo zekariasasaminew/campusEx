@@ -80,7 +80,8 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_message_notification ON public.messages;
 CREATE TRIGGER on_message_notification
