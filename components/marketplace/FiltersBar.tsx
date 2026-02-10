@@ -109,6 +109,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={styles.searchInput}
+          maxLength={100}
         />
       </div>
 
@@ -153,7 +154,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             placeholder="Min"
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
-            min="0"
+            max="10000"
             step="1"
           />
           <span className={styles.priceSeparator}>to</span>
@@ -162,6 +163,8 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             placeholder="Max"
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
+            min="0"
+            max="1000nge={(e) => setPriceMax(e.target.value)}
             min="0"
             step="1"
           />

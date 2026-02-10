@@ -60,6 +60,8 @@ export const VALIDATION_RULES = {
   description: { min: 10, max: 2000 },
   location: { max: 100 },
   reportDetails: { max: 500 },
+  searchQuery: { max: 100 },
+  priceFilter: { min: 0, max: 10000 }, // Max $10,000 for campus marketplace
 } as const;
 
 // Prohibited items for the rules checkbox
