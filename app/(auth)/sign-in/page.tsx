@@ -95,7 +95,7 @@ function SignInForm() {
             disabled={loading}
           />
           <p className={styles.emailNote}>
-            🔒 Only @augustana.edu email addresses are allowed
+            Only @augustana.edu email addresses are allowed
           </p>
           <Button type="submit" fullWidth disabled={loading || !email}>
             {loading ? "Sending..." : "Send magic link"}
