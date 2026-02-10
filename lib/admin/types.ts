@@ -43,3 +43,19 @@ export interface HideListingInput {
 export interface UnhideListingInput {
   listing_id: string;
 }
+
+export interface DeleteListingInput {
+  listing_id: string;
+}
+
+export interface UpdateListingInput {
+  listing_id: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  condition?: string | null;
+  price_cents?: number | null;
+  is_free?: boolean;
+  location?: string | null;
+}
+
