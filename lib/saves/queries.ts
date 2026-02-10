@@ -42,7 +42,7 @@ export async function getSavedListings(
       .from("marketplace_listing_images")
       .select("listing_id, image_path")
       .in("listing_id", listingIds)
-      .order("position", { ascending: true });
+      .order("sort_order", { ascending: true });
 
     if (imageData) {
       // Get first image for each listing
