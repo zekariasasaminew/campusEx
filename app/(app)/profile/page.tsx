@@ -65,7 +65,13 @@ export default async function ProfilePage() {
           <p className={styles.label}>Account Status</p>
           <div className={styles.badges}>
             {profile?.email_verified && (
-              <span className={styles.badge}>Email Verified</span>
+              <span className={styles.badge}>✓ Email Verified</span>
+            )}
+            {profile?.campus_verified && (
+              <span className={styles.badge}>✓ Campus Verified</span>
+            )}
+            {!profile?.email_verified && !profile?.campus_verified && (
+              <span className={styles.unverified}>No verifications</span>
             )}
           </div>
         </div>
