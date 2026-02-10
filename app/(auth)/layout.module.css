@@ -4,14 +4,15 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
-  background: var(--color-muted);
+  background: linear-gradient(135deg, var(--color-primary-subtle) 0%, var(--color-bg) 100%);
 }
 
 .card {
   width: 100%;
-  max-width: 24rem;
-  padding: var(--spacing-xl);
-  background: var(--color-background);
+  max-width: 26rem;
+  padding: var(--spacing-3xl);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
 }
