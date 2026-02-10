@@ -58,9 +58,17 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     if (initialMount.current) return; // Skip on initial mount
 
     const timer = setTimeout(() => {
-      // Convert dollars to cents for database query
-      const minValue = priceMin ? parseInt(priceMin) * 100 : null;
-      const maxValue = priceMax ? parseInt(priceMax) * 100 : null;
+      // Convert dollars to cents for database query with validation
+      const parsedMin = priceMin === "" ? null : Number(priceMin);
+      const parsedMax = priceMax === "" ? null : Number(priceMax);
+      const minValue =
+        parsedMin !== null && Number.isFinite(parsedMin)
+          ? Math.round(parsedMin * 100)
+          : null;
+      const maxValue =
+        parsedMax !== null && Number.isFinite(parsedMax)
+          ? Math.round(parsedMax * 100)
+          : null;
 
       if (
         minValue !== filtersRef.current.priceMin ||
