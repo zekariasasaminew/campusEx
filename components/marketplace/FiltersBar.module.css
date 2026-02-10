@@ -71,15 +71,31 @@
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  .filters {
+    gap: var(--spacing-sm);
+  }
+
   .filters > select,
   .priceRange,
   .checkbox,
   .filters > button {
     flex: 1 1 100%;
-    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
   }
 
   .filters > button {
     margin-left: 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .priceRange {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 }
