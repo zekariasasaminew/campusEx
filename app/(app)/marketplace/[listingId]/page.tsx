@@ -16,6 +16,7 @@ import {
   submitDeleteListing,
   submitReport,
 } from "@/lib/marketplace/actions";
+import { PLACEHOLDER_IMAGE_PATH } from "@/lib/marketplace/constants";
 import { createOrGetConversationForListing } from "@/lib/messaging/actions";
 import type { ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
@@ -142,7 +143,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   }
 
   const currentImage =
-    listing.images[selectedImageIndex]?.image_url || "/placeholder.png";
+    listing.images[selectedImageIndex]?.image_url || PLACEHOLDER_IMAGE_PATH;
 
   return (
     <div className={styles.container}>
