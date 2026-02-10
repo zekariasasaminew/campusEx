@@ -321,7 +321,8 @@ export default function ListingDetailClient({
         onConfirm={handleDelete}
         title="Delete Listing"
         message="Are you sure you want to delete this listing? This action cannot be undone."
-        confirmText="Delete"
+        confirmLabel="Delete"
+        variant="destructive"
         isLoading={isDeleting}
       />
     </div>
