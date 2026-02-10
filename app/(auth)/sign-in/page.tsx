@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
@@ -8,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
 
 export default function SignInPage() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
@@ -16,11 +18,35 @@ export default function SignInPage() {
     isVisible: boolean;
   }>({ message: "", variant: "info", isVisible: false });
 
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "unauthorized_domain") {
+      setToast({
+        message: "Only @augustana.edu email addresses are allowed",
+        variant: "error",
+        isVisible: true,
+      });
+    } else if (error === "auth_failed") {
+      setToast({
+        message: "Authentication failed. Please try again.",
+        variant: "error",
+        isVisible: true,
+      });
+    }
+  }, [searchParams]);
+
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Validate Augustana email domain
+      if (!email.endsWith("@augustana.edu")) {
+        throw new Error(
+          "Only Augustana College email addresses (@augustana.edu) are allowed",
+        );
+      }
+
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOtp({
         email,
