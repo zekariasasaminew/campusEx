@@ -106,7 +106,7 @@ $$;
 -- =====================================================
 
 -- Temporarily disable the role escalation trigger to allow backfill
-ALTER TABLE public.users DISABLE TRIGGER IF EXISTS check_role_escalation;
+ALTER TABLE public.users DISABLE TRIGGER check_role_escalation;
 
 -- Sync email_verified status using JOIN pattern to avoid NULL issues
 UPDATE public.users AS u
@@ -115,7 +115,7 @@ FROM auth.users AS au
 WHERE au.id = u.id;
 
 -- Re-enable the trigger
-ALTER TABLE public.users ENABLE TRIGGER IF EXISTS check_role_escalation;
+ALTER TABLE public.users ENABLE TRIGGER check_role_escalation;
 
 COMMENT ON FUNCTION public.handle_new_user() IS 'SECURITY DEFINER function with search_path set to prevent hijacking';
 COMMENT ON FUNCTION public.handle_user_update() IS 'SECURITY DEFINER function with search_path set to prevent hijacking';
