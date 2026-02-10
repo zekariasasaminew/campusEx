@@ -84,10 +84,10 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     }
   };
 
-  const handleReport = async (details: string) => {
+  const handleReport = async (reason: string, details: string) => {
     if (!listing) return;
 
-    const result = await submitReport(listing.id, details);
+    const result = await submitReport(listing.id, reason, details);
     if (result.success) {
       setShowReportDialog(false);
       setToast({

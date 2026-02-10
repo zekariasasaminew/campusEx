@@ -81,6 +81,7 @@ export interface UpdateListingInput {
 
 export interface ReportListingInput {
   listing_id: string;
+  reason: string;
   details: string;
 }
 

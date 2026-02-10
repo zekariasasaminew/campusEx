@@ -40,6 +40,18 @@ export const STORAGE_PATH_TEMPLATE =
 
 export const PLACEHOLDER_IMAGE_PATH = "/placeholder.png";
 
+// Report reason options
+export const REPORT_REASONS = [
+  "Prohibited Item",
+  "Scam or Fraud",
+  "Inappropriate Content",
+  "Misleading Information",
+  "Duplicate Listing",
+  "Other",
+] as const;
+
+export type ReportReason = (typeof REPORT_REASONS)[number];
+
 // Validation constraints
 export const VALIDATION_RULES = {
   title: { min: 3, max: 100 },

@@ -186,12 +186,14 @@ export async function submitDeleteListing(
 
 export async function submitReport(
   listingId: string,
+  reason: string,
   details: string,
 ): Promise<Result<void>> {
   try {
     const { supabase, userId } = await getSupabaseWithAuth();
     await reportListingMutation(supabase, userId, {
       listing_id: listingId,
+      reason,
       details,
     });
     return { success: true, data: undefined };
