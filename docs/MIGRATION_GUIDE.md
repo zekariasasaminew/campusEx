@@ -164,7 +164,7 @@ ALTER TABLE users
 ALTER TABLE listings 
   DROP COLUMN IF EXISTS visibility_status;
 
-ALTER TABLE listing_reports
+ALTER TABLE marketplace_reports
   DROP COLUMN IF EXISTS status,
   DROP COLUMN IF EXISTS admin_notes,
   DROP COLUMN IF EXISTS reviewed_by,
