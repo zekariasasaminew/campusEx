@@ -39,7 +39,7 @@ Then verify Phase One tables exist:
 SELECT * FROM users LIMIT 1;
 SELECT * FROM marketplace_listings LIMIT 1;
 SELECT * FROM marketplace_listing_images LIMIT 1;
-SELECT * FROM listing_reports LIMIT 1;
+SELECT * FROM marketplace_reports LIMIT 1;
 ```
 
 ## Step 2: Apply Phase Two Migrations
@@ -120,7 +120,7 @@ As an admin user:
 SELECT * FROM admin_action_log;
 
 -- Should see all reports
-SELECT * FROM listing_reports;
+SELECT * FROM marketplace_reports;
 ```
 
 ### 4. Verify Triggers
@@ -129,7 +129,7 @@ Send a test message and check that a notification is auto-created:
 
 ```sql
 -- Check trigger exists
-SELECT * FROM pg_trigger WHERE tgname = 'notify_new_message';
+SELECT * FROM pg_trigger WHERE tgname = 'on_message_notification';
 
 -- After sending a message, verify notification created
 SELECT * FROM notifications WHERE type = 'new_message';

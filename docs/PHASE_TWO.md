@@ -119,10 +119,10 @@ Production-grade implementation of messaging, saves, notifications, user profile
 
 **Database Changes**:
 
-- `listings.visibility_status`: 'visible' or 'hidden'
-- `listing_reports.status`: 'open', 'reviewed', or 'action_taken'
-- `listing_reports.admin_notes`: Private admin notes
-- `listing_reports.reviewed_by`: Admin who reviewed
+- `marketplace_listings.visibility_status`: 'visible' or 'hidden'
+- `marketplace_reports.status`: 'open', 'reviewed', or 'action_taken'
+- `marketplace_reports.admin_notes`: Private admin notes
+- `marketplace_reports.reviewed_by`: Admin who reviewed
 - `users.role`: 'user' or 'admin'
 - `admin_action_log`: Audit trail for admin actions
 
