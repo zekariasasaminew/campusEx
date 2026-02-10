@@ -21,3 +21,18 @@ export const hideListingSchema = z.object({
 export const unhideListingSchema = z.object({
   listing_id: z.string().uuid("Invalid listing ID"),
 });
+
+export const deleteListingSchema = z.object({
+  listing_id: z.string().uuid("Invalid listing ID"),
+});
+
+export const updateListingSchema = z.object({
+  listing_id: z.string().uuid("Invalid listing ID"),
+  title: z.string().min(1).max(100).optional(),
+  description: z.string().min(1).max(2000).optional(),
+  category: z.string().optional(),
+  condition: z.string().nullable().optional(),
+  price_cents: z.number().int().min(0).nullable().optional(),
+  is_free: z.boolean().optional(),
+  location: z.string().nullable().optional(),
+});
