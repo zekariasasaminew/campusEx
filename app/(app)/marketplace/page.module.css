@@ -21,17 +21,18 @@
 
 .title {
   margin: 0;
-  font-size: 1.875rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--color-text);
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  margin: var(--spacing-xs) 0 0;
-  font-size: 1rem;
+  margin: var(--spacing-sm) 0 0;
+  font-size: 1.0625rem;
   color: var(--color-text-muted);
-  line-height: 1.5;
+  line-height: var(--line-height-relaxed);
 }
 
 .results {

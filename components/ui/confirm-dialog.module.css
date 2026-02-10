@@ -1,5 +1,5 @@
 .message {
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  line-height: var(--line-height-relaxed);
   color: var(--color-foreground);
 }

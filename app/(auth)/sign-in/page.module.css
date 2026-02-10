@@ -1,36 +1,40 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
   text-align: center;
   margin: 0;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
 }
 
 .description {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   color: var(--color-muted-foreground);
   text-align: center;
   margin: 0;
+  line-height: var(--line-height-relaxed);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
 }
 
 .emailNote {
   font-size: 0.8125rem;
   color: var(--color-muted-foreground);
   text-align: center;
-  margin: calc(var(--spacing-md) * -1) 0 0 0;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: var(--color-card);
+  margin: calc(var(--spacing-lg) * -1) 0 0 0;
+  padding: var(--spacing-md);
+  background: var(--color-primary-subtle);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
+  line-height: var(--line-height-relaxed);
 }

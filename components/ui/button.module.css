@@ -5,10 +5,11 @@
   gap: var(--spacing-sm);
   border-radius: var(--radius);
   font-weight: 500;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
+  font-family: var(--font-sans);
 }
 
 .button:disabled {
@@ -42,29 +43,47 @@
 .primary {
   background: var(--color-primary);
   color: var(--color-primary-foreground);
+  box-shadow: var(--shadow-sm);
 }
 
 .primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .secondary {
   background: var(--color-surface);
   color: var(--color-text);
   border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .secondary:hover:not(:disabled) {
   background: var(--color-surface-2);
+  border-color: var(--color-text-secondary);
 }
 
 .destructive {
   background: var(--color-danger);
   color: var(--color-destructive-foreground);
+  box-shadow: var(--shadow-sm);
 }
 
 .destructive:hover:not(:disabled) {
   background: var(--color-danger-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.destructive:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .ghost {
@@ -74,6 +93,24 @@
 
 .ghost:hover:not(:disabled) {
   background: var(--color-surface-2);
+}
+
+/* New variant for warm accent CTAs */
+.accent {
+  background: var(--color-accent-warm);
+  color: var(--color-accent-warm-foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.accent:hover:not(:disabled) {
+  background: var(--color-accent-warm-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.accent:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .fullWidth {

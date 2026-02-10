@@ -1,11 +1,12 @@
 .container {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .searchRow {
@@ -57,6 +58,7 @@
   flex-shrink: 0;
   cursor: pointer;
   accent-color: var(--color-primary);
+  border-radius: var(--radius-sm);
 }
 
 .checkbox span {
