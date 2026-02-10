@@ -76,7 +76,10 @@ export async function getConversation(conversationId: string): Promise<
       return { success: false, error: "Conversation not found" };
     }
     const messages = await getConversationMessages(conversationId, user.id);
-    return { success: true, data: { conversation, messages, currentUserId: user.id } };
+    return {
+      success: true,
+      data: { conversation, messages, currentUserId: user.id },
+    };
   } catch (error) {
     console.error("getConversation action error:", error);
     return {
