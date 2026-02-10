@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { use, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -18,12 +18,12 @@ import type {
 import styles from "./page.module.css";
 
 interface ConversationPageProps {
-  params: { conversationId: string };
+  params: Promise<{ conversationId: string }>;
 }
 
 export default function ConversationPage({ params }: ConversationPageProps) {
   const router = useRouter();
-  const conversationId = params.conversationId;
+  const { conversationId } = use(params);
   const [conversation, setConversation] =
     useState<ConversationWithDetails | null>(null);
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
