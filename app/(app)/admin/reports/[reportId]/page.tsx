@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -17,12 +17,12 @@ import type { ListingReportWithDetails } from "@/lib/admin/types";
 import styles from "./page.module.css";
 
 interface ReportDetailPageProps {
-  params: { reportId: string };
+  params: Promise<{ reportId: string }>;
 }
 
 export default function ReportDetailPage({ params }: ReportDetailPageProps) {
   const router = useRouter();
-  const reportId = params.reportId;
+  const { reportId } = use(params);
   const [report, setReport] = useState<ListingReportWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [adminNotes, setAdminNotes] = useState("");
