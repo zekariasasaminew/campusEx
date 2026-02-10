@@ -176,12 +176,13 @@ function NotificationItem({ notification, onClick }: NotificationItemProps) {
   }
 
   return (
-    <div
+    <button
+      type="button"
       className={`${styles.notification} ${isUnread ? styles.unread : ""}`}
       onClick={onClick}
     >
       {content}
-    </div>
+    </button>
   );
 }
 
