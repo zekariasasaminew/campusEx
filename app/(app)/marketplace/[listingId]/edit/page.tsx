@@ -23,6 +23,7 @@ export default function EditListingPage({ params }: EditListingPageProps) {
   const router = useRouter();
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [listingId, setListingId] = useState<string>("");
 
   const loadListing = useCallback(async () => {
@@ -49,27 +50,34 @@ export default function EditListingPage({ params }: EditListingPageProps) {
   }, [loadListing]);
 
   const handleSubmit = async (data: CreateListingInput) => {
-    // Convert CreateListingInput to UpdateListingInput
-    // When editing, new images from form go to images_to_add
-    const updateData: UpdateListingInput = {
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      condition: data.condition,
-      price_cents: data.price_cents,
-      is_free: data.is_free,
-      location: data.location,
-      images_to_add: data.images.length > 0 ? data.images : undefined,
-      // Note: images_to_remove would be handled by a dedicated image management UI
-      // For now, this form only adds new images
-    };
+    if (isSubmitting) return; // Prevent double submission
 
-    const result = await submitListingUpdate(listingId, updateData);
+    setIsSubmitting(true);
+    try {
+      // Convert CreateListingInput to UpdateListingInput
+      // When editing, new images from form go to images_to_add
+      const updateData: UpdateListingInput = {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        condition: data.condition,
+        price_cents: data.price_cents,
+        is_free: data.is_free,
+        location: data.location,
+        images_to_add: data.images.length > 0 ? data.images : undefined,
+        // Note: images_to_remove would be handled by a dedicated image management UI
+        // For now, this form only adds new images
+      };
 
-    if (result.success) {
-      router.push(`/marketplace/${listingId}`);
-    } else {
-      throw new Error(result.error);
+      const result = await submitListingUpdate(listingId, updateData);
+
+      if (result.success) {
+        router.push(`/marketplace/${listingId}`);
+      } else {
+        throw new Error(result.error);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,6 +110,7 @@ export default function EditListingPage({ params }: EditListingPageProps) {
         initialData={listing}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
+        isSubmitting={isSubmitting}
       />
     </div>
   );

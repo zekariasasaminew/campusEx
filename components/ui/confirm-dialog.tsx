@@ -1,5 +1,6 @@
 "use client";
 
+import { type ReactNode } from "react";
 import { Modal } from "./modal";
 import { Button } from "./button";
 import styles from "./confirm-dialog.module.css";
@@ -13,6 +14,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: "primary" | "destructive";
+  children?: ReactNode;
 }
 
 export function ConfirmDialog({
@@ -24,6 +26,7 @@ export function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "primary",
+  children,
 }: ConfirmDialogProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -47,6 +50,7 @@ export function ConfirmDialog({
       }
     >
       <p className={styles.message}>{message}</p>
+      {children}
     </Modal>
   );
 }

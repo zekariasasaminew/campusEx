@@ -21,6 +21,18 @@
   line-height: 1.5;
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
 .charCount {
   text-align: right;
   font-size: 0.75rem;

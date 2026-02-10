@@ -209,6 +209,7 @@ export async function reportListing(
   const { error } = await supabase.from("marketplace_reports").insert({
     listing_id: input.listing_id,
     reporter_id: userId,
+    reason: input.reason.trim(),
     details: input.details.trim(),
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import { submitNewListing } from "@/lib/marketplace/actions";
@@ -8,14 +9,22 @@ import styles from "./page.module.css";
 
 export default function NewListingPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: CreateListingInput) => {
-    const result = await submitNewListing(data);
+    if (isSubmitting) return; // Prevent double submission
 
-    if (result.success) {
-      router.push(`/marketplace/${result.data}`);
-    } else {
-      throw new Error(result.error);
+    setIsSubmitting(true);
+    try {
+      const result = await submitNewListing(data);
+
+      if (result.success) {
+        router.push(`/marketplace/${result.data}`);
+      } else {
+        throw new Error(result.error);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -32,7 +41,11 @@ export default function NewListingPage() {
         </p>
       </div>
 
-      <ListingForm onSubmit={handleSubmit} onCancel={handleCancel} />
+      <ListingForm
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

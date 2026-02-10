@@ -240,6 +240,12 @@ export function validateReport(
     errors.listing_id = "Listing ID is required";
   }
 
+  if (!input.reason || typeof input.reason !== "string") {
+    errors.reason = "Report reason is required";
+  } else if (input.reason.trim().length === 0) {
+    errors.reason = "Please select a reason";
+  }
+
   if (!input.details || typeof input.details !== "string") {
     errors.details = "Report details are required";
   } else if (input.details.trim().length === 0) {

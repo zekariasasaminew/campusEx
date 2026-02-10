@@ -274,6 +274,7 @@ describe("validateReport", () => {
   it("should validate a complete report", () => {
     const result = validateReport({
       listing_id: "123",
+      reason: "inappropriate",
       details: "This listing violates marketplace rules",
     });
     expect(result.isValid).toBe(true);

@@ -35,33 +35,6 @@
   gap: var(--spacing-sm);
 }
 
-.profileButton,
-.signOutButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--color-text);
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.profileButton:hover,
-.signOutButton:hover {
-  background: var(--color-surface-2);
-  color: var(--color-primary);
-}
-
-.profileButton:focus-visible,
-.signOutButton:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 @media (max-width: 640px) {
   .container {
     padding: 0 var(--spacing-md);

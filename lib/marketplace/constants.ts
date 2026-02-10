@@ -38,7 +38,21 @@ export const IMAGE_CONSTRAINTS = {
 export const STORAGE_PATH_TEMPLATE =
   "marketplace/{userId}/{listingId}/{fileName}";
 
-export const PLACEHOLDER_IMAGE_PATH = "/placeholder.png";
+// Placeholder image - 1x1 gray pixel data URL for Next.js Image component
+export const PLACEHOLDER_IMAGE_PATH =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e5e7eb' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+// Report reason options
+export const REPORT_REASONS = [
+  "Prohibited Item",
+  "Scam or Fraud",
+  "Inappropriate Content",
+  "Misleading Information",
+  "Duplicate Listing",
+  "Other",
+] as const;
+
+export type ReportReason = (typeof REPORT_REASONS)[number];
 
 // Validation constraints
 export const VALIDATION_RULES = {

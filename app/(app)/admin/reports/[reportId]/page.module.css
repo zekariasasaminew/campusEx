@@ -1,0 +1,137 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.loading,
+.error {
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: var(--spacing-xs) 0;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-lg);
+  color: var(--color-text);
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md);
+  color: var(--color-text);
+}
+
+.field {
+  margin-bottom: var(--spacing-md);
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.listingLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.listingLink:hover {
+  text-decoration: underline;
+}
+
+.hiddenBadge {
+  display: inline-block;
+  margin-left: var(--spacing-sm);
+  padding: 2px 8px;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.reportDetails {
+  padding: var(--spacing-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusBadge.open {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.statusBadge.reviewed {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.statusBadge.action_taken {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-lg);
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   CATEGORIES,
   CONDITIONS,
@@ -22,27 +22,51 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
   const [search, setSearch] = useState(filters.search || "");
   const [priceMin, setPriceMin] = useState(filters.priceMin?.toString() || "");
   const [priceMax, setPriceMax] = useState(filters.priceMax?.toString() || "");
+  const onFiltersChangeRef = useRef(onFiltersChange);
+  const filtersRef = useRef(filters);
+  const initialMount = useRef(true);
+
+  // Keep refs up to date
+  useEffect(() => {
+    onFiltersChangeRef.current = onFiltersChange;
+    filtersRef.current = filters;
+  });
+
+  // Mark as mounted after first render
+  useEffect(() => {
+    initialMount.current = false;
+  }, []);
 
   // Debounce search input
   useEffect(() => {
+    if (initialMount.current) return; // Skip on initial mount
+
     const timer = setTimeout(() => {
-      if (search !== filters.search) {
-        onFiltersChange({ ...filters, search: search || "" });
+      if (search !== filtersRef.current.search) {
+        onFiltersChangeRef.current({
+          ...filtersRef.current,
+          search: search || "",
+        });
       }
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [search, filters, onFiltersChange]);
+  }, [search]);
 
   // Debounce price inputs
   useEffect(() => {
+    if (initialMount.current) return; // Skip on initial mount
+
     const timer = setTimeout(() => {
       const minValue = priceMin ? parseInt(priceMin) : null;
       const maxValue = priceMax ? parseInt(priceMax) : null;
 
-      if (minValue !== filters.priceMin || maxValue !== filters.priceMax) {
-        onFiltersChange({
-          ...filters,
+      if (
+        minValue !== filtersRef.current.priceMin ||
+        maxValue !== filtersRef.current.priceMax
+      ) {
+        onFiltersChangeRef.current({
+          ...filtersRef.current,
           priceMin: minValue,
           priceMax: maxValue,
         });
@@ -50,7 +74,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [priceMin, priceMax, filters, onFiltersChange]);
+  }, [priceMin, priceMax]);
 
   const hasActiveFilters =
     filters.category ||
@@ -64,7 +88,7 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     setSearch("");
     setPriceMin("");
     setPriceMax("");
-    onFiltersChange({
+    onFiltersChangeRef.current({
       status: "active",
       category: null,
       condition: null,
@@ -91,8 +115,8 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
         <Select
           value={filters.category || ""}
           onChange={(e) =>
-            onFiltersChange({
-              ...filters,
+            onFiltersChangeRef.current({
+              ...filtersRef.current,
               category: e.target.value ? (e.target.value as Category) : null,
             })
           }
@@ -108,8 +132,8 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
         <Select
           value={filters.condition || ""}
           onChange={(e) =>
-            onFiltersChange({
-              ...filters,
+            onFiltersChangeRef.current({
+              ...filtersRef.current,
               condition: e.target.value ? (e.target.value as Condition) : null,
             })
           }
@@ -147,7 +171,10 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
             type="checkbox"
             checked={filters.freeOnly || false}
             onChange={(e) =>
-              onFiltersChange({ ...filters, freeOnly: e.target.checked })
+              onFiltersChangeRef.current({
+                ...filtersRef.current,
+                freeOnly: e.target.checked,
+              })
             }
           />
           <span>Free items only</span>

@@ -1,161 +1,232 @@
-# copilot.md
+# GitHub Copilot Instructions
 
-## Purpose
+## Architecture Overview
 
-You are GitHub Copilot working inside this repository.
-Follow these instructions for every code suggestion, edit, refactor, and new file you create.
-If a request conflicts with these rules, propose a compliant alternative.
+**Campus Ex** is a Next.js 16 + Supabase marketplace app using TypeScript, React 19, and CSS Modules.
 
-## Core principles
+### Data Layer Pattern (Critical)
 
-- Prioritize correctness, readability, maintainability, and security over cleverness.
-- Keep solutions simple. Avoid unnecessary abstraction.
-- Write code that a new teammate can understand quickly.
-- Prefer small, incremental changes that are easy to review.
+Every feature domain (`lib/marketplace`, `lib/messaging`, `lib/notifications`, `lib/admin`, `lib/saves`) follows this structure:
 
-## Coding standards
+- **`actions.ts`** - Server actions with `"use server"` directive. Handle auth, call queries/mutations. Return `Result<T>` type.
+- **`queries.ts`** - Pure read operations. Accept `SupabaseClient`, return data. No auth logic here.
+- **`mutations.ts`** - Pure write operations. Accept `SupabaseClient` and `userId`. Call validators first.
+- **`types.ts`** - TypeScript interfaces/types for the domain.
+- **`validators.ts`** - Zod schemas for input validation.
+- **`storage.ts`** - (if needed) File upload/deletion operations.
 
-- Clean code: clear names, small functions, single responsibility, minimal side effects.
-- DRY, but do not over abstract. Only extract shared logic after it repeats.
-- KISS and YAGNI: do not build features not explicitly required.
-- Prefer pure functions where practical.
-- Prefer composition over inheritance.
-- Avoid global state. Minimize shared mutable state.
-- Prefer immutable data patterns where feasible.
+**Example flow**: Component → `actions.ts` (gets user, creates client) → `mutations.ts` (validates, writes) → database
 
-## File size and structure
+### Supabase Patterns
 
-- Hard limit: no source file should exceed 300 lines.
-- If a file approaches 250 lines, proactively split it.
-- Prefer many small focused files over one large file.
-- Organize by feature or domain, not by technical layer when possible.
-  - Example: `features/events/` rather than `components/` dumping ground.
-- Each folder should have a short README if the structure is non obvious.
+- **Browser**: Import from `@/lib/supabase/client` (has `"use client"`)
+- **Server**: Use `getSupabaseWithAuth()` helper in actions.ts (handles cookies/auth)
+- **Shared config**: `@/lib/supabase/config` centralizes URL/key
+- **Middleware**: Auth session refresh in `middleware.ts` using `@/lib/supabase/middleware`
 
-## Functions and complexity
+### Next.js App Router
 
-- Keep functions small. Target 20 to 40 lines max per function.
-- Limit nesting. Prefer early returns and guard clauses.
-- Avoid high cyclomatic complexity. If logic branches heavily, refactor into helpers.
-- Prefer explicit code over clever one liners.
+- **Route groups**: `(app)` = protected pages, `(auth)` = public auth pages
+- **Styling**: CSS Modules (`.module.css`) co-located with components
+- **Imports**: Use `@/` alias (maps to project root)
+- **Images**: Supabase storage URLs configured in `next.config.ts`
 
-## Naming
+### Testing Setup
 
-- Use descriptive names. Avoid abbreviations unless universally obvious.
-- Booleans should read like predicates: `isReady`, `hasAccess`, `canSubmit`.
-- Functions should be verbs: `fetchUser`, `calculateTotal`, `serializePayload`.
-- Keep naming consistent across the codebase.
+- **Framework**: Vitest with happy-dom (not jsdom)
+- **Location**: `__tests__/` mirrors source structure (`__tests__/lib/marketplace/` for `lib/marketplace/`)
+- **Run**: `npm test` (one-time), `npm run test:ui` (watch mode), `npm run test:coverage`
+- **Focus**: Test user-facing behavior, not implementation details
 
-## Types and contracts
+## CRITICAL: Git Workflow - MANDATORY
 
-- Strongly prefer explicit types over implicit any.
-- Create clear interfaces and data contracts at module boundaries.
-- Validate external inputs at the boundary (API handlers, file IO, user input).
-- Do not trust network, client, env, or database input without validation.
+### When to Commit (Required Actions)
 
-## Error handling
+**COMMIT AFTER EVERY LOGICAL CHANGE** - This is not optional.
 
-- Fail fast with clear messages.
-- Use typed errors or error classes when helpful.
-- Do not swallow errors. Either handle them or propagate them.
-- Log with context and avoid leaking secrets.
-- Prefer returning structured errors for user facing paths.
+Examples of when you MUST commit:
+
+- ✅ After fixing 1-3 related lint errors in a file
+- ✅ After removing unused imports from a file
+- ✅ After adding a new function or component
+- ✅ After fixing a bug
+- ✅ After updating types in a module
+- ✅ After refactoring a function
+
+**DO NOT:**
+
+- ❌ Make 10+ file changes without committing
+- ❌ Fix all lint errors in one massive commit
+- ❌ Wait until everything is "done" to commit
+
+### Commit Command Workflow
+
+After EACH logical change:
+
+```bash
+git add <changed-files>
+git commit -m "Imperative message describing the change"
+```
+
+**Good commit messages:**
+
+- `Remove unused imports from messaging components`
+- `Fix useEffect dependencies in inbox page`
+- `Replace any types with proper types in admin queries`
+- `Add useCallback to profile edit handlers`
+
+**Bad commit messages:**
+
+- `Fix lint errors` (too vague)
+- `Updates` (meaningless)
+- `WIP` (not descriptive)
+
+### Multi-Step Task Pattern
+
+When user asks to "fix all lint errors":
+
+1. Run lint to see all errors
+2. **Group errors by type/file**
+3. Fix first group (e.g., unused imports)
+4. **COMMIT** with message like: `Remove unused imports from components`
+5. Fix second group (e.g., useEffect deps)
+6. **COMMIT** with message like: `Fix useEffect dependency warnings`
+7. Continue until done
+
+**Pattern:** Fix → Test → Commit → Repeat
+
+## Core Principles
+
+- Correctness > Cleverness
+- Simple > Complex
+- Readable > Compact
+- Small incremental changes > Large rewrites
+- Self-documenting code > Comments
+
+## File Size Rules
+
+- **Hard limit:** 300 lines per file
+- **Action trigger:** At 250 lines, split the file
+- **Organization:** By feature/domain, not by type
+  - ✅ `features/events/EventList.tsx`
+  - ❌ `components/EventList.tsx`
+
+## Function Rules
+
+- **Target:** 20-40 lines per function
+- **Max complexity:** Prefer early returns over nested ifs
+- **Naming:** Verbs for functions (`fetchUser`, `calculateTotal`)
+- **Naming:** Predicates for booleans (`isValid`, `hasAccess`)
+
+## Type Safety Rules
+
+- **NEVER use `any`** - Use proper types or `unknown`
+- **Alternatives to `any`:**
+  - `Record<string, unknown>` for objects
+  - `unknown` when type is truly unknown
+  - Explicit type with `as Type` assertion when justified
+  - Create proper interface/type
+
+## React-Specific Rules
+
+### useEffect Dependencies
+
+**NEVER use eslint-disable for useEffect deps**
+
+✅ **Correct approach:**
+
+```typescript
+const loadData = useCallback(async () => {
+  // fetch logic
+}, [dependencies]);
+
+useEffect(() => {
+  loadData();
+}, [loadData]);
+```
+
+❌ **Wrong approach:**
+
+```typescript
+useEffect(() => {
+  loadData();
+  // eslint-disable-next-line
+}, []);
+```
+
+### Component Size
+
+- Max 250 lines per component
+- Split into subcomponents when approaching limit
+- Extract hooks when logic is reusable
+
+## Error Handling
+
+- Fail fast with clear messages
+- Never swallow errors silently
+- Use typed errors for user-facing paths
+- Log with context, never log secrets
 
 ## Security
 
-- Never hardcode secrets, tokens, keys, passwords, or connection strings.
-- Use environment variables and documented configuration.
-- Sanitize and validate all user input.
-- Use parameterized queries. Never string concatenate SQL.
-- Apply principle of least privilege.
-- Avoid insecure crypto and weak randomness.
+- **NEVER hardcode:** tokens, keys, passwords, connection strings
+- **ALWAYS validate:** user input, external data
+- **ALWAYS use:** parameterized queries (never string concatenation)
+- Use environment variables for configuration
 
-## Performance
+## Testing
 
-- Make performance improvements only when justified.
-- Prefer algorithmic improvements over micro optimizations.
-- Avoid unnecessary re renders, repeated queries, and N plus 1 patterns.
-- Cache only with clear invalidation rules.
+- Framework: Vitest with happy-dom (not jsdom)
+- Tests in `__tests__/` mirror source structure
+- Test user-facing behavior, not implementation details
+- Focus on critical paths and core business logic
+- No flaky tests (avoid timing assumptions)
+- Run: `npm test`, `npm run test:ui`, `npm run test:coverage`
 
-## Testing and quality
+## Build Workflow
 
-- Every change should include tests when practical.
-- Focus on testing features, functionalities, and core business logic.
-- Do not test every granular detail or implementation specifics.
-- Test user-facing behavior and critical paths, not internal implementation.
-- Prefer unit tests for pure logic and integration tests for boundaries.
-- Tests must be deterministic. No flaky timing assumptions.
-- Use meaningful assertions, not snapshot spam.
-- Aim for high confidence coverage on critical paths.
-- Tests should live in `__tests__/` directory mirroring source structure.
-
-## Documentation
-
-- Write docstrings only where the intent is not obvious.
-- Prefer self documenting code over excessive comments.
-- Add a short module header comment when a file has non obvious constraints.
-- When adding public functions, document inputs, outputs, and edge cases.
-
-## Formatting and style
-
-- Match the repository formatter and linter.
-- No commented out code.
-- Keep imports sorted and minimal.
-- Avoid deep relative imports when possible. Prefer alias or module boundaries.
+- **`npm run build`** - Runs lint automatically, then builds
+- Fix all lint errors before builds will succeed
+- Dev server: `npm run dev` (port 3000)
+- Production: `npm run start` (requires build first)
 
 ## Dependencies
 
-- Prefer standard library and existing repo dependencies.
-- Do not add new dependencies unless necessary.
-- If you must add a dependency, explain why and the tradeoffs.
+- Prefer existing dependencies
+- Only add new deps when necessary
+- Explain tradeoffs when adding deps
 
-## Git workflow and commits
+## Before Completing Task
 
-- Make small, focused changes per commit.
-- Commit messages should be imperative and specific:
-  - Example: `Add validation for event date range`
-- Never push directly to main.
-- Always work on feature branches.
-- Prefer PRs with clear descriptions and minimal diff surface area.
+Checklist:
 
-## API and data modeling
+- [ ] Lint passes (`npm run lint`)
+- [ ] Tests pass (if applicable)
+- [ ] All changes committed (check with `git status`)
+- [ ] No files over 300 lines
+- [ ] No `any` types in code
+- [ ] No hardcoded secrets
+- [ ] Commit messages are descriptive
 
-- Keep endpoints thin. Put business logic in services or domain modules.
-- Validate request payloads and response shapes.
-- Prefer explicit DTOs at boundaries.
-- Avoid leaking database models directly to clients.
+## Response Style
 
-## Frontend guidance (if applicable)
+- Be concise
+- Show only relevant code changes
+- If asked to do something unsafe, refuse and suggest alternative
+- Choose simplest compliant solution
+- Don't announce which tools you're using
 
-- Keep components small and focused.
-- Avoid components over 250 lines, split into subcomponents.
-- Prefer controlled components for forms when appropriate.
-- Keep state close to where it is used.
-- Avoid prop drilling by introducing context only when it clearly helps.
+## Workflow Summary for Multi-File Changes
 
-## Backend guidance (if applicable)
+```
+1. Understand the task
+2. Break into logical steps
+3. For each step:
+   a. Make the change
+   b. Test if needed
+   c. Commit with clear message
+4. Run final verification
+5. Report completion
+```
 
-- Separate routing, validation, business logic, and persistence.
-- Prefer idempotent operations where feasible.
-- Use transactions when multiple writes must be consistent.
-- Handle retries and timeouts for network calls.
-
-## Pull request readiness checklist
-
-Before finalizing changes, ensure:
-
-- Code compiles and lint passes.
-- Tests added or updated and passing.
-- No file over 300 lines.
-- No secrets introduced.
-- Clear naming and minimal complexity.
-- Changes are documented if behavior changed.
-
-## Response style for Copilot
-
-When generating code:
-
-- Output only what is needed for the change.
-- Keep edits minimal and localized.
-- If multiple approaches exist, choose the simplest compliant option.
-- If asked to do something unsafe or out of scope, refuse and propose a safer alternative.
+**Remember:** Small commits = easier reviews, safer rollbacks, clearer history
