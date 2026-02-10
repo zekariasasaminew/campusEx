@@ -58,8 +58,9 @@ export function FiltersBar({ filters, onFiltersChange }: FiltersBarProps) {
     if (initialMount.current) return; // Skip on initial mount
 
     const timer = setTimeout(() => {
-      const minValue = priceMin ? parseInt(priceMin) : null;
-      const maxValue = priceMax ? parseInt(priceMax) : null;
+      // Convert dollars to cents for database query
+      const minValue = priceMin ? parseInt(priceMin) * 100 : null;
+      const maxValue = priceMax ? parseInt(priceMax) * 100 : null;
 
       if (
         minValue !== filtersRef.current.priceMin ||
