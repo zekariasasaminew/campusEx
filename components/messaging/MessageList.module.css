@@ -34,7 +34,7 @@
 
 .sent .messageContent {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-primary-foreground);
 }
 
 .received .messageContent {

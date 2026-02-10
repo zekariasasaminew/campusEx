@@ -92,7 +92,7 @@
 
 .unread {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-primary-foreground);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 2px 8px;

@@ -68,7 +68,7 @@
   right: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-lg);
   background-color: var(--color-accent-warm);
-  color: white;
+  color: var(--color-accent-warm-foreground);
   font-weight: 700;
   font-size: 0.8125rem;
   text-transform: uppercase;

@@ -34,7 +34,7 @@
   height: 2.75rem;
   padding: 0 var(--spacing-xl);
   background: var(--color-accent-warm);
-  color: white;
+  color: var(--color-accent-warm-foreground);
   border-radius: var(--radius);
   font-size: 0.9375rem;
   font-weight: 600;

@@ -98,7 +98,7 @@
 /* New variant for warm accent CTAs */
 .accent {
   background: var(--color-accent-warm);
-  color: white;
+  color: var(--color-accent-warm-foreground);
   box-shadow: var(--shadow-sm);
 }
 

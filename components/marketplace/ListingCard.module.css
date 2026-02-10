@@ -57,7 +57,7 @@
   top: var(--spacing-md);
   right: var(--spacing-md);
   background: var(--color-accent-warm);
-  color: white;
+  color: var(--color-accent-warm-foreground);
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius);
   font-size: 0.75rem;

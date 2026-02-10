@@ -15,6 +15,7 @@
   --color-accent-warm: #ff6b35;
   --color-accent-warm-hover: #ff8c61;
   --color-accent-warm-light: #fff4f0;
+  --color-accent-warm-foreground: #ffffff;
 
   /* Surface colors */
   --color-bg: #f8fafc;
@@ -105,6 +106,7 @@
   --color-accent-warm: #ff8c61;
   --color-accent-warm-hover: #ffa883;
   --color-accent-warm-light: #2d1810;
+  --color-accent-warm-foreground: #0f172a;
 
   /* Surfaces */
   --color-bg: #0f172a;
