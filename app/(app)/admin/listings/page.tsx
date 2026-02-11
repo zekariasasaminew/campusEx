@@ -10,6 +10,19 @@ export const metadata = {
   description: "Manage all marketplace listings",
 };
 
+function getStatusClassName(status: string): string {
+  switch (status) {
+    case "active":
+      return styles.statusActive;
+    case "sold":
+      return styles.statusSold;
+    case "removed":
+      return styles.statusRemoved;
+    default:
+      return "";
+  }
+}
+
 export default async function AdminListingsPage() {
   const supabase = await createClient();
   const {
@@ -113,7 +126,7 @@ export default async function AdminListingsPage() {
 
               <div className={styles.colStatus}>
                 <span
-                  className={`${styles.statusBadge} ${styles[listing.status]}`}
+                  className={`${styles.statusBadge} ${getStatusClassName(listing.status)}`}
                 >
                   {listing.status}
                 </span>

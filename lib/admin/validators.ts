@@ -62,15 +62,10 @@ export const updateListingSchema = z
   })
   .refine(
     (data) => {
-      // If is_free is true, price_cents must be null
-      if (
-        data.is_free === true &&
-        data.price_cents !== null &&
-        data.price_cents !== undefined
-      ) {
+      // If is_free is true, price_cents must be explicitly null
+      if (data.is_free === true && data.price_cents !== null) {
         return false;
       }
-      // If is_free is false, price_cents should not be null (but this is less strict for updates)
       return true;
     },
     {

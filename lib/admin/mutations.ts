@@ -168,7 +168,13 @@ export async function updateListingAsAdmin(
   if (updates.condition !== undefined) updateData.condition = updates.condition;
   if (updates.price_cents !== undefined)
     updateData.price_cents = updates.price_cents;
-  if (updates.is_free !== undefined) updateData.is_free = updates.is_free;
+  if (updates.is_free !== undefined) {
+    updateData.is_free = updates.is_free;
+    // Normalize: if setting is_free to true, ensure price_cents is null
+    if (updates.is_free === true) {
+      updateData.price_cents = null;
+    }
+  }
   if (updates.location !== undefined)
     updateData.location_text = updates.location?.trim() || null;
 
