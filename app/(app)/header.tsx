@@ -11,7 +11,7 @@ export function Header() {
     <header className={styles.header}>
       <div className={styles.container}>
         <Link href="/marketplace" className={styles.logo}>
-          Campus Ex
+          CampusEx
         </Link>
         <div className={styles.actions}>
           <ThemeToggle />

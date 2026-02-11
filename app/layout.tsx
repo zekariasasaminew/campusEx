@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Ex - Student Marketplace",
+  title: "CampusEx - Student Marketplace",
   description: "Exclusive marketplace for campus students",
 };
 

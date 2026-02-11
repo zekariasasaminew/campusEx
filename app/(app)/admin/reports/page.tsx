@@ -6,7 +6,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Admin Reports - Campus Exchange",
+  title: "Admin Reports - CampusEx",
   description: "Manage listing reports",
 };
 

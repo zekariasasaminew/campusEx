@@ -79,7 +79,7 @@ function SignInForm() {
   return (
     <>
       <div className={styles.content}>
-        <h1 className={styles.title}>Sign in to Campus Ex</h1>
+        <h1 className={styles.title}>Sign in to CampusEx</h1>
         <p className={styles.description}>
           Enter your Augustana email to receive a magic link
         </p>

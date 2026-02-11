@@ -5,7 +5,7 @@ import { ConversationList } from "@/components/messaging/ConversationList";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Inbox - Campus Exchange",
+  title: "Inbox - CampusEx",
   description: "View your messages",
 };
 
