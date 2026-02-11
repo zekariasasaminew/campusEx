@@ -111,7 +111,7 @@ export default function ListingDetailClient({
               </Button>
               <Button
                 onClick={() => setShowDeleteDialog(true)}
-                variant="danger"
+                variant="destructive"
               >
                 Delete Listing
               </Button>
