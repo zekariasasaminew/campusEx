@@ -79,9 +79,15 @@ export default function ListingDetailClient({
       return;
     }
 
-    console.log("✅ Delete successful, navigating to /admin/listings");
-    router.push("/admin/listings");
-    router.refresh();
+    console.log("✅ Delete successful, closing modal and navigating...");
+    setIsDeleting(false);
+    setShowDeleteDialog(false);
+    
+    // Small delay to let the modal close smoothly
+    setTimeout(() => {
+      router.push("/admin/listings");
+      router.refresh();
+    }, 100);
   }, [listing.id, router]);
 
   const handleCancel = useCallback(() => {
