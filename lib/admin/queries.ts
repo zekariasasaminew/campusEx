@@ -4,7 +4,10 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type { ListingReportWithDetails, AdminListingWithDetails } from "./types";
+import type {
+  ListingReportWithDetails,
+  AdminListingWithDetails,
+} from "./types";
 
 export async function checkIsAdmin(userId: string): Promise<boolean> {
   const supabase = await createClient();
@@ -60,10 +63,12 @@ export async function getReports(
     reviewed_at: report.reviewed_at,
     reviewed_by: report.reviewed_by,
     created_at: report.created_at,
-    listing_title: (report.marketplace_listings as unknown as Record<string, unknown>)
-      .title as string,
-    listing_status: (report.marketplace_listings as unknown as Record<string, unknown>)
-      .status as string,
+    listing_title: (
+      report.marketplace_listings as unknown as Record<string, unknown>
+    ).title as string,
+    listing_status: (
+      report.marketplace_listings as unknown as Record<string, unknown>
+    ).status as string,
     listing_visibility_status: (
       report.marketplace_listings as unknown as Record<string, unknown>
     ).visibility_status as string,
@@ -109,10 +114,12 @@ export async function getReportById(
     reviewed_at: data.reviewed_at,
     reviewed_by: data.reviewed_by,
     created_at: data.created_at,
-    listing_title: (data.marketplace_listings as unknown as Record<string, unknown>)
-      .title as string,
-    listing_status: (data.marketplace_listings as unknown as Record<string, unknown>)
-      .status as string,
+    listing_title: (
+      data.marketplace_listings as unknown as Record<string, unknown>
+    ).title as string,
+    listing_status: (
+      data.marketplace_listings as unknown as Record<string, unknown>
+    ).status as string,
     listing_visibility_status: (
       data.marketplace_listings as unknown as Record<string, unknown>
     ).visibility_status as string,
@@ -237,4 +244,3 @@ export async function getListingByIdAsAdmin(
     ).sort((a, b) => a.sort_order - b.sort_order),
   };
 }
-

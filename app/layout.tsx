@@ -38,7 +38,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${inter.variable}`} suppressHydrationWarning>
+      <body
+        className={`${inter.className} ${inter.variable}`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
