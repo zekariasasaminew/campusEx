@@ -178,3 +178,63 @@ export async function getAllListings(): Promise<AdminListingWithDetails[]> {
   }));
 }
 
+export async function getListingByIdAsAdmin(
+  listingId: string,
+): Promise<AdminListingWithDetails | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("marketplace_listings")
+    .select(
+      `
+      id,
+      title,
+      description,
+      category,
+      condition,
+      price_cents,
+      is_free,
+      location_text,
+      status,
+      visibility_status,
+      hidden_reason,
+      created_at,
+      updated_at,
+      users!marketplace_listings_seller_id_fkey(email, full_name),
+      marketplace_listing_images(id, image_path, sort_order)
+    `,
+    )
+    .eq("id", listingId)
+    .single();
+
+  if (error) return null;
+
+  return {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    category: data.category,
+    condition: data.condition,
+    price_cents: data.price_cents,
+    is_free: data.is_free,
+    location_text: data.location_text,
+    status: data.status,
+    visibility_status: data.visibility_status,
+    hidden_reason: data.hidden_reason,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    seller_email: (data.users as unknown as Record<string, unknown>)
+      .email as string,
+    seller_name:
+      ((data.users as unknown as Record<string, unknown>)
+        .full_name as string) || null,
+    images: (
+      (data.marketplace_listing_images as unknown as Array<{
+        id: string;
+        image_path: string;
+        sort_order: number;
+      }>) || []
+    ).sort((a, b) => a.sort_order - b.sort_order),
+  };
+}
+

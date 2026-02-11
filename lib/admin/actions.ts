@@ -11,6 +11,7 @@ import {
   getReports,
   getReportById,
   getAllListings,
+  getListingByIdAsAdmin,
 } from "./queries";
 import {
   updateReportStatus as updateReportStatusMutation,
@@ -195,6 +196,21 @@ export async function getAdminListings(): Promise<
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to load listings",
+    };
+  }
+}
+
+export async function getAdminListing(
+  listingId: string,
+): Promise<Result<AdminListingWithDetails | null>> {
+  try {
+    await requireAdmin();
+    const listing = await getListingByIdAsAdmin(listingId);
+    return { success: true, data: listing };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to load listing",
     };
   }
 }

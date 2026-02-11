@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { checkIsAdmin, getAllListings } from "@/lib/admin/queries";
+import { checkIsAdmin } from "@/lib/admin/queries";
+import { getAdminListing } from "@/lib/admin/actions";
 import ListingDetailClient from "./ListingDetailClient";
 
 export const metadata = {
@@ -28,12 +29,11 @@ export default async function AdminListingDetailPage({ params }: PageProps) {
   }
 
   const { listingId } = await params;
-  const listings = await getAllListings();
-  const listing = listings.find((l) => l.id === listingId);
+  const result = await getAdminListing(listingId);
 
-  if (!listing) {
+  if (!result.success || !result.data) {
     redirect("/admin/listings");
   }
 
-  return <ListingDetailClient listing={listing} />;
+  return <ListingDetailClient listing={result.data} />;
 }
