@@ -3,7 +3,7 @@
  * Database mutations for admin moderation
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function updateReportStatus(
   reportId: string,
@@ -98,45 +98,34 @@ export async function deleteListingAsAdmin(
   listingId: string,
   adminId: string,
 ): Promise<void> {
-  console.log("🔧 [MUTATION] deleteListingAsAdmin called:", { listingId, adminId });
-  const supabase = await createClient();
+  // Use service role client to bypass RLS for admin operations
+  const supabase = createServiceClient();
 
   // Get image paths before deletion
-  console.log("🔧 [MUTATION] Fetching images for listing...");
   const { data: images } = await supabase
     .from("marketplace_listing_images")
     .select("image_path")
     .eq("listing_id", listingId);
-  console.log("🔧 [MUTATION] Found images:", images?.length || 0);
 
   // Delete listing (cascades to images via DB)
-  console.log("🔧 [MUTATION] Deleting listing from database...");
   const { error } = await supabase
     .from("marketplace_listings")
     .delete()
     .eq("id", listingId);
 
-  if (error) {
-    console.error("🔧 [MUTATION] Database delete error:", error);
-    throw error;
-  }
-  console.log("🔧 [MUTATION] Listing deleted from database successfully");
+  if (error) throw error;
 
   // Attempt to delete images from storage (best effort)
   if (images && images.length > 0) {
     try {
-      console.log("🔧 [MUTATION] Deleting images from storage...");
       const paths = images.map((img) => img.image_path);
       await supabase.storage.from("marketplace-images").remove(paths);
-      console.log("🔧 [MUTATION] Images deleted from storage");
-    } catch (storageError) {
-      console.warn(`🔧 [MUTATION] Failed to delete images for listing ${listingId}:`, storageError);
+    } catch {
+      console.warn(`Failed to delete images for listing ${listingId}`);
     }
   }
 
-  console.log("🔧 [MUTATION] Logging admin action...");
   await logAdminAction(adminId, "delete_listing", "listing", listingId, {});
-  console.log("🔧 [MUTATION] Admin action logged successfully");
 }
 
 export async function updateListingAsAdmin(
@@ -152,7 +141,8 @@ export async function updateListingAsAdmin(
     location?: string | null;
   },
 ): Promise<void> {
-  const supabase = await createClient();
+  // Use service role client to bypass RLS
+  const supabase = createServiceClient();
 
   const updateData: Record<string, unknown> = {};
   if (updates.title !== undefined) updateData.title = updates.title.trim();
