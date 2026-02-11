@@ -102,26 +102,42 @@ export async function deleteListingAsAdmin(
   const supabase = createServiceClient();
 
   // Get image paths before deletion
-  const { data: images } = await supabase
+  const { data: images, error: imagesError } = await supabase
     .from("marketplace_listing_images")
     .select("image_path")
     .eq("listing_id", listingId);
 
-  // Delete listing (cascades to images via DB)
-  const { error } = await supabase
+  if (imagesError) {
+    console.error(
+      `Failed to fetch images for listing ${listingId} before deletion`,
+      imagesError,
+    );
+  }
+
+  // Delete listing (cascades to images via DB) and verify deletion
+  const { data, error } = await supabase
     .from("marketplace_listings")
     .delete()
-    .eq("id", listingId);
+    .eq("id", listingId)
+    .select("id");
 
   if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Listing not found");
+  }
 
   // Attempt to delete images from storage (best effort)
   if (images && images.length > 0) {
-    try {
-      const paths = images.map((img) => img.image_path);
-      await supabase.storage.from("marketplace-images").remove(paths);
-    } catch {
-      console.warn(`Failed to delete images for listing ${listingId}`);
+    const paths = images.map((img) => img.image_path);
+    const { error: storageError } = await supabase.storage
+      .from("marketplace-images")
+      .remove(paths);
+
+    if (storageError) {
+      console.warn(
+        `Failed to delete images from storage for listing ${listingId}`,
+        storageError,
+      );
     }
   }
 
