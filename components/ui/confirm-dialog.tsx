@@ -31,7 +31,12 @@ export function ConfirmDialog({
   children,
 }: ConfirmDialogProps) {
   const handleConfirm = async () => {
-    await onConfirm();
+    try {
+      await onConfirm();
+      onClose();
+    } catch (error) {
+      console.error("ConfirmDialog onConfirm handler failed:", error);
+    }
   };
 
   return (

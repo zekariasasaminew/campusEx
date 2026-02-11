@@ -75,8 +75,15 @@ export default function ListingDetailClient({
       return;
     }
 
-    router.push("/admin/listings");
-    router.refresh();
+    // Close modal and reset loading state before navigation
+    setShowDeleteDialog(false);
+    setIsDeleting(false);
+
+    // Small delay to ensure modal closes before navigation
+    setTimeout(() => {
+      router.push("/admin/listings");
+      router.refresh();
+    }, 100);
   }, [listing.id, router]);
 
   const handleCancel = useCallback(() => {
