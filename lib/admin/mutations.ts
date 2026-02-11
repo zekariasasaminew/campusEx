@@ -156,6 +156,11 @@ export async function updateListingAsAdmin(
   if (updates.location !== undefined)
     updateData.location_text = updates.location?.trim() || null;
 
+  // Guard against empty updates
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("At least one field must be provided for update");
+  }
+
   const { error } = await supabase
     .from("marketplace_listings")
     .update(updateData)
