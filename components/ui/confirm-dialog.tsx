@@ -8,7 +8,7 @@ import styles from "./confirm-dialog.module.css";
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title?: string;
   message: string;
   confirmLabel?: string;
@@ -30,11 +30,8 @@ export function ConfirmDialog({
   isLoading = false,
   children,
 }: ConfirmDialogProps) {
-  const handleConfirm = () => {
-    onConfirm();
-    if (!isLoading) {
-      onClose();
-    }
+  const handleConfirm = async () => {
+    await onConfirm();
   };
 
   return (
@@ -47,7 +44,11 @@ export function ConfirmDialog({
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {cancelLabel}
           </Button>
-          <Button variant={variant} onClick={handleConfirm} disabled={isLoading}>
+          <Button
+            variant={variant}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
             {isLoading ? "Loading..." : confirmLabel}
           </Button>
         </>
