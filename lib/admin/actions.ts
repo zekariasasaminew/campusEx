@@ -111,7 +111,11 @@ export async function hideListing(
   try {
     const validatedInput = hideListingSchema.parse(input);
     const admin = await requireAdmin();
-    await hideListingMutation(validatedInput.listing_id, admin.id, validatedInput.reason);
+    await hideListingMutation(
+      validatedInput.listing_id,
+      admin.id,
+      validatedInput.reason,
+    );
     return { success: true, data: undefined };
   } catch (error) {
     return {
@@ -141,23 +145,12 @@ export async function unhideListing(
 export async function adminDeleteListing(
   input: DeleteListingInput,
 ): Promise<Result<void>> {
-  console.log("🔧 [SERVER] adminDeleteListing called with input:", input);
   try {
-    console.log("🔧 [SERVER] Validating input...");
     const validatedInput = deleteListingSchema.parse(input);
-    console.log("🔧 [SERVER] Input validated:", validatedInput);
-    
-    console.log("🔧 [SERVER] Checking admin access...");
     const admin = await requireAdmin();
-    console.log("🔧 [SERVER] Admin confirmed:", admin.id);
-    
-    console.log("🔧 [SERVER] Calling deleteListingAsAdmin...");
     await deleteListingAsAdmin(validatedInput.listing_id, admin.id);
-    console.log("🔧 [SERVER] Delete successful!");
-    
     return { success: true, data: undefined };
   } catch (error) {
-    console.error("🔧 [SERVER] Error in adminDeleteListing:", error);
     return {
       success: false,
       error:
@@ -201,10 +194,7 @@ export async function getAdminListings(): Promise<
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to load listings",
+      error: error instanceof Error ? error.message : "Failed to load listings",
     };
   }
 }
-
-

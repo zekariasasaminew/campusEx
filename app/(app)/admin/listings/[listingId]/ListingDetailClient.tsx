@@ -63,31 +63,20 @@ export default function ListingDetailClient({
   }, [formData, listing.id, router]);
 
   const handleDelete = useCallback(async () => {
-    console.log("🗑️ handleDelete called, listing ID:", listing.id);
     setIsDeleting(true);
     setError(null);
 
-    console.log("🔄 Calling adminDeleteListing...");
     const result = await adminDeleteListing({ listing_id: listing.id });
-    console.log("✅ adminDeleteListing result:", result);
 
     if (!result.success) {
-      console.error("❌ Delete failed:", result.error);
       setError(result.error);
       setIsDeleting(false);
       setShowDeleteDialog(false);
       return;
     }
 
-    console.log("✅ Delete successful, closing modal and navigating...");
-    setIsDeleting(false);
-    setShowDeleteDialog(false);
-    
-    // Small delay to let the modal close smoothly
-    setTimeout(() => {
-      router.push("/admin/listings");
-      router.refresh();
-    }, 100);
+    router.push("/admin/listings");
+    router.refresh();
   }, [listing.id, router]);
 
   const handleCancel = useCallback(() => {

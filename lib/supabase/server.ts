@@ -30,7 +30,7 @@ export async function createClient() {
  */
 export function createServiceClient() {
   const config = getSupabaseServiceConfig();
-  
+
   return createServerClient(config.url, config.serviceKey, {
     cookies: {
       getAll() {
