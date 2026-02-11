@@ -106,7 +106,7 @@ export default async function AdminListingsPage() {
               <div className={styles.colPrice}>
                 {listing.is_free
                   ? "Free"
-                  : listing.price_cents
+                  : listing.price_cents != null
                     ? `$${(listing.price_cents / 100).toFixed(2)}`
                     : "N/A"}
               </div>

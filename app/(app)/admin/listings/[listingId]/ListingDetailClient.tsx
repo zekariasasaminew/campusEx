@@ -234,7 +234,7 @@ export default function ListingDetailClient({
                 {isEditing ? (
                   <Input
                     type="number"
-                    value={formData.price_cents || ""}
+                    value={formData.price_cents ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -247,7 +247,7 @@ export default function ListingDetailClient({
                   />
                 ) : (
                   <p className={styles.value}>
-                    {listing.price_cents
+                    {listing.price_cents != null
                       ? `$${(listing.price_cents / 100).toFixed(2)}`
                       : "N/A"}
                   </p>
