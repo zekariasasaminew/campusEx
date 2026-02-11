@@ -6,22 +6,35 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { checkIsAdmin, getReports, getReportById } from "./queries";
+import {
+  checkIsAdmin,
+  getReports,
+  getReportById,
+  getAllListings,
+  getListingByIdAsAdmin,
+} from "./queries";
 import {
   updateReportStatus as updateReportStatusMutation,
   hideListing as hideListingMutation,
   unhideListing as unhideListingMutation,
+  deleteListingAsAdmin,
+  updateListingAsAdmin,
 } from "./mutations";
 import {
   updateReportStatusSchema,
   hideListingSchema,
   unhideListingSchema,
+  deleteListingSchema,
+  updateListingSchema,
 } from "./validators";
 import type {
   ListingReportWithDetails,
   UpdateReportStatusInput,
   HideListingInput,
   UnhideListingInput,
+  DeleteListingInput,
+  UpdateListingInput,
+  AdminListingWithDetails,
 } from "./types";
 
 type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -99,7 +112,11 @@ export async function hideListing(
   try {
     const validatedInput = hideListingSchema.parse(input);
     const admin = await requireAdmin();
-    await hideListingMutation(validatedInput.listing_id, admin.id, validatedInput.reason);
+    await hideListingMutation(
+      validatedInput.listing_id,
+      admin.id,
+      validatedInput.reason,
+    );
     return { success: true, data: undefined };
   } catch (error) {
     return {
@@ -122,6 +139,78 @@ export async function unhideListing(
       success: false,
       error:
         error instanceof Error ? error.message : "Failed to unhide listing",
+    };
+  }
+}
+
+export async function adminDeleteListing(
+  input: DeleteListingInput,
+): Promise<Result<void>> {
+  try {
+    const validatedInput = deleteListingSchema.parse(input);
+    const admin = await requireAdmin();
+    await deleteListingAsAdmin(validatedInput.listing_id, admin.id);
+    return { success: true, data: undefined };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to delete listing",
+    };
+  }
+}
+
+export async function adminUpdateListing(
+  input: UpdateListingInput,
+): Promise<Result<void>> {
+  try {
+    const validatedInput = updateListingSchema.parse(input);
+    const admin = await requireAdmin();
+    await updateListingAsAdmin(validatedInput.listing_id, admin.id, {
+      title: validatedInput.title,
+      description: validatedInput.description,
+      category: validatedInput.category,
+      condition: validatedInput.condition,
+      price_cents: validatedInput.price_cents,
+      is_free: validatedInput.is_free,
+      location: validatedInput.location,
+    });
+    return { success: true, data: undefined };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to update listing",
+    };
+  }
+}
+
+export async function getAdminListings(): Promise<
+  Result<AdminListingWithDetails[]>
+> {
+  try {
+    await requireAdmin();
+    const listings = await getAllListings();
+    return { success: true, data: listings };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to load listings",
+    };
+  }
+}
+
+export async function getAdminListing(
+  listingId: string,
+): Promise<Result<AdminListingWithDetails | null>> {
+  try {
+    await requireAdmin();
+    const listing = await getListingByIdAsAdmin(listingId);
+    return { success: true, data: listing };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to load listing",
     };
   }
 }

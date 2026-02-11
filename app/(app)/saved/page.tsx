@@ -9,7 +9,7 @@ import { SaveButton } from "@/components/saves/SaveButton";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Saved - Campus Exchange",
+  title: "Saved - CampusEx",
   description: "Your saved listings",
 };
 

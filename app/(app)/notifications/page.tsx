@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Notifications - Campus Exchange",
+  title: "Notifications - CampusEx",
   description: "Your notifications",
 };
 

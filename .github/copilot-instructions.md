@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-**Campus Ex** is a Next.js 16 + Supabase marketplace app using TypeScript, React 19, and CSS Modules.
+**CampusEx** is a Next.js 16 + Supabase marketplace app using TypeScript, React 19, and CSS Modules.
 
 ### Data Layer Pattern (Critical)
 

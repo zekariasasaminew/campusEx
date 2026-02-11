@@ -1,4 +1,4 @@
-# Campus Exchange - Phase Two Features
+# CampusEx - Phase Two Features
 
 Production-grade implementation of messaging, saves, notifications, user profiles, and admin moderation.
 

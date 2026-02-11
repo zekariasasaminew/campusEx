@@ -8,12 +8,13 @@ import styles from "./confirm-dialog.module.css";
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title?: string;
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: "primary" | "destructive";
+  isLoading?: boolean;
   children?: ReactNode;
 }
 
@@ -26,11 +27,16 @@ export function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "primary",
+  isLoading = false,
   children,
 }: ConfirmDialogProps) {
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+      onClose();
+    } catch (error) {
+      console.error("ConfirmDialog onConfirm handler failed:", error);
+    }
   };
 
   return (
@@ -40,11 +46,15 @@ export function ConfirmDialog({
       title={title}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {cancelLabel}
           </Button>
-          <Button variant={variant} onClick={handleConfirm}>
-            {confirmLabel}
+          <Button
+            variant={variant}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : confirmLabel}
           </Button>
         </>
       }

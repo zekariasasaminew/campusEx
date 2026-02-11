@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { getSupabaseConfig } from "./config";
+import { getSupabaseConfig, getSupabaseServiceConfig } from "./config";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -20,6 +20,23 @@ export async function createClient() {
           // Called from Server Component, can't set cookies
         }
       },
+    },
+  });
+}
+
+/**
+ * Create a Supabase client with service role key
+ * BYPASSES Row Level Security - use only for admin operations
+ */
+export function createServiceClient() {
+  const config = getSupabaseServiceConfig();
+
+  return createServerClient(config.url, config.serviceKey, {
+    cookies: {
+      getAll() {
+        return [];
+      },
+      setAll() {},
     },
   });
 }

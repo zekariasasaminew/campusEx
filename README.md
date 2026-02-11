@@ -1,4 +1,4 @@
-# Campus Ex
+# CampusEx
 
 A campus-exclusive marketplace for students built with Next.js 16, React 19, and Supabase.
 

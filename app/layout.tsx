@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Ex - Student Marketplace",
+  title: "CampusEx - Student Marketplace",
   description: "Exclusive marketplace for campus students",
 };
 
@@ -38,7 +38,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${inter.variable}`} suppressHydrationWarning>
+      <body
+        className={`${inter.className} ${inter.variable}`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

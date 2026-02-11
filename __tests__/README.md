@@ -1,4 +1,4 @@
-# Campus Exchange Test Suite
+# CampusEx Test Suite
 
 Comprehensive test coverage for phase one marketplace features.
 

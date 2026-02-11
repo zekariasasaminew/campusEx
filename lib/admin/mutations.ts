@@ -3,7 +3,7 @@
  * Database mutations for admin moderation
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function updateReportStatus(
   reportId: string,
@@ -92,4 +92,105 @@ async function logAdminAction(
   });
 
   if (error) throw error;
+}
+
+export async function deleteListingAsAdmin(
+  listingId: string,
+  adminId: string,
+): Promise<void> {
+  // Use service role client to bypass RLS for admin operations
+  const supabase = createServiceClient();
+
+  // Get image paths before deletion
+  const { data: images, error: imagesError } = await supabase
+    .from("marketplace_listing_images")
+    .select("image_path")
+    .eq("listing_id", listingId);
+
+  if (imagesError) {
+    console.error(
+      `Failed to fetch images for listing ${listingId} before deletion`,
+      imagesError,
+    );
+  }
+
+  // Delete listing (cascades to images via DB) and verify deletion
+  const { data, error } = await supabase
+    .from("marketplace_listings")
+    .delete()
+    .eq("id", listingId)
+    .select("id");
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Listing not found");
+  }
+
+  // Attempt to delete images from storage (best effort)
+  if (images && images.length > 0) {
+    const paths = images.map((img) => img.image_path);
+    const { error: storageError } = await supabase.storage
+      .from("marketplace-images")
+      .remove(paths);
+
+    if (storageError) {
+      console.warn(
+        `Failed to delete images from storage for listing ${listingId}`,
+        storageError,
+      );
+    }
+  }
+
+  await logAdminAction(adminId, "delete_listing", "listing", listingId, {});
+}
+
+export async function updateListingAsAdmin(
+  listingId: string,
+  adminId: string,
+  updates: {
+    title?: string;
+    description?: string;
+    category?: string;
+    condition?: string | null;
+    price_cents?: number | null;
+    is_free?: boolean;
+    location?: string | null;
+  },
+): Promise<void> {
+  // Use service role client to bypass RLS
+  const supabase = createServiceClient();
+
+  const updateData: Record<string, unknown> = {};
+  if (updates.title !== undefined) updateData.title = updates.title.trim();
+  if (updates.description !== undefined)
+    updateData.description = updates.description.trim();
+  if (updates.category !== undefined) updateData.category = updates.category;
+  if (updates.condition !== undefined) updateData.condition = updates.condition;
+  if (updates.price_cents !== undefined)
+    updateData.price_cents = updates.price_cents;
+  if (updates.is_free !== undefined) {
+    updateData.is_free = updates.is_free;
+    // Normalize: if setting is_free to true, ensure price_cents is null
+    if (updates.is_free === true) {
+      updateData.price_cents = null;
+    }
+  }
+  if (updates.location !== undefined)
+    updateData.location_text = updates.location?.trim() || null;
+
+  // Guard against empty updates
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("At least one field must be provided for update");
+  }
+
+  const { error } = await supabase
+    .from("marketplace_listings")
+    .update(updateData)
+    .eq("id", listingId);
+
+  if (error) throw error;
+
+  await logAdminAction(adminId, "update_listing", "listing", listingId, {
+    updates,
+  });
 }
