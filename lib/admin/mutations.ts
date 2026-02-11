@@ -102,17 +102,10 @@ export async function deleteListingAsAdmin(
   const supabase = createServiceClient();
 
   // Get image paths before deletion
-  const { data: images, error: imagesError } = await supabase
+  const { data: images } = await supabase
     .from("marketplace_listing_images")
     .select("image_path")
     .eq("listing_id", listingId);
-
-  if (imagesError) {
-    console.error(
-      `Failed to fetch images for listing ${listingId} before deletion`,
-      imagesError,
-    );
-  }
 
   // Delete listing (cascades to images via DB) and verify deletion
   const { data, error } = await supabase
@@ -129,16 +122,7 @@ export async function deleteListingAsAdmin(
   // Attempt to delete images from storage (best effort)
   if (images && images.length > 0) {
     const paths = images.map((img) => img.image_path);
-    const { error: storageError } = await supabase.storage
-      .from("marketplace-images")
-      .remove(paths);
-
-    if (storageError) {
-      console.warn(
-        `Failed to delete images from storage for listing ${listingId}`,
-        storageError,
-      );
-    }
+    await supabase.storage.from("marketplace-images").remove(paths);
   }
 
   await logAdminAction(adminId, "delete_listing", "listing", listingId, {});

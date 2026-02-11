@@ -182,13 +182,8 @@ export async function deleteListing(
 
   // Attempt to delete images from storage (best effort)
   if (images && images.length > 0) {
-    try {
-      const paths = images.map((img) => img.image_path);
-      await supabase.storage.from("marketplace-images").remove(paths);
-    } catch {
-      // Log but don't fail - images can be cleaned up later
-      console.warn(`Failed to delete images for listing ${listingId}`);
-    }
+    const paths = images.map((img) => img.image_path);
+    await supabase.storage.from("marketplace-images").remove(paths);
   }
 }
 

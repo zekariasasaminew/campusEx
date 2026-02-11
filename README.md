@@ -34,11 +34,18 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a `.env.local` file in the root directory:
+Copy `.env.example` to `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Then fill in your Supabase credentials:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 Get these values from your Supabase project settings:
@@ -46,7 +53,9 @@ Get these values from your Supabase project settings:
 1. Go to [app.supabase.com](https://app.supabase.com)
 2. Select your project
 3. Go to Settings > API
-4. Copy the Project URL and anon/public key
+4. Copy the Project URL, anon/public key, and service_role key
+
+**⚠️ Security Note**: The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Keep it secret! Never commit it to Git.
 
 ### 4. Run the development server
 
@@ -155,10 +164,33 @@ npm run start
 
 ## Environment Variables
 
-| Variable                        | Description                   | Required |
-| ------------------------------- | ----------------------------- | -------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL     | Yes      |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key | Yes      |
+| Variable                        | Description                                | Required |
+| ------------------------------- | ------------------------------------------ | -------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL                  | Yes      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key              | Yes      |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Service role key (for admin operations) 🔒 | Yes      |
+
+## Supabase Configuration
+
+### Required Auth Settings
+
+Before deploying, configure these in Supabase Dashboard → Authentication:
+
+**URL Configuration**:
+
+- Site URL: `https://your-domain.vercel.app` (your production URL)
+- Redirect URLs: Add `https://your-domain.vercel.app/auth/callback`
+
+**Email Auth**:
+
+- Provider: Enable Email (Magic Link)
+- Confirm email: Recommended for production
+- Email templates: Verify magic link redirects to `/auth/callback`
+
+**Security**:
+
+- Only @augustana.edu emails can sign in (enforced in code)
+- All routes require authentication except sign-in page
 
 ## Contributing
 

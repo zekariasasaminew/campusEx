@@ -102,8 +102,13 @@ export async function getInboxConversations(
     const otherParticipantId =
       conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
 
-    const listing = conv.marketplace_listings as unknown as Record<string, unknown>;
-    const images = (listing.marketplace_listing_images as Array<Record<string, unknown>>) || [];
+    const listing = conv.marketplace_listings as unknown as Record<
+      string,
+      unknown
+    >;
+    const images =
+      (listing.marketplace_listing_images as Array<Record<string, unknown>>) ||
+      [];
 
     return {
       id: conv.id,
@@ -152,12 +157,6 @@ export async function getConversationById(
     .single();
 
   if (error) {
-    console.error("getConversationById error:", {
-      conversationId,
-      userId,
-      error,
-      data,
-    });
     return null;
   }
 
@@ -165,8 +164,13 @@ export async function getConversationById(
   const otherParticipantId =
     conv.buyer_id === userId ? conv.seller_id : conv.buyer_id;
 
-  const listing = conv.marketplace_listings as unknown as Record<string, unknown>;
-  const images = (listing.marketplace_listing_images as Array<Record<string, unknown>>) || [];
+  const listing = conv.marketplace_listings as unknown as Record<
+    string,
+    unknown
+  >;
+  const images =
+    (listing.marketplace_listing_images as Array<Record<string, unknown>>) ||
+    [];
 
   const { data: otherUser } = await supabase
     .from("users")
@@ -294,11 +298,7 @@ export async function getOrCreateConversation(
     .single();
 
   if (listingError) {
-    console.error("getOrCreateConversation - listing fetch error:", {
-      listingId,
-      buyerId,
-      error: listingError,
-    });
+    throw new Error("Failed to fetch listing");
   }
 
   if (!listing) throw new Error("Listing not found");
@@ -314,12 +314,7 @@ export async function getOrCreateConversation(
     .maybeSingle();
 
   if (existingError) {
-    console.error("getOrCreateConversation - existing check error:", {
-      listingId,
-      buyerId,
-      sellerId: listing.seller_id,
-      error: existingError,
-    });
+    throw new Error("Failed to check for existing conversation");
   }
 
   if (existing) return existing.id;
@@ -335,12 +330,6 @@ export async function getOrCreateConversation(
     .single();
 
   if (error) {
-    console.error("getOrCreateConversation - insert error:", {
-      listingId,
-      buyerId,
-      sellerId: listing.seller_id,
-      error,
-    });
     throw error;
   }
   return newConv.id;
