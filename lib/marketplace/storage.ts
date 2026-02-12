@@ -81,6 +81,10 @@ export async function uploadListingImages(
     throw new Error(`All image uploads failed: ${errors.join("; ")}`);
   }
 
+  if (errors.length > 0) {
+    console.warn(`Some images failed to upload: ${errors.join("; ")}`);
+  }
+
   return uploadedImages;
 }
 
@@ -115,7 +119,13 @@ export async function deleteListingImages(
   // Delete from storage (best effort)
   if (images && images.length > 0) {
     const paths = images.map((img) => img.image_path);
-    await supabase.storage.from("marketplace-images").remove(paths);
+    try {
+      await supabase.storage.from("marketplace-images").remove(paths);
+    } catch (error) {
+      console.warn(
+        `Failed to delete some images from storage: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 }
 
