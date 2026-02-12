@@ -59,11 +59,27 @@ function SignInForm() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle timeout errors gracefully - email might still arrive
+        if (
+          error.message?.includes("timeout") ||
+          error.message?.includes("504")
+        ) {
+          setOtpSent(true);
+          setToast({
+            message:
+              "Email is being sent (this may take a moment). Check your inbox.",
+            variant: "info",
+            isVisible: true,
+          });
+          return;
+        }
+        throw error;
+      }
 
       setOtpSent(true);
       setToast({
-        message: "Check your email for the 6-digit code",
+        message: "Check your email for the verification code",
         variant: "success",
         isVisible: true,
       });
@@ -84,7 +100,7 @@ function SignInForm() {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      
+
       // Validate domain before making auth call
       if (!normalizedEmail.endsWith("@augustana.edu")) {
         throw new Error("Only @augustana.edu email addresses are allowed");
