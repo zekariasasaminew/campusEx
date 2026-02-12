@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, type FormEvent, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
@@ -10,7 +10,10 @@ import styles from "./page.module.css";
 
 function SignInForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
@@ -52,22 +55,22 @@ function SignInForm() {
       const { error } = await supabase.auth.signInWithOtp({
         email: normalizedEmail,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          shouldCreateUser: true,
         },
       });
 
       if (error) throw error;
 
+      setOtpSent(true);
       setToast({
-        message: "Check your email for the login link",
+        message: "Check your email for the 6-digit code",
         variant: "success",
         isVisible: true,
       });
-      setEmail("");
     } catch (error) {
       setToast({
         message:
-          error instanceof Error ? error.message : "Failed to send login link",
+          error instanceof Error ? error.message : "Failed to send code",
         variant: "error",
         isVisible: true,
       });
@@ -76,31 +79,110 @@ function SignInForm() {
     }
   };
 
+  const handleVerifyOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const supabase = createClient();
+
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: normalizedEmail,
+        token: otp,
+        type: "email",
+      });
+
+      if (error) throw error;
+
+      // Validate email domain after authentication
+      if (data?.user?.email) {
+        const userEmail = data.user.email.trim().toLowerCase();
+        if (!userEmail.endsWith("@augustana.edu")) {
+          await supabase.auth.signOut();
+          throw new Error("Only @augustana.edu email addresses are allowed");
+        }
+      }
+
+      // Redirect to marketplace on success
+      router.push("/marketplace");
+    } catch (error) {
+      setToast({
+        message:
+          error instanceof Error ? error.message : "Invalid or expired code",
+        variant: "error",
+        isVisible: true,
+      });
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className={styles.content}>
         <h1 className={styles.title}>Sign in to CampusEx</h1>
-        <p className={styles.description}>
-          Enter your Augustana email to receive a magic link
-        </p>
-        <form onSubmit={handleSignIn} className={styles.form}>
-          <Input
-            type="email"
-            label="Augustana Email"
-            placeholder="you@augustana.edu"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            fullWidth
-            disabled={loading}
-          />
-          <p className={styles.emailNote}>
-            Only @augustana.edu email addresses are allowed
-          </p>
-          <Button type="submit" fullWidth disabled={loading || !email}>
-            {loading ? "Sending..." : "Send magic link"}
-          </Button>
-        </form>
+        {!otpSent ? (
+          <>
+            <p className={styles.description}>
+              Enter your Augustana email to receive a verification code
+            </p>
+            <form onSubmit={handleSignIn} className={styles.form}>
+              <Input
+                type="email"
+                label="Augustana Email"
+                placeholder="you@augustana.edu"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                fullWidth
+                disabled={loading}
+              />
+              <p className={styles.emailNote}>
+                Only @augustana.edu email addresses are allowed
+              </p>
+              <Button type="submit" fullWidth disabled={loading || !email}>
+                {loading ? "Sending..." : "Send verification code"}
+              </Button>
+            </form>
+          </>
+        ) : (
+          <>
+            <p className={styles.description}>
+              Enter the 6-digit code sent to {email}
+            </p>
+            <form onSubmit={handleVerifyOtp} className={styles.form}>
+              <Input
+                type="text"
+                label="Verification Code"
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  setOtp(value);
+                }}
+                required
+                fullWidth
+                disabled={loading}
+                maxLength={6}
+              />
+              <Button type="submit" fullWidth disabled={loading || otp.length !== 6}>
+                {loading ? "Verifying..." : "Verify code"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                fullWidth
+                onClick={() => {
+                  setOtpSent(false);
+                  setOtp("");
+                }}
+                disabled={loading}
+              >
+                Use a different email
+              </Button>
+            </form>
+          </>
+        )}
       </div>
       <Toast
         message={toast.message}
