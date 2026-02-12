@@ -17,6 +17,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Policy: Allow authenticated users to upload images
 -- Note: Server actions enforce that users can only upload for their own listings
+DROP POLICY IF EXISTS "Authenticated users can upload marketplace images" ON storage.objects;
 CREATE POLICY "Authenticated users can upload marketplace images"
 ON storage.objects FOR INSERT
 TO authenticated
@@ -28,6 +29,7 @@ WITH CHECK (
 );
 
 -- Policy: Allow authenticated users to update/replace their uploaded images
+DROP POLICY IF EXISTS "Authenticated users can update their marketplace images" ON storage.objects;
 CREATE POLICY "Authenticated users can update their marketplace images"
 ON storage.objects FOR UPDATE
 TO authenticated
@@ -38,6 +40,7 @@ USING (
 );
 
 -- Policy: Allow authenticated users to delete their images
+DROP POLICY IF EXISTS "Authenticated users can delete their marketplace images" ON storage.objects;
 CREATE POLICY "Authenticated users can delete their marketplace images"
 ON storage.objects FOR DELETE
 TO authenticated
@@ -48,6 +51,7 @@ USING (
 );
 
 -- Policy: Allow anyone to view marketplace images (public bucket)
+DROP POLICY IF EXISTS "Anyone can view marketplace images" ON storage.objects;
 CREATE POLICY "Anyone can view marketplace images"
 ON storage.objects FOR SELECT
 TO public
