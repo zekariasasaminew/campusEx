@@ -84,6 +84,12 @@ function SignInForm() {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+      
+      // Validate domain before making auth call
+      if (!normalizedEmail.endsWith("@augustana.edu")) {
+        throw new Error("Only @augustana.edu email addresses are allowed");
+      }
+
       const supabase = createClient();
 
       const { data, error } = await supabase.auth.verifyOtp({
@@ -94,7 +100,7 @@ function SignInForm() {
 
       if (error) throw error;
 
-      // Validate email domain after authentication
+      // Double-check email domain after authentication
       if (data?.user?.email) {
         const userEmail = data.user.email.trim().toLowerCase();
         if (!userEmail.endsWith("@augustana.edu")) {
@@ -112,6 +118,7 @@ function SignInForm() {
         variant: "error",
         isVisible: true,
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -160,6 +167,8 @@ function SignInForm() {
                 required
                 fullWidth
                 disabled={loading}
+                inputMode="numeric"
+                autoComplete="one-time-code"
               />
               <Button
                 type="submit"
