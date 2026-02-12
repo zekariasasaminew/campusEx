@@ -69,8 +69,7 @@ function SignInForm() {
       });
     } catch (error) {
       setToast({
-        message:
-          error instanceof Error ? error.message : "Failed to send code",
+        message: error instanceof Error ? error.message : "Failed to send code",
         variant: "error",
         isVisible: true,
       });
@@ -90,7 +89,7 @@ function SignInForm() {
       const { data, error } = await supabase.auth.verifyOtp({
         email: normalizedEmail,
         token: otp,
-        type: "email",
+        type: "magiclink",
       });
 
       if (error) throw error;
@@ -147,25 +146,26 @@ function SignInForm() {
           </>
         ) : (
           <>
-            <p className={styles.description}>
-              Enter the 6-digit code sent to {email}
-            </p>
+            <p className={styles.description}>Enter the code sent to {email}</p>
             <form onSubmit={handleVerifyOtp} className={styles.form}>
               <Input
                 type="text"
                 label="Verification Code"
-                placeholder="000000"
+                placeholder="00000000"
                 value={otp}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  const value = e.target.value.replace(/\D/g, "");
                   setOtp(value);
                 }}
                 required
                 fullWidth
                 disabled={loading}
-                maxLength={6}
               />
-              <Button type="submit" fullWidth disabled={loading || otp.length !== 6}>
+              <Button
+                type="submit"
+                fullWidth
+                disabled={loading || otp.length < 6}
+              >
                 {loading ? "Verifying..." : "Verify code"}
               </Button>
               <Button
