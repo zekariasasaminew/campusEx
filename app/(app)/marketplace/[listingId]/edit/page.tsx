@@ -15,6 +15,10 @@ import type {
 } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
+interface CreateListingInputWithRemoval extends CreateListingInput {
+  imagesToRemove?: string[];
+}
+
 interface EditListingPageProps {
   params: Promise<{ listingId: string }>;
 }
@@ -56,9 +60,8 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     try {
       // Convert CreateListingInput to UpdateListingInput
       // Extract imagesToRemove if present (added by form component)
-      const imagesToRemove = (data as any).imagesToRemove as
-        | string[]
-        | undefined;
+      const dataWithRemoval = data as CreateListingInputWithRemoval;
+      const imagesToRemove = dataWithRemoval.imagesToRemove;
 
       const updateData: UpdateListingInput = {
         title: data.title,

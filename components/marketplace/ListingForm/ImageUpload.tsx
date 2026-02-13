@@ -7,12 +7,6 @@ import { IMAGE_CONSTRAINTS } from "@/lib/marketplace/constants";
 import { compressImages } from "@/lib/marketplace/image-utils";
 import styles from "./ImageUpload.module.css";
 
-interface ImagePreview {
-  id?: string; // ID if it's an existing image
-  url: string; // Either object URL for File or image_url for existing
-  file?: File; // Present if it's a new upload
-}
-
 interface ImageUploadProps {
   images: File[];
   existingImages?: Array<{ id: string; url: string }>; // Existing images from DB

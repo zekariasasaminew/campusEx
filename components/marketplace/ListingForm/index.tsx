@@ -14,6 +14,10 @@ import { Button } from "@/components/ui/button";
 import { validateCreateListing } from "@/lib/marketplace/validators";
 import styles from "./ListingForm.module.css";
 
+interface CreateListingInputWithRemoval extends CreateListingInput {
+  imagesToRemove?: string[];
+}
+
 interface ListingFormProps {
   onSubmit: (input: CreateListingInput) => Promise<void>;
   onCancel: () => void;
@@ -60,10 +64,11 @@ export function ListingForm({
     }
 
     try {
-      // Pass form data. Parent component (edit page) can access imagesToRemove via data attribute
-      const submitData = formData as CreateListingInput;
-      // Store imagesToRemove in a way the parent can access
-      (submitData as any).imagesToRemove = imagesToRemove;
+      // Pass form data with removed images info
+      const submitData: CreateListingInputWithRemoval = {
+        ...(formData as CreateListingInput),
+        imagesToRemove,
+      };
       await onSubmit(submitData);
     } catch (error) {
       setErrors({
