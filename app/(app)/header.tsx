@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MessageSquare } from "lucide-react";
+import { Flag } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ProfileMenu } from "@/components/ui/profile-menu";
@@ -28,7 +28,7 @@ export function Header() {
             aria-label="Send Feedback"
             title="Send Feedback"
           >
-            <MessageSquare size={20} />
+            <Flag size={20} />
           </button>
           <NotificationBell />
           <ProfileMenu />
