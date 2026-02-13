@@ -19,7 +19,7 @@ export function Header() {
           <button
             onClick={() =>
               window.open(
-                "https://forms.google.com/YOUR_FORM_ID", // Replace with your Google Form URL
+                "https://forms.gle/VWPTmwuFqL6BjDXR8", // Replace with your Google Form URL
                 "_blank",
                 "noopener,noreferrer",
               )
