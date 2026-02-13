@@ -14,8 +14,12 @@ import { Button } from "@/components/ui/button";
 import { validateCreateListing } from "@/lib/marketplace/validators";
 import styles from "./ListingForm.module.css";
 
+export type ListingFormSubmitInput = CreateListingInput & {
+  imagesToRemove?: string[];
+};
+
 interface ListingFormProps {
-  onSubmit: (input: CreateListingInput) => Promise<void>;
+  onSubmit: (input: ListingFormSubmitInput) => Promise<void>;
   onCancel: () => void;
   initialData?: ListingDetail;
   isSubmitting?: boolean;
@@ -38,6 +42,15 @@ export function ListingForm({
     images: [],
     agreed_to_rules: false,
   });
+  const [existingImages, setExistingImages] = useState<
+    Array<{ id: string; url: string }>
+  >(
+    initialData?.images?.map((img) => ({
+      id: img.id,
+      url: img.image_url || "",
+    })) || [],
+  );
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,12 +59,35 @@ export function ListingForm({
 
     const validation = validateCreateListing(formData);
     if (!validation.isValid) {
-      setErrors(validation.errors);
-      return;
+      // Filter out only the "at least one image required" error in edit mode
+      const filteredErrors = { ...validation.errors };
+
+      if (
+        initialData &&
+        filteredErrors.images === "At least one image is required"
+      ) {
+        // In edit mode, check total image count including existing
+        const totalImages =
+          existingImages.length + (formData.images?.length || 0);
+        if (totalImages > 0) {
+          // We have at least one image (existing or new), remove only this specific error
+          delete filteredErrors.images;
+        }
+      }
+
+      if (Object.keys(filteredErrors).length > 0) {
+        setErrors(filteredErrors);
+        return;
+      }
     }
 
     try {
-      await onSubmit(formData as CreateListingInput);
+      // Pass form data with removed images info
+      const submitData: ListingFormSubmitInput = {
+        ...(formData as CreateListingInput),
+        imagesToRemove,
+      };
+      await onSubmit(submitData);
     } catch (error) {
       setErrors({
         submit:
@@ -74,6 +110,11 @@ export function ListingForm({
     }
   };
 
+  const handleRemoveExistingImage = (imageId: string) => {
+    setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+    setImagesToRemove((prev) => [...prev, imageId]);
+  };
+
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <BasicFields
@@ -91,8 +132,10 @@ export function ListingForm({
 
       <ImageUpload
         images={formData.images || []}
+        existingImages={existingImages}
         errors={errors}
         onChange={(images: File[]) => updateField("images", images)}
+        onRemoveExisting={handleRemoveExistingImage}
       />
 
       <PriceFields
