@@ -57,7 +57,7 @@ export function ImageUpload({
     // Calculate available slots BEFORE compression
     const totalCount = existingImages.length + images.length;
     const availableSlots = IMAGE_CONSTRAINTS.maxCount - totalCount;
-    
+
     if (availableSlots <= 0) return; // No slots available
 
     // Limit files to available slots BEFORE compressing to avoid unnecessary work
@@ -193,7 +193,11 @@ export function ImageUpload({
                   onClick={() => handleRemoveExisting(image.id)}
                   className={styles.removeButton}
                   disabled={isLastImage}
-                  title={isLastImage ? "At least one image is required" : "Remove image"}
+                  title={
+                    isLastImage
+                      ? "At least one image is required"
+                      : "Remove image"
+                  }
                 >
                   Remove
                 </Button>
@@ -220,7 +224,11 @@ export function ImageUpload({
                   onClick={() => handleRemove(index)}
                   className={styles.removeButton}
                   disabled={isLastImage}
-                  title={isLastImage ? "At least one image is required" : "Remove image"}
+                  title={
+                    isLastImage
+                      ? "At least one image is required"
+                      : "Remove image"
+                  }
                 >
                   Remove
                 </Button>
