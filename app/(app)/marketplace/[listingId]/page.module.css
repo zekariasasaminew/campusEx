@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  width: 100%;
 }
 
 .breadcrumb {
@@ -39,12 +40,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-2xl);
+  width: 100%;
+  min-width: 0;
 }
 
 .gallery {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  min-width: 0;
+  width: 100%;
 }
 
 .mainImage {
@@ -114,6 +119,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  min-width: 0;
+  width: 100%;
 }
 
 .header {
