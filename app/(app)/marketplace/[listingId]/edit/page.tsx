@@ -55,7 +55,11 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     setIsSubmitting(true);
     try {
       // Convert CreateListingInput to UpdateListingInput
-      // When editing, new images from form go to images_to_add
+      // Extract imagesToRemove if present (added by form component)
+      const imagesToRemove = (data as any).imagesToRemove as
+        | string[]
+        | undefined;
+
       const updateData: UpdateListingInput = {
         title: data.title,
         description: data.description,
@@ -65,8 +69,10 @@ export default function EditListingPage({ params }: EditListingPageProps) {
         is_free: data.is_free,
         location: data.location,
         images_to_add: data.images.length > 0 ? data.images : undefined,
-        // Note: images_to_remove would be handled by a dedicated image management UI
-        // For now, this form only adds new images
+        images_to_remove:
+          imagesToRemove && imagesToRemove.length > 0
+            ? imagesToRemove
+            : undefined,
       };
 
       const result = await submitListingUpdate(listingId, updateData);

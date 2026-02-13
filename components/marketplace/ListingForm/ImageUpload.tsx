@@ -7,13 +7,27 @@ import { IMAGE_CONSTRAINTS } from "@/lib/marketplace/constants";
 import { compressImages } from "@/lib/marketplace/image-utils";
 import styles from "./ImageUpload.module.css";
 
-interface ImageUploadProps {
-  images: File[];
-  errors: Record<string, string>;
-  onChange: (images: File[]) => void;
+interface ImagePreview {
+  id?: string; // ID if it's an existing image
+  url: string; // Either object URL for File or image_url for existing
+  file?: File; // Present if it's a new upload
 }
 
-export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
+interface ImageUploadProps {
+  images: File[];
+  existingImages?: Array<{ id: string; url: string }>; // Existing images from DB
+  errors: Record<string, string>;
+  onChange: (images: File[]) => void;
+  onRemoveExisting?: (imageId: string) => void; // Callback for removing existing images
+}
+
+export function ImageUpload({
+  images,
+  existingImages = [],
+  errors,
+  onChange,
+  onRemoveExisting,
+}: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [compressing, setCompressing] = useState(false);
@@ -58,9 +72,13 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
         },
       );
 
-      const combined = [...images, ...compressedFiles];
-      const limited = combined.slice(0, IMAGE_CONSTRAINTS.maxCount);
-      onChange(limited);
+      // Limit total images (existing + new)
+      const totalCount = existingImages.length + images.length;
+      const availableSlots = IMAGE_CONSTRAINTS.maxCount - totalCount;
+      const filesToAdd = compressedFiles.slice(0, Math.max(0, availableSlots));
+
+      const combined = [...images, ...filesToAdd];
+      onChange(combined);
     } catch (error) {
       console.error("Error processing images:", error);
     } finally {
@@ -80,25 +98,38 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
     onChange(updated);
   };
 
+  const handleRemoveExisting = (imageId: string) => {
+    if (onRemoveExisting) {
+      onRemoveExisting(imageId);
+    }
+  };
+
+  const totalImageCount = existingImages.length + images.length;
+
   return (
     <div className={styles.section}>
       <div>
         <h3 className={styles.sectionTitle}>Photos</h3>
         <p className={styles.hint}>
-          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (optimized
-          automatically)
+          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (
+          {totalImageCount}/{IMAGE_CONSTRAINTS.maxCount})
         </p>
       </div>
 
       <div
-        className={`${styles.dropzone} ${dragActive ? styles.active : ""} ${compressing ? styles.disabled : ""}`}
+        className={`${styles.dropzone} ${dragActive ? styles.active : ""} ${compressing || totalImageCount >= IMAGE_CONSTRAINTS.maxCount ? styles.disabled : ""}`}
         onDragOver={(e) => {
           e.preventDefault();
-          if (!compressing) setDragActive(true);
+          if (!compressing && totalImageCount < IMAGE_CONSTRAINTS.maxCount)
+            setDragActive(true);
         }}
         onDragLeave={() => setDragActive(false)}
         onDrop={handleDrop}
-        onClick={() => !compressing && fileInputRef.current?.click()}
+        onClick={() =>
+          !compressing &&
+          totalImageCount < IMAGE_CONSTRAINTS.maxCount &&
+          fileInputRef.current?.click()
+        }
       >
         <div className={styles.dropzoneContent}>
           {compressing ? (
@@ -106,6 +137,8 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
               <div className={styles.spinner} />
               <p>Optimizing images... {compressionProgress}%</p>
             </>
+          ) : totalImageCount >= IMAGE_CONSTRAINTS.maxCount ? (
+            <p>Maximum number of images reached</p>
           ) : (
             <>
               <svg
@@ -132,16 +165,39 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
           multiple
           className={styles.hiddenInput}
           onChange={(e) => handleFiles(e.target.files)}
-          disabled={compressing}
+          disabled={compressing || totalImageCount >= IMAGE_CONSTRAINTS.maxCount}
         />
       </div>
 
       {errors.images && <div className={styles.error}>{errors.images}</div>}
 
-      {images.length > 0 && (
+      {(existingImages.length > 0 || images.length > 0) && (
         <div className={styles.previews}>
+          {/* Existing images first */}
+          {existingImages.map((image) => (
+            <div key={image.id} className={styles.preview}>
+              <div className={styles.imageWrapper}>
+                <Image
+                  src={image.url}
+                  alt="Existing image"
+                  fill
+                  className={styles.image}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRemoveExisting(image.id)}
+                className={styles.removeButton}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          {/* New uploads */}
           {images.map((file, index) => (
-            <div key={index} className={styles.preview}>
+            <div key={`new-${index}`} className={styles.preview}>
               <div className={styles.imageWrapper}>
                 <Image
                   src={URL.createObjectURL(file)}

@@ -38,6 +38,15 @@ export function ListingForm({
     images: [],
     agreed_to_rules: false,
   });
+  const [existingImages, setExistingImages] = useState<
+    Array<{ id: string; url: string }>
+  >(
+    initialData?.images?.map((img) => ({
+      id: img.id,
+      url: img.image_url || "",
+    })) || [],
+  );
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +60,11 @@ export function ListingForm({
     }
 
     try {
-      await onSubmit(formData as CreateListingInput);
+      // Pass form data. Parent component (edit page) can access imagesToRemove via data attribute
+      const submitData = formData as CreateListingInput;
+      // Store imagesToRemove in a way the parent can access
+      (submitData as any).imagesToRemove = imagesToRemove;
+      await onSubmit(submitData);
     } catch (error) {
       setErrors({
         submit:
@@ -74,6 +87,11 @@ export function ListingForm({
     }
   };
 
+  const handleRemoveExistingImage = (imageId: string) => {
+    setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+    setImagesToRemove((prev) => [...prev, imageId]);
+  };
+
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <BasicFields
@@ -91,8 +109,10 @@ export function ListingForm({
 
       <ImageUpload
         images={formData.images || []}
+        existingImages={existingImages}
         errors={errors}
         onChange={(images: File[]) => updateField("images", images)}
+        onRemoveExisting={handleRemoveExistingImage}
       />
 
       <PriceFields
