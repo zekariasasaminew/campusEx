@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { IMAGE_CONSTRAINTS } from "@/lib/marketplace/constants";
@@ -27,14 +27,17 @@ export function ImageUpload({
   const [compressing, setCompressing] = useState(false);
   const [compressionProgress, setCompressionProgress] = useState(0);
 
+  // Memoize object URLs to prevent memory leaks and unnecessary re-creation
+  const imageUrls = useMemo(() => {
+    return images.map((file) => URL.createObjectURL(file));
+  }, [images]);
+
   useEffect(() => {
     return () => {
-      images.forEach((file) => {
-        const url = URL.createObjectURL(file);
-        URL.revokeObjectURL(url);
-      });
+      // Cleanup: revoke the memoized URLs
+      imageUrls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [images]);
+  }, [imageUrls]);
 
   const handleFiles = async (fileList: FileList | null) => {
     if (!fileList) return;
@@ -211,7 +214,7 @@ export function ImageUpload({
               <div key={`new-${index}`} className={styles.preview}>
                 <div className={styles.imageWrapper}>
                   <Image
-                    src={URL.createObjectURL(file)}
+                    src={imageUrls[index]}
                     alt={`Preview ${index + 1}`}
                     fill
                     className={styles.image}

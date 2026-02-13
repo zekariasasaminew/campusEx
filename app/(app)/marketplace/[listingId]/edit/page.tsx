@@ -2,22 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ListingForm } from "@/components/marketplace/ListingForm";
+import {
+  ListingForm,
+  type ListingFormSubmitInput,
+} from "@/components/marketplace/ListingForm";
 import { Spinner } from "@/components/ui/spinner";
 import {
   fetchListingDetail,
   submitListingUpdate,
 } from "@/lib/marketplace/actions";
-import type {
-  CreateListingInput,
-  UpdateListingInput,
-  ListingDetail,
-} from "@/lib/marketplace/types";
+import type { UpdateListingInput, ListingDetail } from "@/lib/marketplace/types";
 import styles from "./page.module.css";
-
-interface CreateListingInputWithRemoval extends CreateListingInput {
-  imagesToRemove?: string[];
-}
 
 interface EditListingPageProps {
   params: Promise<{ listingId: string }>;
@@ -53,16 +48,12 @@ export default function EditListingPage({ params }: EditListingPageProps) {
     loadListing();
   }, [loadListing]);
 
-  const handleSubmit = async (data: CreateListingInput) => {
+  const handleSubmit = async (data: ListingFormSubmitInput) => {
     if (isSubmitting) return; // Prevent double submission
 
     setIsSubmitting(true);
     try {
-      // Convert CreateListingInput to UpdateListingInput
-      // Extract imagesToRemove if present (added by form component)
-      const dataWithRemoval = data as CreateListingInputWithRemoval;
-      const imagesToRemove = dataWithRemoval.imagesToRemove;
-
+      // Convert ListingFormSubmitInput to UpdateListingInput
       const updateData: UpdateListingInput = {
         title: data.title,
         description: data.description,
@@ -73,8 +64,8 @@ export default function EditListingPage({ params }: EditListingPageProps) {
         location: data.location,
         images_to_add: data.images.length > 0 ? data.images : undefined,
         images_to_remove:
-          imagesToRemove && imagesToRemove.length > 0
-            ? imagesToRemove
+          data.imagesToRemove && data.imagesToRemove.length > 0
+            ? data.imagesToRemove
             : undefined,
       };
 

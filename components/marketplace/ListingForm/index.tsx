@@ -14,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import { validateCreateListing } from "@/lib/marketplace/validators";
 import styles from "./ListingForm.module.css";
 
-interface CreateListingInputWithRemoval extends CreateListingInput {
+export type ListingFormSubmitInput = CreateListingInput & {
   imagesToRemove?: string[];
-}
+};
 
 interface ListingFormProps {
-  onSubmit: (input: CreateListingInput) => Promise<void>;
+  onSubmit: (input: ListingFormSubmitInput) => Promise<void>;
   onCancel: () => void;
   initialData?: ListingDetail;
   isSubmitting?: boolean;
@@ -59,15 +59,18 @@ export function ListingForm({
 
     const validation = validateCreateListing(formData);
     if (!validation.isValid) {
-      // Filter out image validation error if we're editing and have existing images
+      // Filter out only the "at least one image required" error in edit mode
       const filteredErrors = { ...validation.errors };
 
-      if (initialData) {
+      if (
+        initialData &&
+        filteredErrors.images === "At least one image is required"
+      ) {
         // In edit mode, check total image count including existing
         const totalImages =
           existingImages.length + (formData.images?.length || 0);
         if (totalImages > 0) {
-          // We have at least one image (existing or new), remove the error
+          // We have at least one image (existing or new), remove only this specific error
           delete filteredErrors.images;
         }
       }
@@ -80,7 +83,7 @@ export function ListingForm({
 
     try {
       // Pass form data with removed images info
-      const submitData: CreateListingInputWithRemoval = {
+      const submitData: ListingFormSubmitInput = {
         ...(formData as CreateListingInput),
         imagesToRemove,
       };

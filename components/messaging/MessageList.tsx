@@ -15,9 +15,12 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   const prevMessageCountRef = useRef(messages.length);
 
   useEffect(() => {
-    // Only auto-scroll if new messages were added, not on initial load or polling updates
-    if (messages.length > prevMessageCountRef.current) {
-      // Check if user is near bottom before auto-scrolling
+    // Handle initial load first
+    if (prevMessageCountRef.current === 0 && messages.length > 0) {
+      // Initial load - scroll to bottom immediately
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    } else if (messages.length > prevMessageCountRef.current) {
+      // New messages added - only auto-scroll if user is near bottom
       const container = containerRef.current;
       if (container) {
         const isNearBottom =
@@ -29,9 +32,6 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
           bottomRef.current?.scrollIntoView({ behavior: "smooth" });
         }
       }
-    } else if (prevMessageCountRef.current === 0 && messages.length > 0) {
-      // Initial load - scroll to bottom
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
     }
     prevMessageCountRef.current = messages.length;
   }, [messages]);
