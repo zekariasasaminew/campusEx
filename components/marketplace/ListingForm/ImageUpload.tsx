@@ -54,24 +54,28 @@ export function ImageUpload({
 
     if (validFiles.length === 0) return;
 
+    // Calculate available slots BEFORE compression
+    const totalCount = existingImages.length + images.length;
+    const availableSlots = IMAGE_CONSTRAINTS.maxCount - totalCount;
+    
+    if (availableSlots <= 0) return; // No slots available
+
+    // Limit files to available slots BEFORE compressing to avoid unnecessary work
+    const filesToCompress = validFiles.slice(0, availableSlots);
+
     try {
       setCompressing(true);
       setCompressionProgress(0);
 
-      // Compress images to reduce size
+      // Compress only the files we'll actually use
       const compressedFiles = await compressImages(
-        validFiles,
+        filesToCompress,
         (current, total) => {
           setCompressionProgress(Math.round((current / total) * 100));
         },
       );
 
-      // Limit total images (existing + new)
-      const totalCount = existingImages.length + images.length;
-      const availableSlots = IMAGE_CONSTRAINTS.maxCount - totalCount;
-      const filesToAdd = compressedFiles.slice(0, Math.max(0, availableSlots));
-
-      const combined = [...images, ...filesToAdd];
+      const combined = [...images, ...compressedFiles];
       onChange(combined);
     } catch (error) {
       console.error("Error processing images:", error);
