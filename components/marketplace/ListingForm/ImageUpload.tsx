@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { IMAGE_CONSTRAINTS } from "@/lib/marketplace/constants";
+import { compressImages } from "@/lib/marketplace/image-utils";
 import styles from "./ImageUpload.module.css";
 
 interface ImageUploadProps {
@@ -15,6 +16,8 @@ interface ImageUploadProps {
 export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [compressing, setCompressing] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -25,7 +28,7 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
     };
   }, [images]);
 
-  const handleFiles = (fileList: FileList | null) => {
+  const handleFiles = async (fileList: FileList | null) => {
     if (!fileList) return;
 
     const newFiles = Array.from(fileList);
@@ -33,15 +36,37 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
       if (!file.type.startsWith("image/")) {
         return false;
       }
-      if (file.size > IMAGE_CONSTRAINTS.maxSizeBytes) {
+      // Check if file is too large BEFORE compression
+      if (file.size > IMAGE_CONSTRAINTS.maxSizeBytes * 2) {
+        // Allow 2x limit since we'll compress
         return false;
       }
       return true;
     });
 
-    const combined = [...images, ...validFiles];
-    const limited = combined.slice(0, IMAGE_CONSTRAINTS.maxCount);
-    onChange(limited);
+    if (validFiles.length === 0) return;
+
+    try {
+      setCompressing(true);
+      setCompressionProgress(0);
+
+      // Compress images to reduce size
+      const compressedFiles = await compressImages(
+        validFiles,
+        (current, total) => {
+          setCompressionProgress(Math.round((current / total) * 100));
+        },
+      );
+
+      const combined = [...images, ...compressedFiles];
+      const limited = combined.slice(0, IMAGE_CONSTRAINTS.maxCount);
+      onChange(limited);
+    } catch (error) {
+      console.error("Error processing images:", error);
+    } finally {
+      setCompressing(false);
+      setCompressionProgress(0);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -55,42 +80,50 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
     onChange(updated);
   };
 
-  const maxSizeMB = IMAGE_CONSTRAINTS.maxSizeBytes / 1024 / 1024;
-
   return (
     <div className={styles.section}>
       <div>
         <h3 className={styles.sectionTitle}>Photos</h3>
         <p className={styles.hint}>
-          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (max {maxSizeMB}MB each)
+          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (optimized
+          automatically)
         </p>
       </div>
 
       <div
-        className={`${styles.dropzone} ${dragActive ? styles.active : ""}`}
+        className={`${styles.dropzone} ${dragActive ? styles.active : ""} ${compressing ? styles.disabled : ""}`}
         onDragOver={(e) => {
           e.preventDefault();
-          setDragActive(true);
+          if (!compressing) setDragActive(true);
         }}
         onDragLeave={() => setDragActive(false)}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => !compressing && fileInputRef.current?.click()}
       >
         <div className={styles.dropzoneContent}>
-          <svg
-            className={styles.uploadIcon}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          <p>Click to upload or drag and drop</p>
+          {compressing ? (
+            <>
+              <div className={styles.spinner} />
+              <p>Optimizing images... {compressionProgress}%</p>
+            </>
+          ) : (
+            <>
+              <svg
+                className={styles.uploadIcon}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <p>Click to upload or drag and drop</p>
+            </>
+          )}
         </div>
         <input
           ref={fileInputRef}
@@ -99,6 +132,7 @@ export function ImageUpload({ images, errors, onChange }: ImageUploadProps) {
           multiple
           className={styles.hiddenInput}
           onChange={(e) => handleFiles(e.target.files)}
+          disabled={compressing}
         />
       </div>
 
