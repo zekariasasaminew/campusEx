@@ -11,7 +11,10 @@ import {
   fetchListingDetail,
   submitListingUpdate,
 } from "@/lib/marketplace/actions";
-import type { UpdateListingInput, ListingDetail } from "@/lib/marketplace/types";
+import type {
+  UpdateListingInput,
+  ListingDetail,
+} from "@/lib/marketplace/types";
 import styles from "./page.module.css";
 
 interface EditListingPageProps {
