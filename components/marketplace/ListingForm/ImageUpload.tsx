@@ -105,8 +105,8 @@ export function ImageUpload({
       <div>
         <h3 className={styles.sectionTitle}>Photos</h3>
         <p className={styles.hint}>
-          Add up to {IMAGE_CONSTRAINTS.maxCount} photos (
-          {totalImageCount}/{IMAGE_CONSTRAINTS.maxCount})
+          Add up to {IMAGE_CONSTRAINTS.maxCount} photos ({totalImageCount}/
+          {IMAGE_CONSTRAINTS.maxCount})
         </p>
       </div>
 
@@ -159,7 +159,9 @@ export function ImageUpload({
           multiple
           className={styles.hiddenInput}
           onChange={(e) => handleFiles(e.target.files)}
-          disabled={compressing || totalImageCount >= IMAGE_CONSTRAINTS.maxCount}
+          disabled={
+            compressing || totalImageCount >= IMAGE_CONSTRAINTS.maxCount
+          }
         />
       </div>
 
@@ -168,49 +170,59 @@ export function ImageUpload({
       {(existingImages.length > 0 || images.length > 0) && (
         <div className={styles.previews}>
           {/* Existing images first */}
-          {existingImages.map((image) => (
-            <div key={image.id} className={styles.preview}>
-              <div className={styles.imageWrapper}>
-                <Image
-                  src={image.url}
-                  alt="Existing image"
-                  fill
-                  className={styles.image}
-                />
+          {existingImages.map((image) => {
+            const isLastImage = totalImageCount === 1;
+            return (
+              <div key={image.id} className={styles.preview}>
+                <div className={styles.imageWrapper}>
+                  <Image
+                    src={image.url}
+                    alt="Existing image"
+                    fill
+                    className={styles.image}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemoveExisting(image.id)}
+                  className={styles.removeButton}
+                  disabled={isLastImage}
+                  title={isLastImage ? "At least one image is required" : "Remove image"}
+                >
+                  Remove
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemoveExisting(image.id)}
-                className={styles.removeButton}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
+            );
+          })}
           {/* New uploads */}
-          {images.map((file, index) => (
-            <div key={`new-${index}`} className={styles.preview}>
-              <div className={styles.imageWrapper}>
-                <Image
-                  src={URL.createObjectURL(file)}
-                  alt={`Preview ${index + 1}`}
-                  fill
-                  className={styles.image}
-                />
+          {images.map((file, index) => {
+            const isLastImage = totalImageCount === 1;
+            return (
+              <div key={`new-${index}`} className={styles.preview}>
+                <div className={styles.imageWrapper}>
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    fill
+                    className={styles.image}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove(index)}
+                  className={styles.removeButton}
+                  disabled={isLastImage}
+                  title={isLastImage ? "At least one image is required" : "Remove image"}
+                >
+                  Remove
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemove(index)}
-                className={styles.removeButton}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

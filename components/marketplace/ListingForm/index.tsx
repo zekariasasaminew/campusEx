@@ -59,8 +59,23 @@ export function ListingForm({
 
     const validation = validateCreateListing(formData);
     if (!validation.isValid) {
-      setErrors(validation.errors);
-      return;
+      // Filter out image validation error if we're editing and have existing images
+      const filteredErrors = { ...validation.errors };
+
+      if (initialData) {
+        // In edit mode, check total image count including existing
+        const totalImages =
+          existingImages.length + (formData.images?.length || 0);
+        if (totalImages > 0) {
+          // We have at least one image (existing or new), remove the error
+          delete filteredErrors.images;
+        }
+      }
+
+      if (Object.keys(filteredErrors).length > 0) {
+        setErrors(filteredErrors);
+        return;
+      }
     }
 
     try {

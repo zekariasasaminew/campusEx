@@ -21,7 +21,9 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
       const container = containerRef.current;
       if (container) {
         const isNearBottom =
-          container.scrollHeight - container.scrollTop - container.clientHeight <
+          container.scrollHeight -
+            container.scrollTop -
+            container.clientHeight <
           100;
         if (isNearBottom) {
           bottomRef.current?.scrollIntoView({ behavior: "smooth" });
