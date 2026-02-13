@@ -11,9 +11,27 @@ interface MessageListProps {
 
 export function MessageList({ messages, currentUserId }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevMessageCountRef = useRef(messages.length);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Only auto-scroll if new messages were added, not on initial load or polling updates
+    if (messages.length > prevMessageCountRef.current) {
+      // Check if user is near bottom before auto-scrolling
+      const container = containerRef.current;
+      if (container) {
+        const isNearBottom =
+          container.scrollHeight - container.scrollTop - container.clientHeight <
+          100;
+        if (isNearBottom) {
+          bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    } else if (prevMessageCountRef.current === 0 && messages.length > 0) {
+      // Initial load - scroll to bottom
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    }
+    prevMessageCountRef.current = messages.length;
   }, [messages]);
 
   if (messages.length === 0) {
@@ -27,7 +45,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   }
 
   return (
-    <div className={styles.messageList}>
+    <div className={styles.messageList} ref={containerRef}>
       {messages.map((message) => (
         <MessageItem
           key={message.id}
