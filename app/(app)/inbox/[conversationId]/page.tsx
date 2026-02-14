@@ -56,11 +56,19 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   useEffect(() => {
     if (!conversationId) return;
 
-    loadConversation();
-    markAsRead();
+    const timer = window.setTimeout(() => {
+      void loadConversation();
+      void markAsRead();
+    }, 0);
 
-    const interval = setInterval(loadConversation, 5000);
-    return () => clearInterval(interval);
+    const interval = window.setInterval(() => {
+      void loadConversation();
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.clearInterval(interval);
+    };
   }, [conversationId, loadConversation, markAsRead]);
 
   const handleSendMessage = useCallback(

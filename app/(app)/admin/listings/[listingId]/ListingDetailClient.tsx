@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { adminDeleteListing, adminUpdateListing } from "@/lib/admin/actions";
 import type { AdminListingWithDetails } from "@/lib/admin/types";
@@ -99,12 +99,6 @@ export default function ListingDetailClient({
     setIsEditing(false);
     setError(null);
   }, [listing]);
-
-  useEffect(() => {
-    if (formData.is_free) {
-      setFormData((prev) => ({ ...prev, price_cents: null }));
-    }
-  }, [formData.is_free]);
 
   return (
     <div className={styles.page}>
@@ -226,9 +220,14 @@ export default function ListingDetailClient({
                 <input
                   type="checkbox"
                   checked={formData.is_free}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_free: e.target.checked })
-                  }
+                  onChange={(e) => {
+                    const isFree = e.target.checked;
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_free: isFree,
+                      price_cents: isFree ? null : prev.price_cents,
+                    }));
+                  }}
                   disabled={!isEditing}
                 />
                 Free Item
