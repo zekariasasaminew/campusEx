@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -24,16 +24,16 @@ const navigation = [
 ];
 
 export function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    const stored = localStorage.getItem("sidebar-collapsed");
+    return stored !== null ? stored === "true" : true;
+  });
   const pathname = usePathname();
   const router = useRouter();
-
-  useEffect(() => {
-    const stored = localStorage.getItem("sidebar-collapsed");
-    if (stored !== null) {
-      setIsCollapsed(stored === "true");
-    }
-  }, []);
 
   const toggleCollapsed = () => {
     const newState = !isCollapsed;

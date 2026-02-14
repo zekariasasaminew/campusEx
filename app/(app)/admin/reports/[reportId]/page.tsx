@@ -45,7 +45,14 @@ export default function ReportDetailPage({ params }: ReportDetailPageProps) {
 
   useEffect(() => {
     if (!reportId) return;
-    loadReport();
+
+    const timer = window.setTimeout(() => {
+      void loadReport();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [reportId, loadReport]);
 
   const handleMarkReviewed = useCallback(async () => {

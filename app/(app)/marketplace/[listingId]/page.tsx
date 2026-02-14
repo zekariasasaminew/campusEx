@@ -53,7 +53,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   }, [params]);
 
   useEffect(() => {
-    loadListing();
+    const timer = window.setTimeout(() => {
+      void loadListing();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [loadListing]);
 
   const handleMarkAsSold = async () => {

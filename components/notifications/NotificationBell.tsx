@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   getUserNotifications,
@@ -17,17 +17,46 @@ export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    loadUnreadCount();
-    const interval = setInterval(loadUnreadCount, 30000);
-    return () => clearInterval(interval);
+  const loadNotifications = useCallback(async () => {
+    const result = await getUserNotifications(10);
+    if (result.success) {
+      setNotifications(result.data);
+    }
+  }, []);
+
+  const loadUnreadCount = useCallback(async () => {
+    const result = await getNotificationUnreadCount();
+    if (result.success) {
+      setUnreadCount(result.data);
+    }
   }, []);
 
   useEffect(() => {
+    const initialTimer = setTimeout(() => {
+      void loadUnreadCount();
+    }, 0);
+
+    const interval = setInterval(() => {
+      void loadUnreadCount();
+    }, 30000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [loadUnreadCount]);
+
+  useEffect(() => {
     if (isOpen) {
-      loadNotifications();
+      const timer = setTimeout(() => {
+        void loadNotifications();
+      }, 0);
+
+      return () => {
+        clearTimeout(timer);
+      };
     }
-  }, [isOpen]);
+  }, [isOpen, loadNotifications]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,20 +77,6 @@ export function NotificationBell() {
     };
   }, [isOpen]);
 
-  const loadNotifications = async () => {
-    const result = await getUserNotifications(10);
-    if (result.success) {
-      setNotifications(result.data);
-    }
-  };
-
-  const loadUnreadCount = async () => {
-    const result = await getNotificationUnreadCount();
-    if (result.success) {
-      setUnreadCount(result.data);
-    }
-  };
-
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.read_at) {
       await markNotificationRead(notification.id);
@@ -73,7 +88,7 @@ export function NotificationBell() {
   const handleMarkAllRead = async () => {
     await markAllNotificationsRead();
     setUnreadCount(0);
-    loadNotifications();
+    await loadNotifications();
   };
 
   return (
