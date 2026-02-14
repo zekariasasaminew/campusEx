@@ -32,6 +32,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MarketplaceLayout({ children }: { children: ReactNode }) {
+export default function MarketplaceLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return children;
 }
