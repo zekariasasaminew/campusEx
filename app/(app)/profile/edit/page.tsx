@@ -50,7 +50,13 @@ export default function EditProfilePage() {
   }, [router]);
 
   useEffect(() => {
-    loadProfile();
+    const timer = window.setTimeout(() => {
+      void loadProfile();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [loadProfile]);
 
   const handleSave = useCallback(async () => {

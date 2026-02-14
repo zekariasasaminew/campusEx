@@ -34,7 +34,14 @@ export default function MarketplacePage() {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      loadListings({});
+
+      const timer = window.setTimeout(() => {
+        void loadListings({});
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timer);
+      };
     }
   }, [loadListings]);
 
